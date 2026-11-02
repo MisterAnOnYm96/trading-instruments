@@ -1,6 +1,6 @@
 {
   "name": "Trading Instruments",
-  "short_name": "Trading",
+  "short_name": "Trading Instruments",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
