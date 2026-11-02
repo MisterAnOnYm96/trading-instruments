@@ -1,0 +1,1982 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Trading Instruments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #17181a;
+    --bg-grid: #1c1d20;
+    --panel: #202124;
+    --panel-2: #26272b;
+    --border: #34363b;
+    --border-soft: #2b2c30;
+    --text: #edebe6;
+    --text-muted: #8b8d93;
+    --text-faint: #5c5e64;
+    --buy: #3fa66f;
+    --buy-dim: #2c7550;
+    --sell: #c1553f;
+    --sell-dim: #8f3f2e;
+    --gold: #c9a24b;
+    --gold-dim: #8a6f34;
+    --radius: 20px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 50% -10%, #202124 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 10px 14px calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+  .wrap{ width:100%; max-width: 420px; }
+  .screen{ display:none; }
+  .screen.active{ display:block; }
+
+  .ticket{
+    background: linear-gradient(180deg, var(--panel) 0%, #171c24 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 14px 12px;
+    box-shadow: 0 20px 50px -20px rgba(0,0,0,0.6);
+  }
+
+  .field{ margin-bottom: 8px; }
+  .field:last-child{ margin-bottom: 0; }
+  .label{
+    display:block;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  /* segmented control */
+  .segmented{
+    display:flex;
+    background: #1a1b1e;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 4px;
+    gap: 4px;
+  }
+  .segmented button{
+    flex:1;
+    border:none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family:'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 6px 4px;
+    border-radius: 12px;
+    cursor:pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+  .segmented button.active{
+    background: var(--panel-2);
+    color: var(--text);
+    box-shadow: inset 0 0 0 1px var(--border);
+  }
+  .segmented.direction button[data-val="buy"].active{
+    background: rgba(63,166,111,0.16);
+    color: var(--buy);
+    box-shadow: inset 0 0 0 1px var(--buy-dim);
+  }
+  .segmented.direction button[data-val="sell"].active{
+    background: rgba(193,85,63,0.16);
+    color: var(--sell);
+    box-shadow: inset 0 0 0 1px var(--sell-dim);
+  }
+
+  select, input{
+    width:100%;
+    background: #1a1b1e;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 13px;
+    outline:none;
+    transition: border-color .15s ease;
+    appearance:none;
+    -webkit-appearance:none;
+  }
+  select{
+    font-family:'Manrope', sans-serif;
+    font-weight:600;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23838ba0'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position: right 14px center;
+    padding-right: 32px;
+  }
+  input:focus, select:focus{ border-color: var(--gold); }
+  input::placeholder{ color: var(--text-faint); }
+  select optgroup{
+    background: #1a1b1e;
+    color: var(--gold);
+    font-family:'Manrope', sans-serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+  select option{
+    background: #1a1b1e;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .row2{ display:flex; gap: 8px; }
+  .row2 .field{ flex:1; }
+
+  .divider{
+    height:1px;
+    background: linear-gradient(90deg, transparent, var(--border-soft) 15%, var(--border-soft) 85%, transparent);
+    margin: 8px 0 8px;
+  }
+
+  .result{
+    border-radius: 16px;
+    padding: 10px 12px 9px;
+    background: #1a1b1e;
+    border: 1px solid var(--border-soft);
+  }
+  .result-main{
+    display:flex; align-items:flex-start; justify-content:space-between;
+    margin-bottom: 6px;
+  }
+  .result-label{ font-size:11px; color: var(--text-muted); font-weight:600; }
+  .result-value{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    line-height:1.1;
+    margin-top: 2px;
+  }
+  .result-value.pos{ color: var(--buy); }
+  .result-value.neg{ color: var(--sell); }
+  .result-value.zero{ color: var(--text); }
+
+  .badge{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    font-weight:600;
+    padding: 5px 10px;
+    border-radius: 9px;
+    white-space:nowrap;
+    margin-top: 1px;
+  }
+  .badge.pos{ background: rgba(63,166,111,0.14); color: var(--buy); }
+  .badge.neg{ background: rgba(193,85,63,0.14); color: var(--sell); }
+  .badge.zero{ background: rgba(255,255,255,0.06); color: var(--text-muted); }
+
+  .stat-grid{
+    display:flex; gap: 8px;
+  }
+  .stat{
+    flex:1;
+    background: var(--panel-2);
+    border: 1px solid var(--border-soft);
+    border-radius: 13px;
+    padding: 7px 10px;
+  }
+  .stat-k{ font-size: 10.5px; color: var(--text-muted); font-weight:600; margin-bottom:2px; }
+  .stat-v{ font-family:'JetBrains Mono', monospace; font-size: 13.5px; font-weight:600; color: var(--text); }
+
+  .tabbar{
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    display:flex;
+    background: #1a1b1e;
+    border-top: 1px solid var(--border);
+    padding: 7px 10px calc(7px + env(safe-area-inset-bottom, 0px));
+    z-index: 30;
+  }
+  .tab-item{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap: 3px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    color: var(--text-faint);
+    font-family:'Manrope', sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 5px 4px 3px;
+    border-radius: 12px;
+    transition: color .15s ease;
+  }
+  .tab-item svg{ width:21px; height:21px; }
+  .tab-item.active{ color: var(--gold); }
+  .tab-item:not(.active):active{ color: var(--text-muted); }
+  .tab-item span{ text-align:center; line-height:1.15; }
+
+  /* ---- News instruction ---- */
+  .news-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; position:relative; }
+  .news-title{ font-weight:800; font-size:14px; border-left:3px solid var(--gold); padding-left:10px; }
+  .news-menubtn{
+    width:34px; height:34px; border-radius:12px; border:1px solid var(--border); background:#1a1b1e;
+    color:var(--text-muted); display:grid; place-items:center; cursor:pointer;
+  }
+  .news-menubtn svg{ width:17px; height:17px; }
+  .news-dd{
+    position:absolute; right:0; top:42px; z-index:5; min-width:170px; background:#1a1b1e;
+    border:1px solid var(--border); border-radius:14px; padding:4px; display:none;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+  }
+  .news-dd.open{ display:block; }
+  .news-mi{
+    width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:transparent; border:0; color:var(--text); font-family:'Manrope',sans-serif; font-weight:600;
+    font-size:13px; padding:10px 12px; border-radius:10px; cursor:pointer; text-align:left;
+  }
+  .news-mi.on{ background:rgba(63,166,111,.16); color:var(--buy); }
+  .news-mi.on::after{ content:"✓"; font-size:12px; }
+  .news-bar{ display:none; gap:8px; margin-bottom:10px; }
+  #screen-news.sel .news-bar{ display:flex; }
+  .news-bar button{
+    flex:1; font-family:'Manrope',sans-serif; font-weight:600; font-size:12.5px; padding:9px 6px;
+    border-radius:12px; border:1px solid var(--border); background:#1a1b1e; color:var(--text-muted); cursor:pointer;
+  }
+  .news-bar button:active{ background:rgba(221,226,230,.1); color:var(--text); }
+  .news-head{ display:flex; gap:10px; margin-bottom:6px; }
+  .news-head span{ font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
+  .news-head .l{ flex:1; padding-left:8px; }
+  .news-head .r{ flex:none; width:48px; margin-right:4px; text-align:center; }
+  .news-box{
+    display:flex; align-items:center; gap:4px; padding:4px; background:#1a1b1e;
+    border:1px solid var(--border); border-radius:16px; margin-bottom:8px;
+  }
+  .news-box.drag{ border-color:#8b8d93; box-shadow:0 6px 18px rgba(0,0,0,.35); }
+  .news-box:not(.on){ display:none; }
+  #screen-news.sel .news-box:not(.on){ display:flex; opacity:.45; }
+  .news-handle, .news-chk{ display:none; flex:none; align-items:center; justify-content:center; }
+  .news-handle{ width:26px; height:40px; color:#8b8d93; cursor:grab; touch-action:none; user-select:none; -webkit-user-select:none; }
+  .news-handle svg{ width:12px; height:18px; }
+  #screen-news.sort .news-handle{ display:flex; }
+  .news-chk{ width:26px; height:40px; background:transparent; border:0; padding:0; cursor:pointer; }
+  .news-chk i{
+    width:20px; height:20px; border-radius:6px; border:1.5px solid #5a5d64; display:grid; place-items:center;
+    color:transparent; transition: background .15s ease, border-color .15s ease;
+  }
+  .news-chk i svg{ width:12px; height:12px; }
+  .news-chk[aria-pressed="true"] i{ background:rgba(221,226,230,.14); border-color:#8b8d93; color:var(--text); }
+  #screen-news.sel .news-chk{ display:flex; }
+  .news-idx{
+    flex:1; min-width:0; height:40px; background:rgba(63,166,111,.16); color:var(--buy);
+    box-shadow:inset 0 0 0 1px var(--buy-dim); font-family:inherit; font-weight:600; font-size:13px;
+    cursor:pointer; border:0; border-radius:12px; padding:6px 12px; display:flex; align-items:center; justify-content:flex-start;
+    transition: background .15s ease, color .15s ease;
+  }
+  .news-idx.down{ background:rgba(193,85,63,.16); color:var(--sell); box-shadow:inset 0 0 0 1px var(--sell-dim); }
+  .news-nm{ font-weight:600; font-size:13px; line-height:1.15; text-align:left; display:block; width:100%; max-height:2.3em; overflow:hidden; }
+  .news-gold{
+    flex:none; width:48px; height:40px; border-radius:12px; display:grid; place-items:center;
+    background:rgba(63,166,111,.16); color:var(--buy); box-shadow:inset 0 0 0 1px var(--buy-dim);
+    transition: background .15s ease, color .15s ease;
+  }
+  .news-gold.down{ background:rgba(193,85,63,.16); color:var(--sell); box-shadow:inset 0 0 0 1px var(--sell-dim); }
+  .news-gold.dim{ background:rgba(255,255,255,.05); color:var(--text-faint); box-shadow:inset 0 0 0 1px var(--border); opacity:.55; }
+  .news-gold.cfg{ cursor:pointer; }
+  #screen-news.cfg .news-box{ display:flex; opacity:1; }
+  #screen-news.cfg .news-idx{ pointer-events:none; }
+  .news-box.cfg-none .news-idx{ opacity:.4; }
+  .news-gold svg{ width:22px; height:22px; }
+  .news-empty{ text-align:center; color:var(--text-muted); font-size:12.5px; line-height:1.5; padding:26px 12px; }
+  .news-note{
+    font-size:11px; color:var(--text-muted); margin:16px 0 0; padding:10px 12px; line-height:1.5;
+    border-left:3px solid var(--gold); background:#1a1b1e; border-radius:0 8px 8px 0;
+  }
+
+
+  [hidden]{ display:none !important; }
+  .app-version{ text-align:center; color:var(--text-faint); font-family:'JetBrains Mono',monospace; font-size:11.5px; margin-top:22px; }
+  /* ---- Sozlamalar: Instrumentlar (iOS Settings style) ---- */
+  .set-row{
+    width:100%; display:flex; align-items:center; justify-content:space-between; margin-top:16px;
+    background:#1a1b1e; border:1px solid var(--border-soft); border-radius:12px; min-height:46px; padding:0 16px;
+    color:var(--text); font-family:'Manrope',sans-serif; font-weight:600; font-size:14px; cursor:pointer;
+  }
+  .set-row svg{ width:15px; height:15px; color:var(--text-faint); flex:none; }
+  .inst-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:2px; }
+  .inst-back{
+    display:flex; align-items:center; gap:2px; background:transparent; border:0; color:var(--gold);
+    font-family:'Manrope',sans-serif; font-weight:600; font-size:14px; padding:6px 2px; cursor:pointer;
+  }
+  .inst-back svg{ width:16px; height:16px; }
+  .inst-title{ font-weight:700; font-size:15px; }
+  .ios-section-title{
+    font-family:'Manrope',sans-serif; font-size:12px; font-weight:600; letter-spacing:.03em;
+    text-transform:uppercase; color:var(--text-muted); margin:18px 16px 7px;
+  }
+  .ios-group{ background:#1a1b1e; border-radius:12px; overflow:hidden; border:1px solid var(--border-soft); }
+  .ios-swipe{ position:relative; overflow:hidden; }
+  .ios-action{
+    position:absolute; top:0; right:0; bottom:0; width:88px; background:#d9473a; color:#fff; border:0;
+    font-family:'Manrope',sans-serif; font-weight:600; font-size:14px; cursor:pointer;
+  }
+  .ios-row{
+    position:relative; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    width:100%; min-height:46px; padding:0 16px; background:#1a1b1e; border:0; text-align:left;
+    color:var(--text); font-family:'Manrope',sans-serif; font-size:14px; font-weight:600;
+  }
+  .ios-group > .ios-swipe:not(:first-child) > .ios-row::before,
+  .ios-group > .ios-row:not(:first-child)::before{
+    content:''; position:absolute; top:0; left:16px; right:0; height:.5px; background:rgba(255,255,255,.1);
+  }
+  .ios-swipe > .ios-row{
+    font-family:'JetBrains Mono',monospace; touch-action:pan-y; user-select:none; -webkit-user-select:none;
+    transition: transform .22s ease; will-change:transform;
+  }
+  .ios-swipe > .ios-row.dragging{ transition:none; }
+  .ios-label{ white-space:nowrap; }
+  .ios-input{
+    flex:1; min-width:0; width:auto; background:transparent; border:0; border-radius:0; padding:0;
+    text-align:right; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:600;
+  }
+  .ios-input::placeholder{ color:var(--text-faint); }
+  .ios-opt, .ios-act, .ios-addrow{ cursor:pointer; }
+  .ios-check{ width:18px; height:18px; color:var(--gold); opacity:0; flex:none; }
+  .ios-opt.selected .ios-check{ opacity:1; }
+  .ios-act{ justify-content:center; color:var(--gold); font-weight:700; }
+  .ios-act.muted{ color:var(--text-muted); font-weight:600; }
+  .ios-addrow{ justify-content:flex-start; gap:10px; color:var(--gold); font-weight:600; }
+  .ios-plus{
+    width:20px; height:20px; border-radius:50%; background:var(--gold); color:#171717;
+    display:grid; place-items:center; font-weight:800; font-size:15px; line-height:1; flex:none;
+  }
+  #inst-add-wrap{ margin-top:18px; }
+  .inst-form{ margin-top:6px; }
+  .inst-error{ color:#e8806c; font-size:12px; min-height:16px; margin:8px 16px 0; }
+  .inst-form .ios-group + .ios-group{ margin-top:18px; }
+  .ios-chev{ width:15px; height:15px; color:var(--text-faint); flex:none; }
+  .news-adm-name{ flex:1; min-width:0; text-align:left; padding:10px 0; line-height:1.25; }
+  .ios-field{ flex-direction:column; align-items:stretch; justify-content:center; gap:3px; padding:8px 16px; min-height:58px; }
+  .ios-field .ios-label{ font-size:11.5px; color:var(--text-muted); font-weight:600; }
+  .ios-field .ios-input{ flex:none; width:100%; text-align:left; font-family:'Manrope',sans-serif; font-size:14px; }
+  .ios-act.danger{ color:#e8806c; }
+  .inst-form .inst-error + .ios-group{ margin-top:10px; }
+  .news-head .r{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  /* ---- Savdo vaqtlari ---- */
+  .fx-ticker-row{ margin-bottom:14px; }
+  .fx-ticker-wrap{
+    flex:1; min-width:0; overflow:hidden; background:#15161a; border:1px solid var(--border-soft);
+    border-radius:10px; padding:5px 0; white-space:nowrap;
+  }
+  .fx-ticker-track{ display:inline-flex; align-items:center; animation: fx-marquee 26s linear infinite; }
+  .fx-ticker-wrap:active .fx-ticker-track{ animation-play-state:paused; }
+  @keyframes fx-marquee{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  .fx-ticker-item{
+    display:inline-flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; color:var(--text-muted); padding:0 13px; flex:none;
+  }
+  .fx-ticker-item .dot{ width:5px; height:5px; border-radius:50%; flex:none; }
+  .fx-ticker-item b{ color:var(--text); font-weight:600; }
+  .fx-ticker-sep{ color:var(--text-faint); padding:0 3px; }
+
+  .fx-clock-wrap{ display:flex; justify-content:center; margin-bottom:14px; }
+  .fx-clock-wrap svg{ width:324px; max-width:100%; height:auto; aspect-ratio:1/1; }
+
+  .fx-markets-toggle{
+    width:100%; display:flex; align-items:center; justify-content:space-between;
+    background:#1a1b1e; border:1px solid var(--border); border-radius:13px;
+    padding:11px 14px; cursor:pointer; color:var(--text);
+    font-family:'Manrope',sans-serif; font-weight:700; font-size:13px;
+  }
+  .fx-markets-toggle svg{ width:15px; height:15px; color:var(--text-muted); transition: transform .2s ease; flex:none; }
+  .fx-markets-toggle.open svg{ transform: rotate(180deg); }
+  .fx-markets-panel{ max-height:0; overflow:hidden; transition: max-height .25s ease; }
+  .fx-markets-panel.open{ max-height:2000px; }
+  .fx-markets-panel-inner{ padding-top:10px; }
+
+  .session-card{
+    display:flex; align-items:center; gap:10px;
+    background:#1a1b1e; border:1px solid var(--border-soft); border-radius:15px;
+    padding:10px 12px; margin-bottom:8px;
+    transition: opacity .15s ease;
+    cursor:pointer;
+  }
+  .session-card:last-child{ margin-bottom:0; }
+  .session-card.dim{ opacity:0.38; }
+  .session-card.dragging{
+    position:relative; z-index:50; box-shadow:0 12px 26px -8px rgba(0,0,0,0.55); background:#202127;
+  }
+  .drag-handle{
+    width:20px; height:20px; flex:none; color:var(--text-faint);
+    touch-action:none; cursor:grab; display:flex; align-items:center; justify-content:center;
+  }
+  .drag-handle svg{ width:16px; height:16px; }
+  .session-dot{ width:8px; height:8px; border-radius:50%; flex:none; }
+  .session-body{ flex:1; min-width:0; }
+  .session-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; gap:6px; }
+  .session-name{ font-family:'Manrope',sans-serif; font-weight:700; font-size:13px; }
+  .overlap-badge{
+    font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700;
+    color:var(--sell); background:rgba(193,85,63,0.14); border-radius:6px;
+    padding:2px 6px; vertical-align:middle; margin-left:2px;
+  }
+  .session-status{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700;
+    padding:3px 9px; border-radius:8px; white-space:nowrap; flex:none;
+  }
+  .session-status.open{ color:var(--buy); background:rgba(63,166,111,0.14); }
+  .session-status.closed{ color:var(--text-faint); background:rgba(255,255,255,0.05); }
+  .session-time{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-muted); }
+  @media (pointer: coarse){
+    input, select, textarea{ font-size:16px !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="ticket screen active" id="screen-calculator">
+
+    <div class="field">
+      <span class="label" id="lbl-instrument">Instrument</span>
+      <select id="instrument"></select>
+    </div>
+
+    <div class="field">
+      <span class="label" id="lbl-direction">Yo'nalish</span>
+      <div class="segmented direction" id="direction">
+        <button data-val="buy" class="active">BUY</button>
+        <button data-val="sell">SELL</button>
+      </div>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <span class="label" id="lbl-deposit">Depozit ($)</span>
+        <input type="number" id="deposit" value="40" min="0" step="10">
+      </div>
+      <div class="field">
+        <span class="label" id="lbl-lots">Lot hajmi</span>
+        <input type="number" id="lots" value="0.01" min="0" step="0.01">
+      </div>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <span class="label" id="lbl-openPrice">Ochilish narxi</span>
+        <input type="number" id="openPrice" value="4390" step="0.00001" placeholder="0.00000">
+      </div>
+      <div class="field">
+        <span class="label" id="lbl-closePrice">Yopilish narxi</span>
+        <input type="number" id="closePrice" value="4400" step="0.00001" placeholder="0.00000">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="result">
+      <div class="result-main">
+        <div>
+          <div class="result-label" id="lbl-pnl">Foyda / Zarar</div>
+          <div class="result-value zero" id="pnl">$0.00</div>
+        </div>
+        <div class="badge zero" id="pnl-pct">0.00%</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="stat-k" id="lbl-movement">Harakat</div>
+          <div class="stat-v" id="movement">0.0 pips</div>
+        </div>
+        <div class="stat">
+          <div class="stat-k" id="lbl-contract">Kontrakt hajmi</div>
+          <div class="stat-v" id="contract">100,000</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="ticket screen" id="screen-settings">
+
+    <div id="settings-main">
+    <div class="field">
+      <span class="label" id="lbl-timezone">Vaqt mintaqasi</span>
+      <select id="timezone"></select>
+    </div>
+
+    <div class="field">
+      <span class="label" id="lbl-language">Til</span>
+      <div class="segmented" id="language-switch">
+        <button data-val="uz" class="active">O'zbek</button>
+        <button data-val="ru">Русский</button>
+        <button data-val="en">English</button>
+      </div>
+    </div>
+
+    <button class="set-row" id="open-instruments" type="button">
+      <span id="lbl-set-instruments">Instrumentlar</span>
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 5l5 5-5 5"/></svg>
+    </button>
+    <button class="set-row" id="open-news-admin" type="button" style="margin-top:10px">
+      <span id="lbl-set-news">Yangiliklar</span>
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 5l5 5-5 5"/></svg>
+    </button>
+    <div class="app-version" id="app-version">Trading Instruments · v1</div>
+    </div>
+
+    <div id="settings-instruments" hidden>
+      <div class="inst-head">
+        <button class="inst-back" id="inst-back" type="button">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 5l-5 5 5 5"/></svg>
+          <span id="lbl-inst-back">Sozlamalar</span>
+        </button>
+        <div class="inst-title" id="lbl-inst-title">Instrumentlar</div>
+      </div>
+      <div id="inst-list"></div>
+      <div class="ios-group" id="inst-add-wrap">
+        <button class="ios-row ios-addrow" id="inst-add-btn" type="button"><span class="ios-plus">+</span><span id="lbl-inst-add">Yangi qo'shish</span></button>
+      </div>
+      <div class="inst-form" id="inst-form" hidden>
+        <div class="ios-group">
+          <div class="ios-row">
+            <span class="ios-label" id="lbl-inst-name">Instrument nomi</span>
+            <input type="text" class="ios-input" id="inst-name" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="EURGBP">
+          </div>
+        </div>
+        <div class="ios-section-title" id="lbl-inst-cat">Kategoriya</div>
+        <div class="ios-group" id="inst-cat">
+          <button type="button" class="ios-row ios-opt selected" data-val="forex"><span id="inst-cat-forex">Valyuta juftliklari</span><svg class="ios-check" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg></button>
+          <button type="button" class="ios-row ios-opt" data-val="metal"><span id="inst-cat-metal">Metallar</span><svg class="ios-check" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg></button>
+        </div>
+        <div class="inst-error" id="inst-error"></div>
+        <div class="ios-group">
+          <button class="ios-row ios-act" id="inst-save" type="button">Saqlash</button>
+          <button class="ios-row ios-act muted" id="inst-cancel" type="button">Bekor qilish</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="settings-news" hidden>
+      <div class="inst-head">
+        <button class="inst-back" id="newsadm-back" type="button">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 5l-5 5 5 5"/></svg>
+          <span id="lbl-newsadm-back">Sozlamalar</span>
+        </button>
+        <div class="inst-title" id="lbl-newsadm-title">Yangiliklar</div>
+      </div>
+      <div id="newsadm-list"></div>
+      <div class="ios-group" id="newsadm-add-wrap" style="margin-top:18px">
+        <button class="ios-row ios-addrow" id="newsadm-add-btn" type="button"><span class="ios-plus">+</span><span id="lbl-newsadm-add">Yangi qo'shish</span></button>
+      </div>
+      <div class="inst-form" id="newsform" hidden>
+        <div class="ios-section-title" id="lbl-newsform-title">Yangi yangilik</div>
+        <div class="ios-group">
+          <div class="ios-row ios-field"><span class="ios-label">O'zbek</span><input type="text" class="ios-input" id="nf-uz" maxlength="80" autocomplete="off"></div>
+          <div class="ios-row ios-field"><span class="ios-label">Русский</span><input type="text" class="ios-input" id="nf-ru" maxlength="80" autocomplete="off"></div>
+          <div class="ios-row ios-field"><span class="ios-label">English</span><input type="text" class="ios-input" id="nf-en" maxlength="80" autocomplete="off"></div>
+        </div>
+        <div class="inst-error" id="newsform-error"></div>
+        <div class="ios-group">
+          <button class="ios-row ios-act" id="newsform-save" type="button">Saqlash</button>
+          <button class="ios-row ios-act muted" id="newsform-cancel" type="button">Bekor qilish</button>
+        </div>
+        <div class="ios-group" id="newsform-delete-wrap" hidden>
+          <button class="ios-row ios-act danger" id="newsform-delete" type="button">O'chirish</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="ticket screen" id="screen-news">
+    <div class="news-top">
+      <div class="news-title" id="lbl-news-title">Yangilik ko'rsatmasi</div>
+      <button class="news-menubtn" id="news-menu-btn" type="button" aria-haspopup="true" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+      </button>
+      <div class="news-dd" id="news-dd">
+        <button class="news-mi" type="button" data-m="sort" id="news-mi-sort">Tartiblash</button>
+        <button class="news-mi" type="button" data-m="sel" id="news-mi-sel">Belgilash</button>
+        <button class="news-mi" type="button" data-m="cfg" id="news-mi-cfg">Sozlash</button>
+      </div>
+    </div>
+    <div class="news-bar" id="news-bar">
+      <button type="button" id="news-all">Hammasini belgilash</button>
+      <button type="button" id="news-clr">Tozalash</button>
+    </div>
+    <div class="news-head"><span class="l" id="lbl-news-head">Yangilik</span><span class="r" id="news-head-instr">XAUUSD</span></div>
+    <div id="news-list"></div>
+    <p class="news-note" id="news-note">Bu bog'lanishlar umumiy qoida: real bozorda har doim ishlamaydi. Moliyaviy maslahat emas.</p>
+  </div>
+
+  <div class="ticket screen" id="screen-forextimes">
+    <div class="fx-ticker-row">
+      <div class="fx-ticker-wrap">
+        <div class="fx-ticker-track" id="fx-ticker-track"></div>
+      </div>
+    </div>
+    <div class="fx-clock-wrap">
+      <svg id="fx-analog-clock" viewBox="0 0 200 200"></svg>
+    </div>
+    <button class="fx-markets-toggle" id="fx-markets-toggle">
+      <span id="lbl-markets-select">Bozorlarni tanlash</span>
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7.5l5 5 5-5"/></svg>
+    </button>
+    <div class="fx-markets-panel" id="fx-markets-panel">
+      <div class="fx-markets-panel-inner">
+        <div id="sessions-list"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<nav class="tabbar">
+  <button class="tab-item" id="tab-forextimes" data-tab="forextimes">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M12 7v5l3.5 2"/>
+    </svg>
+    <span id="lbl-tab-forextimes">Savdo vaqtlari</span>
+  </button>
+  <button class="tab-item" id="tab-news" data-tab="news">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/>
+    </svg>
+    <span id="lbl-tab-news">Yangilik ko'rsatmasi</span>
+  </button>
+  <button class="tab-item active" id="tab-calculator" data-tab="calculator">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="5" y="2" width="14" height="20" rx="2"/>
+      <rect x="7.5" y="4.5" width="9" height="4" rx="0.6"/>
+      <circle cx="8.5" cy="12.5" r="0.75" fill="currentColor" stroke="none"/>
+      <circle cx="12" cy="12.5" r="0.75" fill="currentColor" stroke="none"/>
+      <circle cx="15.5" cy="12.5" r="0.75" fill="currentColor" stroke="none"/>
+      <circle cx="8.5" cy="16" r="0.75" fill="currentColor" stroke="none"/>
+      <circle cx="12" cy="16" r="0.75" fill="currentColor" stroke="none"/>
+      <circle cx="15.5" cy="16" r="0.75" fill="currentColor" stroke="none"/>
+      <circle cx="8.5" cy="19.5" r="0.75" fill="currentColor" stroke="none"/>
+      <circle cx="12" cy="19.5" r="0.75" fill="currentColor" stroke="none"/>
+      <circle cx="15.5" cy="19.5" r="0.75" fill="currentColor" stroke="none"/>
+    </svg>
+    <span id="lbl-tab-calculator">Kalkulyator</span>
+  </button>
+  <button class="tab-item" id="tab-settings" data-tab="settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
+    </svg>
+    <span id="lbl-tab-settings">Sozlamalar</span>
+  </button>
+</nav>
+
+<script>
+  const INSTRUMENTS = [
+    { group:"forex", items:[
+      { code:'EURUSD', name:'EUR/USD', contract:100000, pip:0.0001, quoteIsUSD:true, decimals:5, unit:'units' },
+      { code:'GBPUSD', name:'GBP/USD', contract:100000, pip:0.0001, quoteIsUSD:true, decimals:5, unit:'units' },
+      { code:'AUDUSD', name:'AUD/USD', contract:100000, pip:0.0001, quoteIsUSD:true, decimals:5, unit:'units' },
+      { code:'NZDUSD', name:'NZD/USD', contract:100000, pip:0.0001, quoteIsUSD:true, decimals:5, unit:'units' },
+      { code:'USDJPY', name:'USD/JPY', contract:100000, pip:0.01,   quoteIsUSD:false, decimals:3, unit:'units' },
+      { code:'USDCHF', name:'USD/CHF', contract:100000, pip:0.0001, quoteIsUSD:false, decimals:5, unit:'units' },
+      { code:'USDCAD', name:'USD/CAD', contract:100000, pip:0.0001, quoteIsUSD:false, decimals:5, unit:'units' },
+    ]},
+    { group:"metal", items:[
+      { code:'XAUUSD', name:'XAU/USD', contract:100,  pip:0.01, quoteIsUSD:true, decimals:2, unit:'oz' },
+      { code:'XAGUSD', name:'XAG/USD', contract:5000, pip:0.01, quoteIsUSD:true, decimals:3, unit:'oz' },
+    ]},
+  ];
+
+  const TIMEZONES = [
+    "GMT-12:00 — Beyker oroli (AQSH)", "GMT-11:00 — Amerika Samoasi", "GMT-10:00 — Gonolulu (AQSH)",
+    "GMT-09:00 — Ankoridj (AQSH)", "GMT-08:00 — Los-Anjeles (AQSH)", "GMT-07:00 — Denver (AQSH)",
+    "GMT-06:00 — Mexiko (Meksika)", "GMT-05:00 — Nyu-York (AQSH)", "GMT-04:00 — Santyago (Chili)",
+    "GMT-03:00 — San-Paulu (Braziliya)", "GMT-02:00 — Janubiy Georgiya", "GMT-01:00 — Azor orollari (Portugaliya)",
+    "GMT+00:00 — London (Buyuk Britaniya)", "GMT+01:00 — Berlin (Germaniya)", "GMT+01:00 — Parij (Fransiya)",
+    "GMT+02:00 — Qohira (Misr)", "GMT+02:00 — Iyerusalim (Isroil)", "GMT+03:00 — Moskva (Rossiya)",
+    "GMT+03:00 — Istanbul (Turkiya)", "GMT+03:00 — Nayrobi (Keniya)", "GMT+03:30 — Tehron (Eron)",
+    "GMT+04:00 — Dubay (BAA)", "GMT+04:00 — Boku (Ozarbayjon)", "GMT+04:30 — Kobul (Afg'oniston)",
+    "GMT+05:00 — Toshkent (O'zbekiston)", "GMT+05:00 — Islomobod (Pokiston)", "GMT+05:30 — Nyu-Dehli (Hindiston)",
+    "GMT+06:00 — Almati (Qozog'iston)", "GMT+06:00 — Dakka (Bangladesh)", "GMT+07:00 — Bangkok (Tailand)",
+    "GMT+07:00 — Jakarta (Indoneziya)", "GMT+08:00 — Pekin (Xitoy)", "GMT+08:00 — Singapur",
+    "GMT+09:00 — Tokio (Yaponiya)", "GMT+09:00 — Seul (Janubiy Koreya)", "GMT+09:30 — Adelaida (Avstraliya)",
+    "GMT+10:00 — Sidney (Avstraliya)", "GMT+11:00 — Solomon orollari", "GMT+12:00 — Oklend (Yangi Zelandiya)",
+    "GMT+13:00 — Nukualofa (Tonga)", "GMT+14:00 — Kiritimati (Kiribati)",
+  ];
+
+  const TZ_NAMES = {
+    ru: ["Остров Бейкер (США)", "Американское Самоа", "Гонолулу (США)", "Анкоридж (США)", "Лос-Анджелес (США)", "Денвер (США)", "Мехико (Мексика)", "Нью-Йорк (США)", "Сантьяго (Чили)", "Сан-Паулу (Бразилия)", "Южная Георгия", "Азорские острова (Португалия)", "Лондон (Великобритания)", "Берлин (Германия)", "Париж (Франция)", "Каир (Египет)", "Иерусалим (Израиль)", "Москва (Россия)", "Стамбул (Турция)", "Найроби (Кения)", "Тегеран (Иран)", "Дубай (ОАЭ)", "Баку (Азербайджан)", "Кабул (Афганистан)", "Ташкент (Узбекистан)", "Исламабад (Пакистан)", "Нью-Дели (Индия)", "Алматы (Казахстан)", "Дакка (Бангладеш)", "Бангкок (Таиланд)", "Джакарта (Индонезия)", "Пекин (Китай)", "Сингапур", "Токио (Япония)", "Сеул (Южная Корея)", "Аделаида (Австралия)", "Сидней (Австралия)", "Соломоновы острова", "Окленд (Новая Зеландия)", "Нукуалофа (Тонга)", "Киритимати (Кирибати)"],
+    en: ["Baker Island (USA)", "American Samoa", "Honolulu (USA)", "Anchorage (USA)", "Los Angeles (USA)", "Denver (USA)", "Mexico City (Mexico)", "New York (USA)", "Santiago (Chile)", "São Paulo (Brazil)", "South Georgia", "Azores (Portugal)", "London (United Kingdom)", "Berlin (Germany)", "Paris (France)", "Cairo (Egypt)", "Jerusalem (Israel)", "Moscow (Russia)", "Istanbul (Turkey)", "Nairobi (Kenya)", "Tehran (Iran)", "Dubai (UAE)", "Baku (Azerbaijan)", "Kabul (Afghanistan)", "Tashkent (Uzbekistan)", "Islamabad (Pakistan)", "New Delhi (India)", "Almaty (Kazakhstan)", "Dhaka (Bangladesh)", "Bangkok (Thailand)", "Jakarta (Indonesia)", "Beijing (China)", "Singapore", "Tokyo (Japan)", "Seoul (South Korea)", "Adelaide (Australia)", "Sydney (Australia)", "Solomon Islands", "Auckland (New Zealand)", "Nuku'alofa (Tonga)", "Kiritimati (Kiribati)"],
+  };
+  function tzLabel(i){
+    const parts = TIMEZONES[i].split(' — ');
+    const name = state.lang === 'uz' ? parts[1] : (TZ_NAMES[state.lang] || [])[i] || parts[1];
+    return parts[0] + ' — ' + name;
+  }
+
+  const WEEKDAYS = {
+    uz: ["Yakshanba","Dushanba","Seshanba","Chorshanba","Payshanba","Juma","Shanba"],
+    ru: ["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"],
+    en: ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+  };
+
+  const MARKETS = [
+    { id:'sydney',     uz:"Sidney (Avstraliya)",        ru:"Сидней (Австралия)",        en:"Sydney (Australia)",      openUTC:22,   closeUTC:7,    color:'#c9a24b' },
+    { id:'tokyo',      uz:"Tokio (Yaponiya)",           ru:"Токио (Япония)",            en:"Tokyo (Japan)",           openUTC:0,    closeUTC:9,    color:'#3fa66f' },
+    { id:'london',     uz:"London (Buyuk Britaniya)",   ru:"Лондон (Великобритания)",   en:"London (UK)",             openUTC:8,    closeUTC:17,   color:'#c1553f' },
+    { id:'newyork',    uz:"Nyu-York (AQSH)",            ru:"Нью-Йорк (США)",            en:"New York (USA)",          openUTC:13,   closeUTC:22,   color:'#4a90c9' },
+    { id:'frankfurt',  uz:"Frankfurt (Germaniya)",      ru:"Франкфурт (Германия)",      en:"Frankfurt (Germany)",     openUTC:7,    closeUTC:16,   color:'#9d6fd1' },
+    { id:'hongkong',   uz:"Gonkong",                    ru:"Гонконг",                   en:"Hong Kong",               openUTC:1,    closeUTC:9,    color:'#4bb3a2' },
+    { id:'singapore',  uz:"Singapur",                   ru:"Сингапур",                  en:"Singapore",               openUTC:1,    closeUTC:9,    color:'#d18a3f' },
+    { id:'shanghai',   uz:"Shanxay (Xitoy)",            ru:"Шанхай (Китай)",            en:"Shanghai (China)",        openUTC:1,    closeUTC:7,    color:'#6fa8dc' },
+    { id:'mumbai',     uz:"Mumbay (Hindiston)",         ru:"Мумбаи (Индия)",            en:"Mumbai (India)",          openUTC:3.75, closeUTC:10,   color:'#b05fa0' },
+    { id:'dubai',      uz:"Dubay (BAA)",                ru:"Дубай (ОАЭ)",               en:"Dubai (UAE)",             openUTC:5,    closeUTC:13.5, color:'#7fae4b' },
+    { id:'moscow',     uz:"Moskva (Rossiya)",           ru:"Москва (Россия)",           en:"Moscow (Russia)",         openUTC:6,    closeUTC:15,   color:'#5f87d1' },
+    { id:'wellington', uz:"Velington (Yangi Zelandiya)",ru:"Веллингтон (Новая Зеландия)",en:"Wellington (New Zealand)",openUTC:21,   closeUTC:6,    color:'#c97f9e' },
+  ];
+
+  const I18N = {
+    uz: {
+      instrument:"Instrument", groupForex:"Valyuta juftliklari", groupMetal:"Metallar",
+      direction:"Yo'nalish", deposit:"Depozit ($)", lots:"Lot hajmi",
+      openPrice:"Ochilish narxi", closePrice:"Yopilish narxi",
+      pnl:"Foyda / Zarar", movement:"Harakat", contract:"Kontrakt hajmi", unitUnits:"birlik",
+      tabCalculator:"Kalkulyator", tabSettings:"Sozlamalar",
+      tabForexTimes:"Savdo vaqtlari",
+      comingSoon:" bo'limi tez orada qo'shiladi",
+      timezoneLabel:"Vaqt mintaqasi", languageLabel:"Til",
+      marketsBtn:"Bozorlar", sessionOpen:"OCHIQ", sessionClosed:"YOPIQ",
+      fxWorkHours:"Ish vaqti",
+      tickerOpensIn:"ochilguncha", tickerClosesIn:"yopilguncha",
+      centerOpens:"ochiladi", centerCloses:"yopiladi",
+      statusOpen:"Hozir ochiq", statusClosed:"Hozir yopiq", overlapBadge:"kesishadi",
+      hourAbbr:"s", minuteAbbr:"d", marketsSelectLabel:"Bozorlarni tanlash",
+      tabNews:"Yangilik ko'rsatmasi", newsTitle:"Yangilik ko'rsatmasi", newsHead:"Yangilik",
+      newsSort:"Tartiblash", newsSelect:"Belgilash", newsConfig:"Sozlash", setInstruments:"Instrumentlar", instAdd:"Yangi qo'shish", instName:"Instrument nomi", instCategory:"Kategoriya", instSave:"Saqlash", instCancel:"Bekor qilish", instErrName:"Nom 3–12 ta harf yoki raqamdan iborat bo'lsin", instErrDup:"Bu instrument allaqachon mavjud", setNews:"Yangiliklar", newsFormAdd:"Yangi yangilik", newsFormEdit:"Nomlarni tahrirlash", newsNameErr:"Kamida bitta nom kiriting", instDelete:"O'chirish", newsEmpty:"Yangiliklar qo'shilmagan. Uch nuqta → Sozlash orqali tanlang.", newsSelectAll:"Hammasini belgilash", newsClear:"Tozalash",
+      newsNote:"Bu bog'lanishlar umumiy qoida: real bozorda har doim ishlamaydi. Moliyaviy maslahat emas.",
+    },
+    ru: {
+      instrument:"Инструмент", groupForex:"Валютные пары", groupMetal:"Металлы",
+      direction:"Направление", deposit:"Депозит ($)", lots:"Объём лота",
+      openPrice:"Цена открытия", closePrice:"Цена закрытия",
+      pnl:"Прибыль / Убыток", movement:"Движение", contract:"Размер контракта", unitUnits:"ед.",
+      tabCalculator:"Калькулятор", tabSettings:"Настройки",
+      tabForexTimes:"Время торгов",
+      comingSoon:" раздел скоро будет добавлен",
+      timezoneLabel:"Часовой пояс", languageLabel:"Язык",
+      marketsBtn:"Рынки", sessionOpen:"ОТКРЫТО", sessionClosed:"ЗАКРЫТО",
+      fxWorkHours:"Часы работы",
+      tickerOpensIn:"до открытия", tickerClosesIn:"до закрытия",
+      centerOpens:"открывается", centerCloses:"закрывается",
+      statusOpen:"Сейчас открыто", statusClosed:"Сейчас закрыто", overlapBadge:"пересекается",
+      hourAbbr:"ч", minuteAbbr:"м", marketsSelectLabel:"Выбор рынков",
+      tabNews:"Новостная инструкция", newsTitle:"Новостная инструкция", newsHead:"Новость",
+      newsSort:"Сортировка", newsSelect:"Выбор", newsConfig:"Настройка", setInstruments:"Инструменты", instAdd:"Добавить новый", instName:"Название инструмента", instCategory:"Категория", instSave:"Сохранить", instCancel:"Отмена", instErrName:"Название — от 3 до 12 букв или цифр", instErrDup:"Такой инструмент уже существует", setNews:"Новости", newsFormAdd:"Новая новость", newsFormEdit:"Редактирование названий", newsNameErr:"Введите хотя бы одно название", instDelete:"Удалить", newsEmpty:"Новости не добавлены. Выберите через три точки → Настройка.", newsSelectAll:"Выбрать все", newsClear:"Очистить",
+      newsNote:"Эти связи — общее правило: на реальном рынке они работают не всегда. Не является финансовой рекомендацией.",
+    },
+    en: {
+      instrument:"Instrument", groupForex:"Currency pairs", groupMetal:"Metals",
+      direction:"Direction", deposit:"Deposit ($)", lots:"Lot size",
+      openPrice:"Open price", closePrice:"Close price",
+      pnl:"Profit / Loss", movement:"Movement", contract:"Contract size", unitUnits:"units",
+      tabCalculator:"Calculator", tabSettings:"Settings",
+      tabForexTimes:"Market hours",
+      comingSoon:" section is coming soon",
+      timezoneLabel:"Time zone", languageLabel:"Language",
+      marketsBtn:"Markets", sessionOpen:"OPEN", sessionClosed:"CLOSED",
+      fxWorkHours:"Trading hours",
+      tickerOpensIn:"until open", tickerClosesIn:"until close",
+      centerOpens:"opens", centerCloses:"closes",
+      statusOpen:"Currently open", statusClosed:"Currently closed", overlapBadge:"overlaps",
+      hourAbbr:"h", minuteAbbr:"m", marketsSelectLabel:"Select markets",
+      tabNews:"News instruction", newsTitle:"News instruction", newsHead:"News",
+      newsSort:"Sort", newsSelect:"Select", newsConfig:"Configure", setInstruments:"Instruments", instAdd:"Add new", instName:"Instrument name", instCategory:"Category", instSave:"Save", instCancel:"Cancel", instErrName:"Name must be 3–12 letters or digits", instErrDup:"This instrument already exists", setNews:"News", newsFormAdd:"New news item", newsFormEdit:"Edit names", newsNameErr:"Enter at least one name", instDelete:"Delete", newsEmpty:"No news added yet. Choose them via the three dots → Configure.", newsSelectAll:"Select all", newsClear:"Clear",
+      newsNote:"These relationships are a general rule: they don't always hold in the real market. Not financial advice.",
+    },
+  };
+
+  const state = {
+    instrument:'XAUUSD', direction:'buy', lang:'uz', timezone:24,
+    marketOrder: MARKETS.map(m => m.id),
+    hiddenMarkets: [],
+    prevOpenMap: {},
+    prevOverflow: [],
+    vibrationsReady: false,
+  };
+
+  const $ = id => document.getElementById(id);
+  const instrumentSelect = $('instrument');
+  const directionButtons = document.querySelectorAll('#direction button');
+
+  function currentSpec(){
+    for(const cat of INSTRUMENTS){
+      const found = cat.items.find(i => i.code === state.instrument);
+      if(found) return found;
+    }
+  }
+
+  function populateInstruments(){
+    const t = I18N[state.lang];
+    instrumentSelect.innerHTML = '';
+    INSTRUMENTS.forEach(cat => {
+      if(!cat.items.length) return;
+      const group = document.createElement('optgroup');
+      group.label = cat.group === 'forex' ? t.groupForex : t.groupMetal;
+      cat.items.forEach(inst => {
+        const opt = document.createElement('option');
+        opt.value = inst.code;
+        opt.textContent = inst.name;
+        group.appendChild(opt);
+      });
+      instrumentSelect.appendChild(group);
+    });
+    instrumentSelect.value = state.instrument;
+  }
+
+  function fmtMoney(n){
+    const sign = n > 0 ? '+' : n < 0 ? '−' : '';
+    return sign + '$' + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
+  }
+  function fmtPct(n){
+    const sign = n > 0 ? '+' : n < 0 ? '−' : '';
+    return sign + Math.abs(n).toFixed(2) + '%';
+  }
+
+  function calculate(){
+    const spec = currentSpec();
+    const t = I18N[state.lang];
+    const unitText = spec.unit === 'oz' ? 'oz' : t.unitUnits;
+    $('contract').textContent = spec.contract.toLocaleString('en-US') + ' ' + unitText;
+
+    const deposit = parseFloat($('deposit').value) || 0;
+    const lots = parseFloat($('lots').value) || 0;
+    const open = parseFloat($('openPrice').value);
+    const close = parseFloat($('closePrice').value);
+
+    const pnlEl = $('pnl');
+    const pctEl = $('pnl-pct');
+    const moveEl = $('movement');
+
+    if(!open || !close || lots <= 0){
+      pnlEl.textContent = '$0.00';
+      pnlEl.className = 'result-value zero';
+      pctEl.textContent = '0.00%';
+      pctEl.className = 'badge zero';
+      moveEl.textContent = '0.0 pips';
+      return;
+    }
+
+    const diff = state.direction === 'buy' ? (close - open) : (open - close);
+    let pnl = diff * spec.contract * lots;
+    if(!spec.quoteIsUSD){
+      pnl = pnl / close; // convert quote currency profit to USD using close rate
+    }
+
+    const pct = deposit > 0 ? (pnl / deposit) * 100 : 0;
+    const pips = diff / spec.pip;
+
+    pnlEl.textContent = fmtMoney(pnl);
+    pnlEl.className = 'result-value ' + (pnl > 0.004 ? 'pos' : pnl < -0.004 ? 'neg' : 'zero');
+
+    pctEl.textContent = fmtPct(pct);
+    pctEl.className = 'badge ' + (pnl > 0.004 ? 'pos' : pnl < -0.004 ? 'neg' : 'zero');
+
+    moveEl.textContent = (pips >= 0 ? pips.toFixed(1) : '−' + Math.abs(pips).toFixed(1)) + ' pips';
+  }
+
+  directionButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      directionButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.direction = btn.dataset.val;
+      calculate();
+    });
+  });
+
+  instrumentSelect.addEventListener('change', () => {
+    state.instrument = instrumentSelect.value;
+    calculate();
+    renderNews();
+  });
+
+  ['deposit','lots','openPrice','closePrice'].forEach(id => {
+    $(id).addEventListener('input', calculate);
+  });
+
+  // ---- Sozlamalar: vaqt mintaqasi ----
+  const timezoneSelect = $('timezone');
+  function populateTimezones(){
+    timezoneSelect.innerHTML = '';
+    TIMEZONES.forEach((tz, idx) => {
+      const opt = document.createElement('option');
+      opt.value = idx;
+      opt.textContent = tzLabel(idx);
+      timezoneSelect.appendChild(opt);
+    });
+    timezoneSelect.value = state.timezone;
+  }
+  timezoneSelect.addEventListener('change', () => {
+    state.timezone = parseInt(timezoneSelect.value, 10);
+    renderSessions();
+    renderClock();
+    renderTicker();
+  });
+
+  // ---- Sozlamalar: til ----
+  const languageButtons = document.querySelectorAll('#language-switch button');
+  function applyLanguage(lang){
+    state.lang = lang;
+    const t = I18N[lang];
+    document.documentElement.lang = lang;
+    $('lbl-instrument').textContent = t.instrument;
+    $('lbl-direction').textContent = t.direction;
+    $('lbl-deposit').textContent = t.deposit;
+    $('lbl-lots').textContent = t.lots;
+    $('lbl-openPrice').textContent = t.openPrice;
+    $('lbl-closePrice').textContent = t.closePrice;
+    $('lbl-pnl').textContent = t.pnl;
+    $('lbl-movement').textContent = t.movement;
+    $('lbl-contract').textContent = t.contract;
+    $('lbl-timezone').textContent = t.timezoneLabel;
+    $('lbl-language').textContent = t.languageLabel;
+    $('lbl-tab-calculator').textContent = t.tabCalculator;
+    $('lbl-tab-settings').textContent = t.tabSettings;
+    $('lbl-tab-forextimes').textContent = t.tabForexTimes;
+    $('lbl-markets-select').textContent = t.marketsSelectLabel;
+    $('lbl-tab-news').textContent = t.tabNews;
+    $('lbl-news-title').textContent = t.newsTitle;
+    $('lbl-news-head').textContent = t.newsHead;
+    $('news-mi-sort').textContent = t.newsSort;
+    $('news-mi-sel').textContent = t.newsSelect;
+    $('news-mi-cfg').textContent = t.newsConfig;
+    $('news-all').textContent = t.newsSelectAll;
+    $('news-clr').textContent = t.newsClear;
+    $('news-note').textContent = t.newsNote;
+    $('lbl-set-instruments').textContent = t.setInstruments;
+    $('lbl-inst-title').textContent = t.setInstruments;
+    $('lbl-inst-back').textContent = t.tabSettings;
+    $('lbl-inst-add').textContent = t.instAdd;
+    $('lbl-inst-name').textContent = t.instName;
+    $('lbl-inst-cat').textContent = t.instCategory;
+    $('inst-cat-forex').textContent = t.groupForex;
+    $('inst-cat-metal').textContent = t.groupMetal;
+    $('inst-save').textContent = t.instSave;
+    $('inst-cancel').textContent = t.instCancel;
+    renderInstrumentList();
+    $('lbl-set-news').textContent = t.setNews;
+    $('lbl-newsadm-title').textContent = t.setNews;
+    $('lbl-newsadm-back').textContent = t.tabSettings;
+    $('lbl-newsadm-add').textContent = t.instAdd;
+    $('newsform-save').textContent = t.instSave;
+    $('newsform-cancel').textContent = t.instCancel;
+    $('newsform-delete').textContent = t.instDelete;
+    if(!$('newsform').hidden) $('lbl-newsform-title').textContent = state.editingNewsKey ? t.newsFormEdit : t.newsFormAdd;
+    renderNewsAdminList();
+    renderNews();
+    languageButtons.forEach(b => b.classList.toggle('active', b.dataset.val === lang));
+    populateInstruments();
+    populateTimezones();
+    calculate();
+    renderSessions();
+    renderClock();
+    renderTicker();
+  }
+  languageButtons.forEach(btn => {
+    btn.addEventListener('click', () => applyLanguage(btn.dataset.val));
+  });
+
+  // ---- Savdo vaqtlari (forex sessions) ----
+  function parseTzOffset(){
+    const label = TIMEZONES[state.timezone] || 'GMT+00:00';
+    const m = label.match(/GMT([+-])(\d{2}):(\d{2})/);
+    if(!m) return 0;
+    const sign = m[1] === '-' ? -1 : 1;
+    return sign * (parseInt(m[2],10) + parseInt(m[3],10)/60);
+  }
+
+  function fmtHM(hoursDecimal){
+    let h = ((hoursDecimal % 24) + 24) % 24;
+    const hh = Math.floor(h);
+    const mm = Math.round((h - hh) * 60);
+    return String(hh).padStart(2,'0') + ':' + String(mm === 60 ? 0 : mm).padStart(2,'0');
+  }
+
+  function isMarketOpen(openUTC, closeUTC, nowUTC){
+    if(openUTC < closeUTC){ return nowUTC >= openUTC && nowUTC < closeUTC; }
+    return nowUTC >= openUTC || nowUTC < closeUTC;
+  }
+
+  function polarToCartesian(cx, cy, r, angleDeg){
+    const rad = angleDeg * Math.PI / 180;
+    return { x: cx + r * Math.sin(rad), y: cy - r * Math.cos(rad) };
+  }
+
+  function describeArc(cx, cy, r, startAngle, endAngle){
+    const start = polarToCartesian(cx, cy, r, startAngle);
+    const end = polarToCartesian(cx, cy, r, endAngle);
+    const largeArc = (endAngle - startAngle) > 180 ? 1 : 0;
+    return 'M ' + start.x.toFixed(2) + ' ' + start.y.toFixed(2) +
+      ' A ' + r + ' ' + r + ' 0 ' + largeArc + ' 1 ' + end.x.toFixed(2) + ' ' + end.y.toFixed(2);
+  }
+
+  function fmtCountdown(totalSeconds){
+    totalSeconds = Math.max(0, Math.round(totalSeconds));
+    const hh = Math.floor(totalSeconds / 3600);
+    const mm = Math.floor((totalSeconds % 3600) / 60);
+    const ss = totalSeconds % 60;
+    return [hh, mm, ss].map(v => String(v).padStart(2, '0')).join(':');
+  }
+
+  function nextTransition(m, nowUTC){
+    const openNow = isMarketOpen(m.openUTC, m.closeUTC, nowUTC);
+    const targetUTC = openNow ? m.closeUTC : m.openUTC;
+    let diff = targetUTC - nowUTC;
+    diff = ((diff % 24) + 24) % 24;
+    if(diff === 0) diff = 24;
+    return { seconds: diff * 3600, isOpening: !openNow, open: openNow };
+  }
+
+  function shortName(m){ return m[state.lang].split(' (')[0]; }
+
+  const MAX_CLOCK_TRACKS = 3;
+
+  function toSegments(s, d){
+    // s: local start hour [0,24), d: duration hours (0,24]
+    if(d >= 24) return [[0, 24]];
+    return (s + d <= 24) ? [[s, s + d]] : [[s, 24], [0, s + d - 24]];
+  }
+  function segsOverlap(a, b){ return a[0] < b[1] && b[0] < a[1]; }
+
+  function computeTrackPlacement(offset){
+    const visible = state.marketOrder.filter(id => !state.hiddenMarkets.includes(id));
+    const tracks = Array.from({ length: MAX_CLOCK_TRACKS }, () => []);
+    const placement = {};
+    const overflow = [];
+    visible.forEach(id => {
+      const m = MARKETS.find(x => x.id === id);
+      if(!m) return;
+      const s = ((m.openUTC + offset) % 24 + 24) % 24;
+      const d = (((m.closeUTC - m.openUTC) % 24) + 24) % 24 || 24;
+      const segs = toSegments(s, d);
+      let assigned = -1;
+      for(let ti = 0; ti < MAX_CLOCK_TRACKS; ti++){
+        const conflict = segs.some(seg => tracks[ti].some(es => segsOverlap(seg, es)));
+        if(!conflict){ tracks[ti].push(...segs); assigned = ti; break; }
+      }
+      if(assigned === -1){ overflow.push(id); } else { placement[id] = assigned; }
+    });
+    return { placement, overflow };
+  }
+
+  const FX_SETTINGS_KEY = 'fx-times-settings';
+
+  function saveFxSettings(){
+    const data = {
+      marketOrder: state.marketOrder,
+      hiddenMarkets: state.hiddenMarkets,
+    };
+    try{ window.storage.set(FX_SETTINGS_KEY, JSON.stringify(data), false); }catch(err){}
+  }
+
+  async function loadFxSettings(){
+    try{
+      const result = await window.storage.get(FX_SETTINGS_KEY, false);
+      if(!result || !result.value) return;
+      const saved = JSON.parse(result.value);
+      const validIds = MARKETS.map(m => m.id);
+      if(Array.isArray(saved.marketOrder)){
+        const filtered = saved.marketOrder.filter(id => validIds.includes(id));
+        const missing = validIds.filter(id => !filtered.includes(id));
+        if(filtered.length) state.marketOrder = filtered.concat(missing);
+      }
+      if(Array.isArray(saved.hiddenMarkets)){
+        state.hiddenMarkets = saved.hiddenMarkets.filter(id => validIds.includes(id));
+      }
+    }catch(err){ /* no saved settings yet */ }
+  }
+
+  function renderClock(){
+    const svg = $('fx-analog-clock');
+    const t = I18N[state.lang];
+    const offset = parseTzOffset();
+    const now = new Date();
+    const nowUTC = now.getUTCHours() + now.getUTCMinutes()/60 + now.getUTCSeconds()/3600;
+    const localSeconds = ((Math.round(nowUTC*3600) + Math.round(offset*3600)) % 86400 + 86400) % 86400;
+    const hourLocal = Math.floor(localSeconds/3600);
+    const minuteLocal = Math.floor((localSeconds%3600)/60);
+    const secondLocal = localSeconds%60;
+
+    const cx = 100, cy = 100;
+    const maxR = 70, minR = 40;
+    const gap = (maxR - minR) / (MAX_CLOCK_TRACKS - 1);
+
+    let parts = [];
+    parts.push('<circle cx="100" cy="100" r="98" fill="#121317" stroke="#2a3038" stroke-width="1"/>');
+
+    // radial spokes (center to rim) at every 15/30/45-minute mark of each hour
+    for(let h = 0; h < 24; h++){
+      [15, 30, 45].forEach(mins => {
+        const ang = h * 15 + mins / 60 * 15;
+        const s1 = polarToCartesian(cx, cy, 32, ang);
+        const s2 = polarToCartesian(cx, cy, 96, ang);
+        parts.push('<line x1="'+s1.x.toFixed(1)+'" y1="'+s1.y.toFixed(1)+'" x2="'+s2.x.toFixed(1)+'" y2="'+s2.y.toFixed(1)+'" stroke="#262b32" stroke-width="0.5"/>');
+      });
+    }
+
+    // 24 major hour ticks + numbers (24 at the top instead of 0), pushed further out from the rings
+    for(let h = 0; h < 24; h++){
+      const ang = h * 15;
+      const p1 = polarToCartesian(cx, cy, 97, ang);
+      const p2 = polarToCartesian(cx, cy, 92, ang);
+      parts.push('<line x1="'+p1.x.toFixed(1)+'" y1="'+p1.y.toFixed(1)+'" x2="'+p2.x.toFixed(1)+'" y2="'+p2.y.toFixed(1)+'" stroke="#39404a" stroke-width="1.1"/>');
+      // minor ticks at 15/30/45 past this hour, shorter than the major tick
+      [15, 30, 45].forEach(mins => {
+        const mAng = ang + mins / 60 * 15;
+        const mp1 = polarToCartesian(cx, cy, 97, mAng);
+        const mp2 = polarToCartesian(cx, cy, 94.5, mAng);
+        parts.push('<line x1="'+mp1.x.toFixed(1)+'" y1="'+mp1.y.toFixed(1)+'" x2="'+mp2.x.toFixed(1)+'" y2="'+mp2.y.toFixed(1)+'" stroke="#333941" stroke-width="0.8"/>');
+      });
+      const lp = polarToCartesian(cx, cy, 88, ang);
+      const label = h === 0 ? 24 : h;
+      parts.push('<text x="'+lp.x.toFixed(1)+'" y="'+(lp.y+2.8).toFixed(1)+'" text-anchor="middle" font-size="7" font-weight="700" fill="#e8e6e1" font-family="Manrope, sans-serif">'+label+'</text>');
+    }
+
+    // session arcs with curved market labels — packed into at most 3 non-overlapping tracks
+    const { placement } = computeTrackPlacement(offset);
+    state.marketOrder.forEach(id => {
+      if(!(id in placement)) return;
+      const m = MARKETS.find(x => x.id === id);
+      if(!m) return;
+      const r = maxR - placement[id] * gap;
+      const localOpen = ((m.openUTC + offset) % 24 + 24) % 24;
+      const duration = (((m.closeUTC - m.openUTC) % 24) + 24) % 24 || 24;
+      const startAngle = localOpen * 15;
+      const endAngle = startAngle + duration * 15;
+      const pathId = 'fx-arc-' + id;
+      const path = describeArc(cx, cy, r, startAngle, endAngle);
+      parts.push('<path id="'+pathId+'" d="'+path+'" fill="none" stroke="'+m.color+'" stroke-width="10.5" stroke-linecap="butt" opacity="0.9"/>');
+      parts.push('<text font-size="6" font-weight="700" letter-spacing="1" fill="#14151a" dominant-baseline="central"><textPath href="#'+pathId+'" startOffset="50%" text-anchor="middle" dominant-baseline="central">'+shortName(m).toUpperCase()+'</textPath></text>');
+    });
+
+    // analog hands (local wall time): hour + minute in white, second in red
+    const hourAngle = ((hourLocal % 12) + minuteLocal/60) * 30;
+    const minuteAngle = (minuteLocal + secondLocal/60) * 6;
+    const secondAngle = secondLocal * 6;
+    const hourEnd = polarToCartesian(cx, cy, 50, hourAngle);
+    const minuteEnd = polarToCartesian(cx, cy, 70, minuteAngle);
+    const secondEnd = polarToCartesian(cx, cy, 83, secondAngle);
+    parts.push('<line x1="100" y1="100" x2="'+hourEnd.x.toFixed(1)+'" y2="'+hourEnd.y.toFixed(1)+'" stroke="#f3f1ec" stroke-width="4" stroke-linecap="round"/>');
+    parts.push('<line x1="100" y1="100" x2="'+minuteEnd.x.toFixed(1)+'" y2="'+minuteEnd.y.toFixed(1)+'" stroke="#f3f1ec" stroke-width="2.4" stroke-linecap="round"/>');
+    parts.push('<line x1="100" y1="100" x2="'+secondEnd.x.toFixed(1)+'" y2="'+secondEnd.y.toFixed(1)+'" stroke="#d9473a" stroke-width="1.2" stroke-linecap="round"/>');
+
+    // center badge: current trading date (dd.mm.yyyy) + time at GMT+0 (on top, covers hand bases)
+    const utcDateStr = String(now.getUTCDate()).padStart(2,'0') + '.' + String(now.getUTCMonth()+1).padStart(2,'0') + '.' + now.getUTCFullYear();
+    const utcHH = String(now.getUTCHours()).padStart(2,'0');
+    const utcMM = String(now.getUTCMinutes()).padStart(2,'0');
+    const utcSS = String(now.getUTCSeconds()).padStart(2,'0');
+    parts.push('<circle cx="100" cy="100" r="29" fill="#15161a" stroke="var(--gold-dim)" stroke-width="1"/>');
+    parts.push('<text x="100" y="91" text-anchor="middle" font-size="4.8" fill="#8b93a1" font-family="JetBrains Mono, monospace">'+utcDateStr+'</text>');
+    parts.push('<text x="100" y="102.5" text-anchor="middle" font-size="9.5" font-weight="700" fill="#3fa66f" font-family="JetBrains Mono, monospace">'+utcHH+':'+utcMM+':'+utcSS+'</text>');
+    parts.push('<text x="100" y="112" text-anchor="middle" font-size="4.6" fill="#5c5e64" font-family="JetBrains Mono, monospace">GMT+0</text>');
+
+    svg.innerHTML = parts.join('');
+  }
+
+  function vibrateShort(){
+    if('vibrate' in navigator){ try{ navigator.vibrate(60); }catch(err){} }
+  }
+
+  function checkVibrations(){
+    const offset = parseTzOffset();
+    const now = new Date();
+    const nowUTC = now.getUTCHours() + now.getUTCMinutes()/60 + now.getUTCSeconds()/3600;
+    const visible = state.marketOrder.filter(id => !state.hiddenMarkets.includes(id));
+    const { overflow } = computeTrackPlacement(offset);
+    let shouldVibrate = false;
+
+    visible.forEach(id => {
+      const m = MARKETS.find(x => x.id === id);
+      if(!m) return;
+      const open = isMarketOpen(m.openUTC, m.closeUTC, nowUTC);
+      if(state.vibrationsReady && state.prevOpenMap[id] !== undefined && state.prevOpenMap[id] !== open){
+        shouldVibrate = true;
+      }
+      state.prevOpenMap[id] = open;
+    });
+
+    if(state.vibrationsReady){
+      overflow.forEach(id => {
+        if(!state.prevOverflow.includes(id)) shouldVibrate = true;
+      });
+    }
+    state.prevOverflow = overflow;
+    state.vibrationsReady = true;
+
+    if(shouldVibrate) vibrateShort();
+  }
+
+  function renderTicker(){
+    const t = I18N[state.lang];
+    const now = new Date();
+    const nowUTC = now.getUTCHours() + now.getUTCMinutes()/60 + now.getUTCSeconds()/3600;
+    const visible = state.marketOrder.filter(id => !state.hiddenMarkets.includes(id));
+    const items = visible.map(id => {
+      const m = MARKETS.find(x => x.id === id);
+      if(!m) return '';
+      const tr = nextTransition(m, nowUTC);
+      const hh = Math.floor(tr.seconds/3600), mm = Math.floor((tr.seconds%3600)/60);
+      const dur = hh > 0 ? (hh+t.hourAbbr+' '+mm+t.minuteAbbr) : (mm+t.minuteAbbr);
+      // open now -> show time left until it closes, in red; closed now -> time left until it opens, in green
+      const color = tr.open ? 'var(--sell)' : 'var(--buy)';
+      const label = tr.open ? t.tickerClosesIn : t.tickerOpensIn;
+      const statusTxt = '<span style="color:'+color+'">' + dur + ' ' + label + '</span>';
+      return '<span class="fx-ticker-item"><span class="dot" style="background:'+m.color+'"></span><b>'+shortName(m)+'</b> — '+statusTxt+'</span><span class="fx-ticker-sep">•</span>';
+    }).join('');
+    const track = $('fx-ticker-track');
+    track.innerHTML = items + items; // duplicate for seamless loop
+  }
+
+  function renderSessions(){
+    const t = I18N[state.lang];
+    const offset = parseTzOffset();
+    const now = new Date();
+    const nowUTC = now.getUTCHours() + now.getUTCMinutes()/60;
+    const list = $('sessions-list');
+    list.innerHTML = '';
+
+    const { overflow } = computeTrackPlacement(offset);
+
+    state.marketOrder.forEach(id => {
+      const m = MARKETS.find(x => x.id === id);
+      if(!m) return;
+      const hidden = state.hiddenMarkets.includes(id);
+      const overflowed = !hidden && overflow.includes(id);
+      const open = isMarketOpen(m.openUTC, m.closeUTC, nowUTC);
+      const localOpen = fmtHM(m.openUTC + offset);
+      const localClose = fmtHM(m.closeUTC + offset);
+
+      const card = document.createElement('div');
+      card.className = 'session-card' + (hidden ? ' dim' : '');
+      card.dataset.marketId = id;
+      card.innerHTML =
+        '<div class="drag-handle"><svg viewBox="0 0 20 20" fill="currentColor">' +
+          '<circle cx="7" cy="5" r="1.4"/><circle cx="13" cy="5" r="1.4"/>' +
+          '<circle cx="7" cy="10" r="1.4"/><circle cx="13" cy="10" r="1.4"/>' +
+          '<circle cx="7" cy="15" r="1.4"/><circle cx="13" cy="15" r="1.4"/></svg></div>' +
+        '<div class="session-dot" style="background:'+m.color+'"></div>' +
+        '<div class="session-body">' +
+          '<div class="session-top">' +
+            '<div class="session-name">' + m[state.lang] + (overflowed ? ' <span class="overlap-badge">' + t.overlapBadge + '</span>' : '') + '</div>' +
+            '<div class="session-status ' + (open ? 'open' : 'closed') + '">' + (open ? t.sessionOpen : t.sessionClosed) + '</div>' +
+          '</div>' +
+          '<div class="session-time">' + t.fxWorkHours + ': ' + localOpen + '–' + localClose + '</div>' +
+        '</div>';
+
+      card.addEventListener('click', (e) => {
+        if(e.target.closest('.drag-handle')) return;
+        const idx = state.hiddenMarkets.indexOf(id);
+        if(idx === -1){ state.hiddenMarkets.push(id); } else { state.hiddenMarkets.splice(idx, 1); }
+        renderSessions();
+        renderClock();
+        renderTicker();
+        saveFxSettings();
+      });
+
+      list.appendChild(card);
+    });
+
+    attachSortable();
+  }
+
+  function attachSortable(){
+    const listEl = $('sessions-list');
+    let dragEl = null, startY = 0, pointerId = null;
+
+    function onMove(e){
+      if(!dragEl) return;
+      const dy = e.clientY - startY;
+      dragEl.style.transform = 'translateY(' + dy + 'px)';
+
+      let sib = dragEl.nextElementSibling;
+      if(sib){
+        const r = sib.getBoundingClientRect();
+        const dragRect = dragEl.getBoundingClientRect();
+        const dragCenter = dragRect.top + dragRect.height / 2;
+        if(dragCenter > r.top + r.height / 2){
+          listEl.insertBefore(sib, dragEl);
+          startY += r.height;
+          dragEl.style.transform = 'translateY(' + (e.clientY - startY) + 'px)';
+        }
+      }
+      sib = dragEl.previousElementSibling;
+      if(sib){
+        const r = sib.getBoundingClientRect();
+        const dragRect = dragEl.getBoundingClientRect();
+        const dragCenter = dragRect.top + dragRect.height / 2;
+        if(dragCenter < r.top + r.height / 2){
+          listEl.insertBefore(dragEl, sib);
+          startY -= r.height;
+          dragEl.style.transform = 'translateY(' + (e.clientY - startY) + 'px)';
+        }
+      }
+    }
+
+    function onUp(){
+      if(!dragEl) return;
+      dragEl.classList.remove('dragging');
+      dragEl.style.transform = '';
+      try{ dragEl.releasePointerCapture(pointerId); }catch(err){}
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      state.marketOrder = [...listEl.querySelectorAll('.session-card')].map(el => el.dataset.marketId);
+      dragEl = null;
+      renderClock();
+      renderTicker();
+      saveFxSettings();
+    }
+
+    listEl.querySelectorAll('.drag-handle').forEach(handle => {
+      handle.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        dragEl = handle.closest('.session-card');
+        pointerId = e.pointerId;
+        startY = e.clientY;
+        dragEl.classList.add('dragging');
+        try{ dragEl.setPointerCapture(pointerId); }catch(err){}
+        document.addEventListener('pointermove', onMove);
+        document.addEventListener('pointerup', onUp);
+      });
+    });
+  }
+
+  $('fx-markets-toggle').addEventListener('click', () => {
+    const open = $('fx-markets-panel').classList.toggle('open');
+    $('fx-markets-toggle').classList.toggle('open', open);
+  });
+
+  // ---- News instruction ----
+  const NEWS_UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V4M5 11l7-7 7 7"/></svg>';
+  const NEWS_DN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M5 13l7 7 7-7"/></svg>';
+  const NEWS_GRIP = '<svg viewBox="0 0 12 18" fill="currentColor"><circle cx="3" cy="3" r="1.6"/><circle cx="9" cy="3" r="1.6"/><circle cx="3" cy="9" r="1.6"/><circle cx="9" cy="9" r="1.6"/><circle cx="3" cy="15" r="1.6"/><circle cx="9" cy="15" r="1.6"/></svg>';
+  const NEWS_BOTH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 19V5M3.5 9.5L8 5l4.5 4.5M16 5v14M11.5 14.5L16 19l4.5-4.5"/></svg>';
+  const NEWS_TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
+
+  // effect on the selected instrument is configurable (state.newsCfg); default is always 'up'
+  const NEWS_ITEMS = [
+    { k:'Fed Interest Rate Decision',     en:'Fed Interest Rate Decision',        uz:"Fed foiz stavkasi qarori",                 ru:"Решение ФРС по процентной ставке" },
+    { k:'CPI (YoY)',                      en:'CPI (YoY)',                         uz:"Iste'mol narxlari indeksi (yillik)",       ru:"ИПЦ (г/г)" },
+    { k:'Core CPI (MoM)',                 en:'Core CPI (MoM)',                    uz:"Asosiy iste'mol narxlari indeksi (oylik)", ru:"Базовый ИПЦ (м/м)" },
+    { k:'Core PCE Price Index (MoM)',     en:'Core PCE Price Index (MoM)',        uz:"Asosiy PCE narx indeksi (oylik)",          ru:"Базовый ценовой индекс PCE (м/м)" },
+    { k:'PPI (MoM)',                      en:'PPI (MoM)',                         uz:"Ishlab chiqaruvchi narxlari indeksi (oylik)", ru:"ИЦП (м/м)" },
+    { k:'Nonfarm Payrolls',               en:'Nonfarm Payrolls',                  uz:"Qishloq xo'jaligidan tashqari bandlik (NFP)", ru:"Занятость вне сельхозсектора (NFP)" },
+    { k:'ADP Nonfarm Employment Change',  en:'ADP Nonfarm Employment Change',     uz:"ADP bandlik o'zgarishi",                   ru:"Изменение занятости ADP" },
+    { k:'Unemployment Rate',              en:'Unemployment Rate',                 uz:"Ishsizlik darajasi",                       ru:"Уровень безработицы" },
+    { k:'Initial Jobless Claims',         en:'Initial Jobless Claims',            uz:"Ishsizlik bo'yicha dastlabki arizalar",    ru:"Первичные заявки на пособие по безработице" },
+    { k:'GDP (QoQ)',                      en:'GDP (QoQ)',                         uz:"YaIM (choraklik)",                         ru:"ВВП (кв/кв)" },
+    { k:'ISM Manufacturing PMI',          en:'ISM Manufacturing PMI',             uz:"ISM ishlab chiqarish PMI",                 ru:"ISM PMI в производстве" },
+    { k:'ISM Non-Manufacturing PMI',      en:'ISM Non-Manufacturing PMI',         uz:"ISM xizmatlar sohasi PMI",                 ru:"ISM PMI в сфере услуг" },
+    { k:'Retail Sales (MoM)',             en:'Retail Sales (MoM)',                uz:"Chakana savdo (oylik)",                    ru:"Розничные продажи (м/м)" },
+    { k:'Trade Balance',                  en:'Trade Balance',                     uz:"Savdo balansi",                            ru:"Торговый баланс" },
+    { k:'Crude Oil Inventories',          en:'Crude Oil Inventories',             uz:"Xom neft zaxiralari",                      ru:"Запасы сырой нефти" },
+    { k:'Michigan Consumer Sentiment',    en:'Michigan Consumer Sentiment',       uz:"Michigan iste'molchi kayfiyati",           ru:"Настроения потребителей Мичигана" },
+    { k:'CB Consumer Confidence',         en:'CB Consumer Confidence',            uz:"CB iste'molchi ishonchi",                  ru:"Доверие потребителей CB" },
+  ];
+  state.newsOrders = {}; // { INSTRUMENT: [newsKey, ...] } — order is kept per instrument
+  state.newsOn = NEWS_ITEMS.map(i => i.k);
+  state.newsFlip = {};
+  state.newsCfg = {}; // { INSTRUMENT: { newsKey: 'up' | 'down' | 'none' } }
+
+  const NEWS_SETTINGS_KEY = 'news-instruction-settings-v2';
+  function saveNewsSettings(){
+    try{ window.storage.set(NEWS_SETTINGS_KEY, JSON.stringify({ order: state.newsOrders, on: state.newsOn, cfg: state.newsCfg }), false); }catch(err){}
+  }
+  async function loadNewsSettings(){
+    try{
+      const r = await window.storage.get(NEWS_SETTINGS_KEY, false);
+      if(!r || !r.value) return;
+      const s = JSON.parse(r.value);
+      const valid = NEWS_ITEMS.map(i => i.k);
+      if(s.order && typeof s.order === 'object' && !Array.isArray(s.order)){
+        Object.keys(s.order).forEach(code => {
+          if(Array.isArray(s.order[code])) state.newsOrders[code] = s.order[code].filter(k => valid.includes(k));
+        });
+      }
+      if(Array.isArray(s.on)) state.newsOn = s.on.filter(k => valid.includes(k));
+      if(s.cfg && typeof s.cfg === 'object'){
+        Object.keys(s.cfg).forEach(code => {
+          const m = s.cfg[code];
+          if(!m || typeof m !== 'object') return;
+          state.newsCfg[code] = {};
+          Object.keys(m).forEach(k => {
+            if(valid.includes(k) && ['up','down','none'].includes(m[k])) state.newsCfg[code][k] = m[k];
+          });
+        });
+      }
+    }catch(err){ /* nothing saved yet */ }
+  }
+
+  function fitNews(){
+    document.querySelectorAll('.news-nm').forEach(n => {
+      let s = 13; n.style.fontSize = s + 'px';
+      while(s > 9 && (n.scrollHeight > n.clientHeight + 1 || n.scrollWidth > n.clientWidth + 1)){ s -= .5; n.style.fontSize = s + 'px'; }
+    });
+  }
+  window.addEventListener('resize', fitNews);
+
+  // effect of a news item on the instrument chosen in the calculator; everything starts dim ('none') until configured
+  function getNewsEff(k){
+    const m = state.newsCfg[state.instrument];
+    return (m && m[k]) || 'none';
+  }
+  function setNewsEff(k, v){
+    if(!state.newsCfg[state.instrument]) state.newsCfg[state.instrument] = {};
+    state.newsCfg[state.instrument][k] = v;
+  }
+
+  function getNewsOrder(){
+    const all = NEWS_ITEMS.map(i => i.k);
+    let o = state.newsOrders[state.instrument];
+    o = o ? o.filter(k => all.includes(k)) : [];
+    all.forEach(k => { if(!o.includes(k)) o.push(k); });
+    state.newsOrders[state.instrument] = o;
+    return o;
+  }
+  function newsLabel(k){ const it = NEWS_ITEMS.find(i => i.k === k); return it ? it[state.lang] : k; }
+  // active (not dim) items keep their order; dim items go after them, alphabetically
+  function normalizeNewsOrder(){
+    const o = getNewsOrder();
+    const act = o.filter(k => getNewsEff(k) !== 'none');
+    const dim = o.filter(k => getNewsEff(k) === 'none').sort((a, b) => newsLabel(a).localeCompare(newsLabel(b), state.lang));
+    state.newsOrders[state.instrument] = act.concat(dim);
+  }
+
+  function renderNews(){
+    const list = $('news-list');
+    const cfgMode = (typeof newsMode !== 'undefined' && newsMode === 'cfg');
+    $('news-head-instr').textContent = state.instrument;
+    list.innerHTML = '';
+    getNewsOrder().forEach(k => {
+      const item = NEWS_ITEMS.find(i => i.k === k);
+      if(!item) return;
+      // a news item set to the dim state is left out of every other mode
+      if(!cfgMode && getNewsEff(k) === 'none') return;
+      const on = state.newsOn.includes(k);
+      const row = document.createElement('div');
+      row.className = 'news-box' + (on ? ' on' : '');
+      row.dataset.k = k;
+      row.innerHTML =
+        '<div class="news-handle" aria-hidden="true">' + NEWS_GRIP + '</div>' +
+        '<button class="news-chk" type="button" aria-pressed="' + on + '"><i>' + NEWS_TICK + '</i></button>' +
+        '<button class="news-idx" type="button"><span class="news-nm">' + item[state.lang] + '</span></button>' +
+        '<div class="news-gold"></div>';
+      const idx = row.querySelector('.news-idx'), gold = row.querySelector('.news-gold'), chk = row.querySelector('.news-chk');
+      function draw(){
+        const eff = getNewsEff(k);
+        if(cfgMode){
+          idx.classList.remove('down');
+          row.classList.toggle('cfg-none', eff === 'none');
+          gold.className = 'news-gold cfg ' + (eff === 'none' ? 'dim' : eff);
+          gold.innerHTML = eff === 'up' ? NEWS_UP : (eff === 'down' ? NEWS_DN : NEWS_BOTH);
+          return;
+        }
+        const falls = !!state.newsFlip[k];
+        idx.classList.toggle('down', falls);
+        const gd = falls ? (eff === 'up' ? 'down' : 'up') : eff;
+        gold.className = 'news-gold ' + gd;
+        gold.innerHTML = gd === 'up' ? NEWS_UP : NEWS_DN;
+      }
+      idx.addEventListener('click', () => { state.newsFlip[k] = !state.newsFlip[k]; draw(); });
+      gold.addEventListener('click', () => {
+        if(!cfgMode) return;
+        const cycle = ['up', 'down', 'none'];
+        setNewsEff(k, cycle[(cycle.indexOf(getNewsEff(k)) + 1) % cycle.length]);
+        draw();
+      });
+      chk.addEventListener('click', () => {
+        const v = chk.getAttribute('aria-pressed') !== 'true';
+        chk.setAttribute('aria-pressed', v);
+        row.classList.toggle('on', v);
+        const i = state.newsOn.indexOf(k);
+        if(v && i === -1) state.newsOn.push(k);
+        if(!v && i !== -1) state.newsOn.splice(i, 1);
+      });
+      draw();
+      list.appendChild(row);
+    });
+    if(!list.querySelector('.news-box')){
+      const e = document.createElement('div');
+      e.className = 'news-empty';
+      e.textContent = I18N[state.lang].newsEmpty;
+      list.appendChild(e);
+    }
+    fitNews();
+  }
+
+  const newsScreen = $('screen-news');
+  const newsMenuBtn = $('news-menu-btn');
+  const newsDd = $('news-dd');
+  const NEWS_DOTS = newsMenuBtn.innerHTML;
+  let newsMode = null;
+
+  function closeNewsMenu(){ newsDd.classList.remove('open'); newsMenuBtn.setAttribute('aria-expanded', 'false'); }
+  function syncNewsOrder(){
+    const domKeys = [...$('news-list').querySelectorAll('.news-box')].map(r => r.dataset.k);
+    const visible = new Set(domKeys);
+    let i = 0;
+    state.newsOrders[state.instrument] = getNewsOrder().map(k => visible.has(k) ? domKeys[i++] : k);
+  }
+  function sortNewsSelected(){
+    const list = $('news-list');
+    const rows = [...list.querySelectorAll('.news-box')];
+    const a = rows.filter(r => r.classList.contains('on'));
+    const b = rows.filter(r => !r.classList.contains('on')).sort((x, y) => newsLabel(x.dataset.k).localeCompare(newsLabel(y.dataset.k), state.lang));
+    a.concat(b).forEach(r => list.appendChild(r));
+    syncNewsOrder();
+  }
+  function setNewsMode(m){
+    if(m === 'sel') sortNewsSelected();
+    if(m === 'cfg') normalizeNewsOrder();
+    newsMode = m;
+    newsScreen.classList.toggle('sort', m === 'sort');
+    newsScreen.classList.toggle('sel', m === 'sel');
+    newsScreen.classList.toggle('cfg', m === 'cfg');
+    renderNews();
+    newsDd.querySelectorAll('.news-mi').forEach(x => x.classList.toggle('on', x.dataset.m === m));
+    newsMenuBtn.innerHTML = m ? NEWS_TICK : NEWS_DOTS;
+    closeNewsMenu();
+    fitNews();
+  }
+  newsMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if(newsMode){
+      if(newsMode === 'cfg') normalizeNewsOrder();
+      saveNewsSettings();
+      setNewsMode(null);
+      return;
+    }
+    const o = newsDd.classList.toggle('open');
+    newsMenuBtn.setAttribute('aria-expanded', o);
+  });
+  document.addEventListener('click', (e) => { if(!newsDd.contains(e.target)) closeNewsMenu(); });
+  newsDd.addEventListener('click', (e) => {
+    const m = e.target.closest('.news-mi');
+    if(!m) return;
+    setNewsMode(m.dataset.m);
+  });
+  function setAllNews(v){
+    state.newsOn = v ? NEWS_ITEMS.map(i => i.k) : [];
+    document.querySelectorAll('.news-chk').forEach(c => { c.setAttribute('aria-pressed', v); c.parentNode.classList.toggle('on', v); });
+  }
+  $('news-all').addEventListener('click', () => setAllNews(true));
+  $('news-clr').addEventListener('click', () => setAllNews(false));
+
+  // drag to reorder (the dragged row stays in the DOM; neighbours move around it)
+  let newsDrag = null;
+  $('news-list').addEventListener('pointerdown', (e) => {
+    const h = e.target.closest('.news-handle');
+    if(!h) return;
+    e.preventDefault();
+    newsDrag = h.closest('.news-box');
+    newsDrag.classList.add('drag');
+  });
+  document.addEventListener('pointermove', (e) => {
+    if(!newsDrag) return;
+    const y = e.clientY;
+    let moved = false, p = newsDrag.previousElementSibling;
+    while(p && y < p.getBoundingClientRect().top + p.offsetHeight / 2){ newsDrag.after(p); moved = true; p = newsDrag.previousElementSibling; }
+    if(!moved){
+      let n = newsDrag.nextElementSibling;
+      while(n && y > n.getBoundingClientRect().top + n.offsetHeight / 2){ newsDrag.before(n); n = newsDrag.nextElementSibling; }
+    }
+    if(y < 80) window.scrollBy(0, -12); else if(y > window.innerHeight - 80) window.scrollBy(0, 12);
+  });
+  function endNewsDrag(){
+    if(!newsDrag) return;
+    newsDrag.classList.remove('drag');
+    newsDrag = null;
+    syncNewsOrder();
+    saveNewsSettings();
+  }
+  document.addEventListener('pointerup', endNewsDrag);
+  document.addEventListener('pointercancel', endNewsDrag);
+
+
+  // ---- Sozlamalar: Instrumentlar ----
+  state.customInstruments = []; // [{ code, name, group }]
+  state.removedInstruments = []; // codes of built-in instruments the user deleted
+  const BASE_INSTRUMENTS = INSTRUMENTS.map(g => ({ group: g.group, items: g.items.slice() }));
+  state.newInstCat = 'forex';
+  const CUSTOM_INSTR_KEY = 'custom-instruments';
+
+  function makeInstrumentSpec(code, name, group){
+    if(group === 'metal'){
+      return { code, name, contract: code.startsWith('XAG') ? 5000 : 100, pip:0.01, quoteIsUSD:true, decimals:2, unit:'oz', custom:true };
+    }
+    const jpy = code.endsWith('JPY');
+    return { code, name, contract:100000, pip: jpy ? 0.01 : 0.0001, quoteIsUSD: code.endsWith('USD'), decimals: jpy ? 3 : 5, unit:'units', custom:true };
+  }
+  function applyCustomInstruments(){
+    INSTRUMENTS.forEach(g => {
+      const base = BASE_INSTRUMENTS.find(b => b.group === g.group);
+      g.items = (base ? base.items : []).filter(i => !state.removedInstruments.includes(i.code));
+    });
+    state.customInstruments.forEach(ci => {
+      const g = INSTRUMENTS.find(x => x.group === ci.group);
+      if(g) g.items.push(makeInstrumentSpec(ci.code, ci.name, ci.group));
+    });
+  }
+  function saveCustomInstruments(){
+    try{ window.storage.set(CUSTOM_INSTR_KEY, JSON.stringify({ custom: state.customInstruments, removed: state.removedInstruments }), false); }catch(err){}
+  }
+  async function loadCustomInstruments(){
+    try{
+      const r = await window.storage.get(CUSTOM_INSTR_KEY, false);
+      if(!r || !r.value) return;
+      const data = JSON.parse(r.value);
+      const arr = Array.isArray(data) ? data : (data && data.custom);
+      if(Array.isArray(arr)){
+        state.customInstruments = arr
+          .filter(x => x && typeof x.code === 'string' && ['forex', 'metal'].includes(x.group))
+          .map(x => ({ code: x.code, name: x.name || x.code, group: x.group }));
+      }
+      if(data && Array.isArray(data.removed)){
+        state.removedInstruments = data.removed.filter(x => typeof x === 'string');
+      }
+    }catch(err){ /* nothing saved yet */ }
+  }
+
+  let openSwipeRow = null;
+  function closeSwipe(row){
+    if(!row) return;
+    row.style.transform = '';
+    row.dataset.open = '';
+    if(openSwipeRow === row) openSwipeRow = null;
+  }
+  document.addEventListener('pointerdown', (e) => {
+    if(openSwipeRow && !openSwipeRow.parentNode.contains(e.target)) closeSwipe(openSwipeRow);
+  });
+
+  // iOS-style: drag a row to the left to reveal the red Delete action (full swipe deletes)
+  function attachSwipe(wrap, fg, code){
+    const ACTION_W = 88;
+    let sx = 0, sy = 0, base = 0, w = 0, off = 0, dragging = false, pid = null;
+    fg.addEventListener('pointerdown', (e) => {
+      if(e.pointerType === 'mouse' && e.button !== 0) return;
+      sx = e.clientX; sy = e.clientY; pid = e.pointerId; dragging = false;
+      w = wrap.offsetWidth;
+      base = fg.dataset.open === '1' ? -ACTION_W : 0;
+      off = base;
+      if(openSwipeRow && openSwipeRow !== fg) closeSwipe(openSwipeRow);
+    });
+    fg.addEventListener('pointermove', (e) => {
+      if(pid !== e.pointerId) return;
+      const dx = e.clientX - sx, dy = e.clientY - sy;
+      if(!dragging){
+        if(Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(dy)){
+          dragging = true;
+          fg.classList.add('dragging');
+          try{ fg.setPointerCapture(pid); }catch(err){}
+        } else return;
+      }
+      off = Math.min(0, Math.max(-w, base + dx));
+      fg.style.transform = 'translateX(' + off + 'px)';
+    });
+    function end(e){
+      if(pid !== e.pointerId) return;
+      pid = null;
+      if(!dragging){ if(fg.dataset.open === '1') closeSwipe(fg); return; }
+      dragging = false;
+      fg.classList.remove('dragging');
+      if(off < -w * 0.6){
+        fg.style.transform = 'translateX(' + (-w) + 'px)';
+        setTimeout(() => removeInstrument(code), 200);
+      } else if(off < -ACTION_W / 2){
+        fg.style.transform = 'translateX(' + (-ACTION_W) + 'px)';
+        fg.dataset.open = '1';
+        openSwipeRow = fg;
+      } else {
+        closeSwipe(fg);
+      }
+    }
+    fg.addEventListener('pointerup', end);
+    fg.addEventListener('pointercancel', end);
+  }
+
+  function renderInstrumentList(){
+    const t = I18N[state.lang];
+    const list = $('inst-list');
+    list.innerHTML = '';
+    openSwipeRow = null;
+    const total = INSTRUMENTS.reduce((n, g) => n + g.items.length, 0);
+    INSTRUMENTS.forEach(g => {
+      if(!g.items.length) return;
+      const title = document.createElement('div');
+      title.className = 'ios-section-title';
+      title.textContent = g.group === 'forex' ? t.groupForex : t.groupMetal;
+      list.appendChild(title);
+      const group = document.createElement('div');
+      group.className = 'ios-group';
+      g.items.forEach(inst => {
+        const wrap = document.createElement('div');
+        wrap.className = 'ios-swipe';
+        const fg = document.createElement('div');
+        fg.className = 'ios-row';
+        const nm = document.createElement('span');
+        nm.textContent = inst.name;
+        fg.appendChild(nm);
+        if(total > 1){ // the calculator always needs at least one instrument
+          const act = document.createElement('button');
+          act.type = 'button';
+          act.className = 'ios-action';
+          act.textContent = t.instDelete;
+          act.addEventListener('click', () => removeInstrument(inst.code));
+          wrap.appendChild(act);
+          wrap.appendChild(fg);
+          attachSwipe(wrap, fg, inst.code);
+        } else {
+          wrap.appendChild(fg);
+        }
+        group.appendChild(wrap);
+      });
+      list.appendChild(group);
+    });
+  }
+
+  function refreshInstrumentUI(){
+    applyCustomInstruments();
+    if(!currentSpec()){
+      const g = INSTRUMENTS.find(x => x.items.length);
+      if(g) state.instrument = g.items[0].code;
+    }
+    populateInstruments();
+    calculate();
+    renderNews();
+    renderInstrumentList();
+  }
+
+  function removeInstrument(code){
+    if(state.customInstruments.some(ci => ci.code === code)){
+      state.customInstruments = state.customInstruments.filter(ci => ci.code !== code);
+    }
+    if(BASE_INSTRUMENTS.some(g => g.items.some(i => i.code === code)) && !state.removedInstruments.includes(code)){
+      state.removedInstruments.push(code);
+    }
+    delete state.newsCfg[code];
+    delete state.newsOrders[code];
+    saveCustomInstruments();
+    saveNewsSettings();
+    refreshInstrumentUI();
+  }
+
+  function showInstForm(show){
+    $('inst-form').hidden = !show;
+    $('inst-add-wrap').hidden = show;
+    $('inst-error').textContent = '';
+    if(show){
+      $('inst-name').value = '';
+      state.newInstCat = 'forex';
+      document.querySelectorAll('#inst-cat .ios-opt').forEach(b => b.classList.toggle('selected', b.dataset.val === 'forex'));
+      $('inst-name').focus();
+    }
+  }
+  function showSettingsMain(){
+    $('settings-main').hidden = false;
+    $('settings-instruments').hidden = true;
+    $('settings-news').hidden = true;
+    showInstForm(false);
+    closeNewsForm();
+  }
+  $('open-instruments').addEventListener('click', () => {
+    $('settings-main').hidden = true;
+    $('settings-instruments').hidden = false;
+    renderInstrumentList();
+  });
+  $('inst-back').addEventListener('click', showSettingsMain);
+  $('inst-add-btn').addEventListener('click', () => showInstForm(true));
+  $('inst-cancel').addEventListener('click', () => showInstForm(false));
+  document.querySelectorAll('#inst-cat .ios-opt').forEach(b => {
+    b.addEventListener('click', () => {
+      state.newInstCat = b.dataset.val;
+      document.querySelectorAll('#inst-cat .ios-opt').forEach(x => x.classList.toggle('selected', x === b));
+    });
+  });
+  $('inst-save').addEventListener('click', () => {
+    const t = I18N[state.lang];
+    const code = $('inst-name').value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if(code.length < 3 || code.length > 12){ $('inst-error').textContent = t.instErrName; return; }
+    if(INSTRUMENTS.some(g => g.items.some(i => i.code === code))){ $('inst-error').textContent = t.instErrDup; return; }
+    const name = code.length === 6 ? code.slice(0, 3) + '/' + code.slice(3) : code;
+    state.customInstruments.push({ code, name, group: state.newInstCat });
+    saveCustomInstruments();
+    refreshInstrumentUI();
+    showInstForm(false);
+  });
+
+  loadCustomInstruments().finally(refreshInstrumentUI);
+
+  // ---- Sozlamalar: Yangiliklar (add / rename, all three languages at once) ----
+  const BASE_NEWS = NEWS_ITEMS.map(i => Object.assign({}, i));
+  state.customNews = [];       // [{ k, uz, ru, en }]
+  state.newsNames = {};        // { key: { uz, ru, en } } — renamed built-in items
+  state.editingNewsKey = null; // null while adding a new item
+  const NEWS_CONTENT_KEY = 'news-content';
+  const ICON_CHEV = '<svg class="ios-chev" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 5l5 5-5 5"/></svg>';
+
+  function applyNewsData(){
+    NEWS_ITEMS.length = 0;
+    BASE_NEWS.forEach(b => NEWS_ITEMS.push(Object.assign({}, b, state.newsNames[b.k] || {})));
+    state.customNews.forEach(cn => NEWS_ITEMS.push(Object.assign({ custom: true }, cn)));
+  }
+  function saveNewsContent(){
+    try{ window.storage.set(NEWS_CONTENT_KEY, JSON.stringify({ custom: state.customNews, names: state.newsNames }), false); }catch(err){}
+  }
+  async function loadNewsContent(){
+    try{
+      const r = await window.storage.get(NEWS_CONTENT_KEY, false);
+      if(r && r.value){
+        const d = JSON.parse(r.value);
+        const ok = o => o && typeof o === 'object' && ['uz', 'ru', 'en'].every(l => typeof o[l] === 'string');
+        if(Array.isArray(d.custom)){
+          state.customNews = d.custom.filter(x => x && typeof x.k === 'string' && ok(x)).map(x => ({ k: x.k, uz: x.uz, ru: x.ru, en: x.en }));
+        }
+        if(d.names && typeof d.names === 'object'){
+          Object.keys(d.names).forEach(k => {
+            if(BASE_NEWS.some(b => b.k === k) && ok(d.names[k])) state.newsNames[k] = { uz: d.names[k].uz, ru: d.names[k].ru, en: d.names[k].en };
+          });
+        }
+      }
+    }catch(err){ /* nothing saved yet */ }
+    applyNewsData();
+  }
+
+  function renderNewsAdminList(){
+    const list = $('newsadm-list');
+    list.innerHTML = '';
+    const group = document.createElement('div');
+    group.className = 'ios-group';
+    NEWS_ITEMS.forEach(item => {
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'ios-row';
+      row.innerHTML = '<span class="news-adm-name"></span>' + ICON_CHEV;
+      row.firstChild.textContent = item[state.lang];
+      row.addEventListener('click', () => openNewsForm(item.k));
+      group.appendChild(row);
+    });
+    list.appendChild(group);
+  }
+
+  function openNewsForm(k){
+    const t = I18N[state.lang];
+    const item = k ? NEWS_ITEMS.find(i => i.k === k) : null;
+    state.editingNewsKey = item ? item.k : null;
+    $('nf-uz').value = item ? item.uz : '';
+    $('nf-ru').value = item ? item.ru : '';
+    $('nf-en').value = item ? item.en : '';
+    $('lbl-newsform-title').textContent = item ? t.newsFormEdit : t.newsFormAdd;
+    $('newsform-error').textContent = '';
+    $('newsform-delete-wrap').hidden = !(item && item.custom);
+    $('newsform').hidden = false;
+    $('newsadm-list').hidden = true;
+    $('newsadm-add-wrap').hidden = true;
+    $('nf-uz').focus();
+  }
+  function closeNewsForm(){
+    $('newsform').hidden = true;
+    $('newsadm-list').hidden = false;
+    $('newsadm-add-wrap').hidden = false;
+    state.editingNewsKey = null;
+  }
+  function refreshNewsUI(){
+    applyNewsData();
+    saveNewsContent();
+    saveNewsSettings();
+    renderNews();
+    renderNewsAdminList();
+    closeNewsForm();
+  }
+
+  $('open-news-admin').addEventListener('click', () => {
+    $('settings-main').hidden = true;
+    $('settings-news').hidden = false;
+    renderNewsAdminList();
+    closeNewsForm();
+  });
+  $('newsadm-back').addEventListener('click', showSettingsMain);
+  $('newsadm-add-btn').addEventListener('click', () => openNewsForm(null));
+  $('newsform-cancel').addEventListener('click', closeNewsForm);
+  $('newsform-save').addEventListener('click', () => {
+    const vals = { uz: $('nf-uz').value.trim(), ru: $('nf-ru').value.trim(), en: $('nf-en').value.trim() };
+    const first = vals.uz || vals.ru || vals.en;
+    if(!first){ $('newsform-error').textContent = I18N[state.lang].newsNameErr; return; }
+    ['uz', 'ru', 'en'].forEach(l => { if(!vals[l]) vals[l] = first; }); // blank languages fall back to the one you filled in
+    const k = state.editingNewsKey;
+    if(k){
+      const cn = state.customNews.find(x => x.k === k);
+      if(cn) Object.assign(cn, vals); else state.newsNames[k] = vals;
+    } else {
+      const nk = 'custom-' + Date.now().toString(36);
+      state.customNews.push(Object.assign({ k: nk }, vals));
+      state.newsOn.push(nk);
+    }
+    refreshNewsUI();
+  });
+  $('newsform-delete').addEventListener('click', () => {
+    const k = state.editingNewsKey;
+    if(!k) return;
+    state.customNews = state.customNews.filter(x => x.k !== k);
+    Object.keys(state.newsCfg).forEach(code => { delete state.newsCfg[code][k]; });
+    Object.keys(state.newsOrders).forEach(code => { state.newsOrders[code] = state.newsOrders[code].filter(x => x !== k); });
+    state.newsOn = state.newsOn.filter(x => x !== k);
+    refreshNewsUI();
+  });
+
+  // custom/renamed news must be known before the saved news settings are filtered against it
+  loadNewsContent().then(() => loadNewsSettings()).finally(() => { renderNews(); renderNewsAdminList(); });
+
+  setInterval(() => { renderClock(); checkVibrations(); }, 1000);
+  setInterval(() => { renderSessions(); renderTicker(); }, 30000);
+
+  populateInstruments();
+  populateTimezones();
+  calculate();
+
+  loadFxSettings().finally(() => {
+    renderSessions();
+    renderClock();
+    renderTicker();
+    checkVibrations();
+  });
+
+  // ---- Pastki navigatsiya ----
+  const screens = {
+    calculator: $('screen-calculator'),
+    settings: $('screen-settings'),
+    forextimes: $('screen-forextimes'),
+    news: $('screen-news'),
+  };
+  const tabButtons = document.querySelectorAll('.tab-item');
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      tabButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      Object.keys(screens).forEach(k => screens[k].classList.toggle('active', k === tab));
+      if(tab === 'news') fitNews();
+      if(tab === 'settings') showSettingsMain();
+    });
+  });
+
+</script>
+</body>
+</html>
