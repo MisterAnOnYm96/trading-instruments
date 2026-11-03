@@ -4,12 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Trading Instruments</title>
-<link rel="manifest" href="./manifest.json">
-<link rel="apple-touch-icon" href="./icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Trading Instruments">
-<meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -446,9 +440,15 @@
   @media (pointer: coarse){
     input, select, textarea{ font-size:16px !important; }
   }
+  body.loading .wrap, body.loading .tabbar{ visibility:hidden; }
+  #defaults-missing{ position:fixed; inset:0; z-index:100; background:var(--bg); display:flex; align-items:center; justify-content:center; padding:24px; }
+  .dm-card{ max-width:380px; text-align:center; font-family:'Manrope',sans-serif; line-height:1.55; font-size:13px; color:var(--text-muted); }
+  .dm-title{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:var(--text); margin-bottom:12px; }
+  .dm-btn{ display:inline-block; margin-top:14px; padding:11px 18px; border-radius:13px; border:1px solid var(--gold-dim); background:rgba(201,162,75,0.12); color:var(--gold); font-weight:700; cursor:pointer; }
+  .dm-error{ color:#e8806c; margin-top:10px; min-height:16px; }
 </style>
 </head>
-<body>
+<body class="loading">
 <div class="wrap">
 
   <div class="ticket screen active" id="screen-calculator">
@@ -469,22 +469,22 @@
     <div class="row2">
       <div class="field">
         <span class="label" id="lbl-deposit">Depozit ($)</span>
-        <input type="number" id="deposit" value="40" min="0" step="10">
+        <input type="number" id="deposit" min="0" step="10">
       </div>
       <div class="field">
         <span class="label" id="lbl-lots">Lot hajmi</span>
-        <input type="number" id="lots" value="0.01" min="0" step="0.01">
+        <input type="number" id="lots" min="0" step="0.01">
       </div>
     </div>
 
     <div class="row2">
       <div class="field">
         <span class="label" id="lbl-openPrice">Ochilish narxi</span>
-        <input type="number" id="openPrice" value="4390" step="0.00001" placeholder="0.00000">
+        <input type="number" id="openPrice" step="0.00001" placeholder="0.00000">
       </div>
       <div class="field">
         <span class="label" id="lbl-closePrice">Yopilish narxi</span>
-        <input type="number" id="closePrice" value="4400" step="0.00001" placeholder="0.00000">
+        <input type="number" id="closePrice" step="0.00001" placeholder="0.00000">
       </div>
     </div>
 
@@ -537,7 +537,7 @@
       <span id="lbl-set-news">Yangiliklar</span>
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 5l5 5-5 5"/></svg>
     </button>
-    <div class="app-version" id="app-version">Trading Instruments · v1</div>
+    <div class="app-version" id="app-version"></div>
     </div>
 
     <div id="settings-instruments" hidden>
@@ -647,6 +647,17 @@
 
 </div>
 
+<div id="defaults-missing" hidden>
+  <div class="dm-card">
+    <div class="dm-title">default-settings.json</div>
+    <p>Fayl topilmadi. U HTML bilan bir papkada bo'lishi kerak yoki uni shu yerdan tanlang (bir marta, keyin eslab qolinadi).<br>
+       Файл не найден. Он должен лежать рядом с HTML — или выберите его здесь (один раз, дальше запомнится).<br>
+       File not found. It must sit next to the HTML — or choose it here (once, it is remembered afterwards).</p>
+    <label class="dm-btn">Tanlash · Выбрать · Choose<input type="file" id="dm-file" accept=".json,application/json" hidden></label>
+    <div class="dm-error" id="dm-error"></div>
+  </div>
+</div>
+
 <nav class="tabbar">
   <button class="tab-item" id="tab-forextimes" data-tab="forextimes">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -687,69 +698,84 @@
 </nav>
 
 <script>
-  const INSTRUMENTS = [
-    { group:"forex", items:[
-      { code:'EURUSD', name:'EUR/USD', contract:100000, pip:0.0001, quoteIsUSD:true, decimals:5, unit:'units' },
-      { code:'GBPUSD', name:'GBP/USD', contract:100000, pip:0.0001, quoteIsUSD:true, decimals:5, unit:'units' },
-      { code:'AUDUSD', name:'AUD/USD', contract:100000, pip:0.0001, quoteIsUSD:true, decimals:5, unit:'units' },
-      { code:'NZDUSD', name:'NZD/USD', contract:100000, pip:0.0001, quoteIsUSD:true, decimals:5, unit:'units' },
-      { code:'USDJPY', name:'USD/JPY', contract:100000, pip:0.01,   quoteIsUSD:false, decimals:3, unit:'units' },
-      { code:'USDCHF', name:'USD/CHF', contract:100000, pip:0.0001, quoteIsUSD:false, decimals:5, unit:'units' },
-      { code:'USDCAD', name:'USD/CAD', contract:100000, pip:0.0001, quoteIsUSD:false, decimals:5, unit:'units' },
-    ]},
-    { group:"metal", items:[
-      { code:'XAUUSD', name:'XAU/USD', contract:100,  pip:0.01, quoteIsUSD:true, decimals:2, unit:'oz' },
-      { code:'XAGUSD', name:'XAG/USD', contract:5000, pip:0.01, quoteIsUSD:true, decimals:3, unit:'oz' },
-    ]},
-  ];
+  // ---- Storage: all saved settings live in IndexedDB ----
+  const idb = (() => {
+    const DB = 'trading-instruments', STORE = 'kv';
+    let dbp = null;
+    function open(){
+      if(dbp) return dbp;
+      dbp = new Promise((res, rej) => {
+        try{
+          const r = indexedDB.open(DB, 1);
+          r.onupgradeneeded = () => { r.result.createObjectStore(STORE, { keyPath: 'key' }); };
+          r.onsuccess = () => res(r.result);
+          r.onerror = () => rej(r.error);
+          r.onblocked = () => rej(new Error('blocked'));
+        }catch(err){ rej(err); }
+      });
+      return dbp;
+    }
+    function tx(mode, fn){
+      return open().then(db => new Promise((res, rej) => {
+        const t = db.transaction(STORE, mode);
+        const q = fn(t.objectStore(STORE));
+        t.oncomplete = () => res(q && q.result);
+        t.onerror = () => rej(t.error);
+        t.onabort = () => rej(t.error);
+      }));
+    }
+    return {
+      get: k => tx('readonly', s => s.get(k)),
+      set: (k, v) => tx('readwrite', s => s.put({ key: k, value: v })),
+      del: k => tx('readwrite', s => s.delete(k)),
+    };
+  })();
 
-  const TIMEZONES = [
-    "GMT-12:00 — Beyker oroli (AQSH)", "GMT-11:00 — Amerika Samoasi", "GMT-10:00 — Gonolulu (AQSH)",
-    "GMT-09:00 — Ankoridj (AQSH)", "GMT-08:00 — Los-Anjeles (AQSH)", "GMT-07:00 — Denver (AQSH)",
-    "GMT-06:00 — Mexiko (Meksika)", "GMT-05:00 — Nyu-York (AQSH)", "GMT-04:00 — Santyago (Chili)",
-    "GMT-03:00 — San-Paulu (Braziliya)", "GMT-02:00 — Janubiy Georgiya", "GMT-01:00 — Azor orollari (Portugaliya)",
-    "GMT+00:00 — London (Buyuk Britaniya)", "GMT+01:00 — Berlin (Germaniya)", "GMT+01:00 — Parij (Fransiya)",
-    "GMT+02:00 — Qohira (Misr)", "GMT+02:00 — Iyerusalim (Isroil)", "GMT+03:00 — Moskva (Rossiya)",
-    "GMT+03:00 — Istanbul (Turkiya)", "GMT+03:00 — Nayrobi (Keniya)", "GMT+03:30 — Tehron (Eron)",
-    "GMT+04:00 — Dubay (BAA)", "GMT+04:00 — Boku (Ozarbayjon)", "GMT+04:30 — Kobul (Afg'oniston)",
-    "GMT+05:00 — Toshkent (O'zbekiston)", "GMT+05:00 — Islomobod (Pokiston)", "GMT+05:30 — Nyu-Dehli (Hindiston)",
-    "GMT+06:00 — Almati (Qozog'iston)", "GMT+06:00 — Dakka (Bangladesh)", "GMT+07:00 — Bangkok (Tailand)",
-    "GMT+07:00 — Jakarta (Indoneziya)", "GMT+08:00 — Pekin (Xitoy)", "GMT+08:00 — Singapur",
-    "GMT+09:00 — Tokio (Yaponiya)", "GMT+09:00 — Seul (Janubiy Koreya)", "GMT+09:30 — Adelaida (Avstraliya)",
-    "GMT+10:00 — Sidney (Avstraliya)", "GMT+11:00 — Solomon orollari", "GMT+12:00 — Oklend (Yangi Zelandiya)",
-    "GMT+13:00 — Nukualofa (Tonga)", "GMT+14:00 — Kiritimati (Kiribati)",
-  ];
+  let idbFailed = false;
+  const storeReady = idb.get('meta').then(() => {}, () => { idbFailed = true; }); // IndexedDB unusable -> localStorage fallback
 
-  const TZ_NAMES = {
-    ru: ["Остров Бейкер (США)", "Американское Самоа", "Гонолулу (США)", "Анкоридж (США)", "Лос-Анджелес (США)", "Денвер (США)", "Мехико (Мексика)", "Нью-Йорк (США)", "Сантьяго (Чили)", "Сан-Паулу (Бразилия)", "Южная Георгия", "Азорские острова (Португалия)", "Лондон (Великобритания)", "Берлин (Германия)", "Париж (Франция)", "Каир (Египет)", "Иерусалим (Израиль)", "Москва (Россия)", "Стамбул (Турция)", "Найроби (Кения)", "Тегеран (Иран)", "Дубай (ОАЭ)", "Баку (Азербайджан)", "Кабул (Афганистан)", "Ташкент (Узбекистан)", "Исламабад (Пакистан)", "Нью-Дели (Индия)", "Алматы (Казахстан)", "Дакка (Бангладеш)", "Бангкок (Таиланд)", "Джакарта (Индонезия)", "Пекин (Китай)", "Сингапур", "Токио (Япония)", "Сеул (Южная Корея)", "Аделаида (Австралия)", "Сидней (Австралия)", "Соломоновы острова", "Окленд (Новая Зеландия)", "Нукуалофа (Тонга)", "Киритимати (Кирибати)"],
-    en: ["Baker Island (USA)", "American Samoa", "Honolulu (USA)", "Anchorage (USA)", "Los Angeles (USA)", "Denver (USA)", "Mexico City (Mexico)", "New York (USA)", "Santiago (Chile)", "São Paulo (Brazil)", "South Georgia", "Azores (Portugal)", "London (United Kingdom)", "Berlin (Germany)", "Paris (France)", "Cairo (Egypt)", "Jerusalem (Israel)", "Moscow (Russia)", "Istanbul (Turkey)", "Nairobi (Kenya)", "Tehran (Iran)", "Dubai (UAE)", "Baku (Azerbaijan)", "Kabul (Afghanistan)", "Tashkent (Uzbekistan)", "Islamabad (Pakistan)", "New Delhi (India)", "Almaty (Kazakhstan)", "Dhaka (Bangladesh)", "Bangkok (Thailand)", "Jakarta (Indonesia)", "Beijing (China)", "Singapore", "Tokyo (Japan)", "Seoul (South Korea)", "Adelaide (Australia)", "Sydney (Australia)", "Solomon Islands", "Auckland (New Zealand)", "Nuku'alofa (Tonga)", "Kiritimati (Kiribati)"],
+  window.storage = {
+    async get(k){
+      await storeReady;
+      if(!idbFailed){
+        const rec = await idb.get(k);
+        if(!rec) throw new Error('not found');
+        return { key: k, value: rec.value, shared: false };
+      }
+      const v = localStorage.getItem('pc:' + k);
+      if(v === null) throw new Error('not found');
+      return { key: k, value: v, shared: false };
+    },
+    async set(k, v){
+      await storeReady;
+      if(!idbFailed){
+        try{ await idb.set(k, v); return { key: k, value: v, shared: false }; }catch(err){}
+      }
+      try{ localStorage.setItem('pc:' + k, v); return { key: k, value: v, shared: false }; }catch(err){ return null; }
+    },
+    async delete(k){
+      await storeReady;
+      try{ if(!idbFailed) await idb.del(k); else localStorage.removeItem('pc:' + k); return { key: k, deleted: true, shared: false }; }catch(err){ return null; }
+    },
   };
+
+
+  function startApp(DEFAULTS){
+  document.body.classList.remove('loading');
+
+  const INSTRUMENTS = DEFAULTS.instruments.map(g => ({ group: g.group, items: g.items.map(i => Object.assign({}, i)) }));
+
+  const TIMEZONES = DEFAULTS.timezone.list.map(t => t.gmt + ' — ' + t.uz);
+
+  const TZ_NAMES = { ru: DEFAULTS.timezone.list.map(t => t.ru), en: DEFAULTS.timezone.list.map(t => t.en) };
   function tzLabel(i){
     const parts = TIMEZONES[i].split(' — ');
     const name = state.lang === 'uz' ? parts[1] : (TZ_NAMES[state.lang] || [])[i] || parts[1];
     return parts[0] + ' — ' + name;
   }
 
-  const WEEKDAYS = {
-    uz: ["Yakshanba","Dushanba","Seshanba","Chorshanba","Payshanba","Juma","Shanba"],
-    ru: ["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"],
-    en: ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
-  };
 
-  const MARKETS = [
-    { id:'sydney',     uz:"Sidney (Avstraliya)",        ru:"Сидней (Австралия)",        en:"Sydney (Australia)",      openUTC:22,   closeUTC:7,    color:'#c9a24b' },
-    { id:'tokyo',      uz:"Tokio (Yaponiya)",           ru:"Токио (Япония)",            en:"Tokyo (Japan)",           openUTC:0,    closeUTC:9,    color:'#3fa66f' },
-    { id:'london',     uz:"London (Buyuk Britaniya)",   ru:"Лондон (Великобритания)",   en:"London (UK)",             openUTC:8,    closeUTC:17,   color:'#c1553f' },
-    { id:'newyork',    uz:"Nyu-York (AQSH)",            ru:"Нью-Йорк (США)",            en:"New York (USA)",          openUTC:13,   closeUTC:22,   color:'#4a90c9' },
-    { id:'frankfurt',  uz:"Frankfurt (Germaniya)",      ru:"Франкфурт (Германия)",      en:"Frankfurt (Germany)",     openUTC:7,    closeUTC:16,   color:'#9d6fd1' },
-    { id:'hongkong',   uz:"Gonkong",                    ru:"Гонконг",                   en:"Hong Kong",               openUTC:1,    closeUTC:9,    color:'#4bb3a2' },
-    { id:'singapore',  uz:"Singapur",                   ru:"Сингапур",                  en:"Singapore",               openUTC:1,    closeUTC:9,    color:'#d18a3f' },
-    { id:'shanghai',   uz:"Shanxay (Xitoy)",            ru:"Шанхай (Китай)",            en:"Shanghai (China)",        openUTC:1,    closeUTC:7,    color:'#6fa8dc' },
-    { id:'mumbai',     uz:"Mumbay (Hindiston)",         ru:"Мумбаи (Индия)",            en:"Mumbai (India)",          openUTC:3.75, closeUTC:10,   color:'#b05fa0' },
-    { id:'dubai',      uz:"Dubay (BAA)",                ru:"Дубай (ОАЭ)",               en:"Dubai (UAE)",             openUTC:5,    closeUTC:13.5, color:'#7fae4b' },
-    { id:'moscow',     uz:"Moskva (Rossiya)",           ru:"Москва (Россия)",           en:"Moscow (Russia)",         openUTC:6,    closeUTC:15,   color:'#5f87d1' },
-    { id:'wellington', uz:"Velington (Yangi Zelandiya)",ru:"Веллингтон (Новая Зеландия)",en:"Wellington (New Zealand)",openUTC:21,   closeUTC:6,    color:'#c97f9e' },
-  ];
+  const MARKETS = DEFAULTS.forexTimes.markets.map(m => Object.assign({}, m));
 
   const I18N = {
     uz: {
@@ -759,13 +785,11 @@
       pnl:"Foyda / Zarar", movement:"Harakat", contract:"Kontrakt hajmi", unitUnits:"birlik",
       tabCalculator:"Kalkulyator", tabSettings:"Sozlamalar",
       tabForexTimes:"Savdo vaqtlari",
-      comingSoon:" bo'limi tez orada qo'shiladi",
       timezoneLabel:"Vaqt mintaqasi", languageLabel:"Til",
-      marketsBtn:"Bozorlar", sessionOpen:"OCHIQ", sessionClosed:"YOPIQ",
+      sessionOpen:"OCHIQ", sessionClosed:"YOPIQ",
       fxWorkHours:"Ish vaqti",
       tickerOpensIn:"ochilguncha", tickerClosesIn:"yopilguncha",
-      centerOpens:"ochiladi", centerCloses:"yopiladi",
-      statusOpen:"Hozir ochiq", statusClosed:"Hozir yopiq", overlapBadge:"kesishadi",
+      overlapBadge:"kesishadi",
       hourAbbr:"s", minuteAbbr:"d", marketsSelectLabel:"Bozorlarni tanlash",
       tabNews:"Yangilik ko'rsatmasi", newsTitle:"Yangilik ko'rsatmasi", newsHead:"Yangilik",
       newsSort:"Tartiblash", newsSelect:"Belgilash", newsConfig:"Sozlash", setInstruments:"Instrumentlar", instAdd:"Yangi qo'shish", instName:"Instrument nomi", instCategory:"Kategoriya", instSave:"Saqlash", instCancel:"Bekor qilish", instErrName:"Nom 3–12 ta harf yoki raqamdan iborat bo'lsin", instErrDup:"Bu instrument allaqachon mavjud", setNews:"Yangiliklar", newsFormAdd:"Yangi yangilik", newsFormEdit:"Nomlarni tahrirlash", newsNameErr:"Kamida bitta nom kiriting", instDelete:"O'chirish", newsEmpty:"Yangiliklar qo'shilmagan. Uch nuqta → Sozlash orqali tanlang.", newsSelectAll:"Hammasini belgilash", newsClear:"Tozalash",
@@ -778,13 +802,11 @@
       pnl:"Прибыль / Убыток", movement:"Движение", contract:"Размер контракта", unitUnits:"ед.",
       tabCalculator:"Калькулятор", tabSettings:"Настройки",
       tabForexTimes:"Время торгов",
-      comingSoon:" раздел скоро будет добавлен",
       timezoneLabel:"Часовой пояс", languageLabel:"Язык",
-      marketsBtn:"Рынки", sessionOpen:"ОТКРЫТО", sessionClosed:"ЗАКРЫТО",
+      sessionOpen:"ОТКРЫТО", sessionClosed:"ЗАКРЫТО",
       fxWorkHours:"Часы работы",
       tickerOpensIn:"до открытия", tickerClosesIn:"до закрытия",
-      centerOpens:"открывается", centerCloses:"закрывается",
-      statusOpen:"Сейчас открыто", statusClosed:"Сейчас закрыто", overlapBadge:"пересекается",
+      overlapBadge:"пересекается",
       hourAbbr:"ч", minuteAbbr:"м", marketsSelectLabel:"Выбор рынков",
       tabNews:"Новостная инструкция", newsTitle:"Новостная инструкция", newsHead:"Новость",
       newsSort:"Сортировка", newsSelect:"Выбор", newsConfig:"Настройка", setInstruments:"Инструменты", instAdd:"Добавить новый", instName:"Название инструмента", instCategory:"Категория", instSave:"Сохранить", instCancel:"Отмена", instErrName:"Название — от 3 до 12 букв или цифр", instErrDup:"Такой инструмент уже существует", setNews:"Новости", newsFormAdd:"Новая новость", newsFormEdit:"Редактирование названий", newsNameErr:"Введите хотя бы одно название", instDelete:"Удалить", newsEmpty:"Новости не добавлены. Выберите через три точки → Настройка.", newsSelectAll:"Выбрать все", newsClear:"Очистить",
@@ -797,13 +819,11 @@
       pnl:"Profit / Loss", movement:"Movement", contract:"Contract size", unitUnits:"units",
       tabCalculator:"Calculator", tabSettings:"Settings",
       tabForexTimes:"Market hours",
-      comingSoon:" section is coming soon",
       timezoneLabel:"Time zone", languageLabel:"Language",
-      marketsBtn:"Markets", sessionOpen:"OPEN", sessionClosed:"CLOSED",
+      sessionOpen:"OPEN", sessionClosed:"CLOSED",
       fxWorkHours:"Trading hours",
       tickerOpensIn:"until open", tickerClosesIn:"until close",
-      centerOpens:"opens", centerCloses:"closes",
-      statusOpen:"Currently open", statusClosed:"Currently closed", overlapBadge:"overlaps",
+      overlapBadge:"overlaps",
       hourAbbr:"h", minuteAbbr:"m", marketsSelectLabel:"Select markets",
       tabNews:"News instruction", newsTitle:"News instruction", newsHead:"News",
       newsSort:"Sort", newsSelect:"Select", newsConfig:"Configure", setInstruments:"Instruments", instAdd:"Add new", instName:"Instrument name", instCategory:"Category", instSave:"Save", instCancel:"Cancel", instErrName:"Name must be 3–12 letters or digits", instErrDup:"This instrument already exists", setNews:"News", newsFormAdd:"New news item", newsFormEdit:"Edit names", newsNameErr:"Enter at least one name", instDelete:"Delete", newsEmpty:"No news added yet. Choose them via the three dots → Configure.", newsSelectAll:"Select all", newsClear:"Clear",
@@ -812,9 +832,10 @@
   };
 
   const state = {
-    instrument:'XAUUSD', direction:'buy', lang:'uz', timezone:24,
+    instrument: DEFAULTS.calculator.instrument, direction: DEFAULTS.calculator.direction,
+    lang: DEFAULTS.language, timezone: DEFAULTS.timezone.defaultIndex,
     marketOrder: MARKETS.map(m => m.id),
-    hiddenMarkets: [],
+    hiddenMarkets: DEFAULTS.forexTimes.hiddenMarkets.slice(),
     prevOpenMap: {},
     prevOverflow: [],
     vibrationsReady: false,
@@ -823,6 +844,11 @@
   const $ = id => document.getElementById(id);
   const instrumentSelect = $('instrument');
   const directionButtons = document.querySelectorAll('#direction button');
+
+  document.title = DEFAULTS.app.name;
+  $('app-version').textContent = DEFAULTS.app.name + ' · v' + DEFAULTS.app.version;
+  ['deposit', 'lots', 'openPrice', 'closePrice'].forEach(id => { $(id).value = DEFAULTS.calculator[id]; });
+  directionButtons.forEach(b => b.classList.toggle('active', b.dataset.val === DEFAULTS.calculator.direction));
 
   function currentSpec(){
     for(const cat of INSTRUMENTS){
@@ -933,6 +959,7 @@
   }
   timezoneSelect.addEventListener('change', () => {
     state.timezone = parseInt(timezoneSelect.value, 10);
+    saveAppSettings();
     renderSessions();
     renderClock();
     renderTicker();
@@ -942,6 +969,7 @@
   const languageButtons = document.querySelectorAll('#language-switch button');
   function applyLanguage(lang){
     state.lang = lang;
+    saveAppSettings();
     const t = I18N[lang];
     document.documentElement.lang = lang;
     $('lbl-instrument').textContent = t.instrument;
@@ -1054,7 +1082,7 @@
 
   function shortName(m){ return m[state.lang].split(' (')[0]; }
 
-  const MAX_CLOCK_TRACKS = 3;
+  const MAX_CLOCK_TRACKS = DEFAULTS.forexTimes.maxClockTracks;
 
   function toSegments(s, d){
     // s: local start hour [0,24), d: duration hours (0,24]
@@ -1199,7 +1227,7 @@
   }
 
   function vibrateShort(){
-    if('vibrate' in navigator){ try{ navigator.vibrate(60); }catch(err){} }
+    if('vibrate' in navigator){ try{ navigator.vibrate(DEFAULTS.forexTimes.vibrationMs); }catch(err){} }
   }
 
   function checkVibrations(){
@@ -1828,7 +1856,7 @@
     showInstForm(false);
   });
 
-  loadCustomInstruments().finally(refreshInstrumentUI);
+  loadCustomInstruments().then(loadCalcSettings).finally(refreshInstrumentUI);
 
   // ---- Sozlamalar: Yangiliklar (add / rename, all three languages at once) ----
   const BASE_NEWS = NEWS_ITEMS.map(i => Object.assign({}, i));
@@ -1950,6 +1978,49 @@
   // custom/renamed news must be known before the saved news settings are filtered against it
   loadNewsContent().then(() => loadNewsSettings()).finally(() => { renderNews(); renderNewsAdminList(); });
 
+  // ---- Saved settings: calculator fields, language, time zone ----
+  const CALC_KEY = 'calculator-settings';
+  const APP_KEY = 'app-settings';
+  const CALC_FIELDS = ['deposit', 'lots']; // open/close prices are not stored: they must be entered every time
+  let calcSaveTimer = null;
+
+  function saveCalcSettings(){
+    const data = { instrument: state.instrument, direction: state.direction };
+    CALC_FIELDS.forEach(id => { data[id] = $(id).value; });
+    try{ window.storage.set(CALC_KEY, JSON.stringify(data), false); }catch(err){}
+  }
+  function scheduleCalcSave(){ clearTimeout(calcSaveTimer); calcSaveTimer = setTimeout(saveCalcSettings, 250); }
+  async function loadCalcSettings(){
+    try{
+      const r = await window.storage.get(CALC_KEY, false);
+      if(!r || !r.value) return;
+      const s = JSON.parse(r.value);
+      CALC_FIELDS.forEach(id => { if(typeof s[id] === 'string') $(id).value = s[id]; });
+      if(s.direction === 'buy' || s.direction === 'sell'){
+        state.direction = s.direction;
+        directionButtons.forEach(b => b.classList.toggle('active', b.dataset.val === s.direction));
+      }
+      if(typeof s.instrument === 'string') state.instrument = s.instrument; // validated in refreshInstrumentUI
+    }catch(err){ /* nothing saved yet */ }
+  }
+  CALC_FIELDS.forEach(id => $(id).addEventListener('input', scheduleCalcSave));
+  directionButtons.forEach(b => b.addEventListener('click', scheduleCalcSave));
+  instrumentSelect.addEventListener('change', scheduleCalcSave);
+
+  function saveAppSettings(){
+    try{ window.storage.set(APP_KEY, JSON.stringify({ lang: state.lang, timezone: state.timezone }), false); }catch(err){}
+  }
+  async function loadAppSettings(){
+    try{
+      const r = await window.storage.get(APP_KEY, false);
+      if(!r || !r.value) return;
+      const s = JSON.parse(r.value);
+      if(['uz', 'ru', 'en'].includes(s.lang)) state.lang = s.lang;
+      if(Number.isInteger(s.timezone) && s.timezone >= 0 && s.timezone < TIMEZONES.length) state.timezone = s.timezone;
+    }catch(err){ /* nothing saved yet */ }
+  }
+  loadAppSettings().then(() => applyLanguage(state.lang));
+
   setInterval(() => { renderClock(); checkVibrations(); }, 1000);
   setInterval(() => { renderSessions(); renderTicker(); }, 30000);
 
@@ -1983,6 +2054,53 @@
     });
   });
 
+
+  } // end of startApp
+
+  // ---- Default settings live in default-settings.json (kept out of this file) ----
+  function validDefaults(cfg){
+    return !!(cfg && cfg.app && Array.isArray(cfg.instruments) && cfg.instruments.length &&
+      cfg.timezone && Array.isArray(cfg.timezone.list) && cfg.timezone.list.length &&
+      cfg.calculator && cfg.forexTimes && Array.isArray(cfg.forexTimes.markets) && cfg.forexTimes.markets.length);
+  }
+  async function loadDefaults(){
+    try{
+      const res = await fetch('default-settings.json', { cache: 'no-cache' });
+      if(res.ok){
+        const cfg = await res.json();
+        if(validDefaults(cfg)){
+          try{ await window.storage.set('default-settings', JSON.stringify(cfg), false); }catch(err){}
+          return cfg;
+        }
+      }
+    }catch(err){ /* not reachable, e.g. the page was opened straight from a file */ }
+    try{
+      const r = await window.storage.get('default-settings', false); // copy kept from an earlier run
+      if(r && r.value){ const cfg = JSON.parse(r.value); if(validDefaults(cfg)) return cfg; }
+    }catch(err){}
+    return null;
+  }
+  let appStarted = false;
+  function launch(cfg){ if(appStarted) return; appStarted = true; startApp(cfg); }
+
+  document.getElementById('dm-file').addEventListener('change', async (e) => {
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    try{
+      const cfg = JSON.parse(await f.text());
+      if(!validDefaults(cfg)) throw new Error('invalid');
+      try{ await window.storage.set('default-settings', JSON.stringify(cfg), false); }catch(err){}
+      document.getElementById('defaults-missing').hidden = true;
+      launch(cfg);
+    }catch(err){
+      document.getElementById('dm-error').textContent = '✗ default-settings.json';
+    }
+  });
+  loadDefaults().then(cfg => {
+    if(cfg){ launch(cfg); return; }
+    document.body.classList.remove('loading');
+    document.getElementById('defaults-missing').hidden = false;
+  });
 </script>
 </body>
 </html>
