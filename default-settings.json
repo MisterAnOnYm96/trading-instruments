@@ -1,0 +1,474 @@
+{
+  "app": {
+    "name": "Trading Instruments",
+    "version": "1.03"
+  },
+  "language": "uz",
+  "timezone": {
+    "defaultIndex": 24,
+    "list": [
+      {
+        "gmt": "GMT-12:00",
+        "uz": "Beyker oroli (AQSH)",
+        "ru": "Остров Бейкер (США)",
+        "en": "Baker Island (USA)"
+      },
+      {
+        "gmt": "GMT-11:00",
+        "uz": "Amerika Samoasi",
+        "ru": "Американское Самоа",
+        "en": "American Samoa"
+      },
+      {
+        "gmt": "GMT-10:00",
+        "uz": "Gonolulu (AQSH)",
+        "ru": "Гонолулу (США)",
+        "en": "Honolulu (USA)"
+      },
+      {
+        "gmt": "GMT-09:00",
+        "uz": "Ankoridj (AQSH)",
+        "ru": "Анкоридж (США)",
+        "en": "Anchorage (USA)"
+      },
+      {
+        "gmt": "GMT-08:00",
+        "uz": "Los-Anjeles (AQSH)",
+        "ru": "Лос-Анджелес (США)",
+        "en": "Los Angeles (USA)"
+      },
+      {
+        "gmt": "GMT-07:00",
+        "uz": "Denver (AQSH)",
+        "ru": "Денвер (США)",
+        "en": "Denver (USA)"
+      },
+      {
+        "gmt": "GMT-06:00",
+        "uz": "Mexiko (Meksika)",
+        "ru": "Мехико (Мексика)",
+        "en": "Mexico City (Mexico)"
+      },
+      {
+        "gmt": "GMT-05:00",
+        "uz": "Nyu-York (AQSH)",
+        "ru": "Нью-Йорк (США)",
+        "en": "New York (USA)"
+      },
+      {
+        "gmt": "GMT-04:00",
+        "uz": "Santyago (Chili)",
+        "ru": "Сантьяго (Чили)",
+        "en": "Santiago (Chile)"
+      },
+      {
+        "gmt": "GMT-03:00",
+        "uz": "San-Paulu (Braziliya)",
+        "ru": "Сан-Паулу (Бразилия)",
+        "en": "São Paulo (Brazil)"
+      },
+      {
+        "gmt": "GMT-02:00",
+        "uz": "Janubiy Georgiya",
+        "ru": "Южная Георгия",
+        "en": "South Georgia"
+      },
+      {
+        "gmt": "GMT-01:00",
+        "uz": "Azor orollari (Portugaliya)",
+        "ru": "Азорские острова (Португалия)",
+        "en": "Azores (Portugal)"
+      },
+      {
+        "gmt": "GMT+00:00",
+        "uz": "London (Buyuk Britaniya)",
+        "ru": "Лондон (Великобритания)",
+        "en": "London (United Kingdom)"
+      },
+      {
+        "gmt": "GMT+01:00",
+        "uz": "Berlin (Germaniya)",
+        "ru": "Берлин (Германия)",
+        "en": "Berlin (Germany)"
+      },
+      {
+        "gmt": "GMT+01:00",
+        "uz": "Parij (Fransiya)",
+        "ru": "Париж (Франция)",
+        "en": "Paris (France)"
+      },
+      {
+        "gmt": "GMT+02:00",
+        "uz": "Qohira (Misr)",
+        "ru": "Каир (Египет)",
+        "en": "Cairo (Egypt)"
+      },
+      {
+        "gmt": "GMT+02:00",
+        "uz": "Iyerusalim (Isroil)",
+        "ru": "Иерусалим (Израиль)",
+        "en": "Jerusalem (Israel)"
+      },
+      {
+        "gmt": "GMT+03:00",
+        "uz": "Moskva (Rossiya)",
+        "ru": "Москва (Россия)",
+        "en": "Moscow (Russia)"
+      },
+      {
+        "gmt": "GMT+03:00",
+        "uz": "Istanbul (Turkiya)",
+        "ru": "Стамбул (Турция)",
+        "en": "Istanbul (Turkey)"
+      },
+      {
+        "gmt": "GMT+03:00",
+        "uz": "Nayrobi (Keniya)",
+        "ru": "Найроби (Кения)",
+        "en": "Nairobi (Kenya)"
+      },
+      {
+        "gmt": "GMT+03:30",
+        "uz": "Tehron (Eron)",
+        "ru": "Тегеран (Иран)",
+        "en": "Tehran (Iran)"
+      },
+      {
+        "gmt": "GMT+04:00",
+        "uz": "Dubay (BAA)",
+        "ru": "Дубай (ОАЭ)",
+        "en": "Dubai (UAE)"
+      },
+      {
+        "gmt": "GMT+04:00",
+        "uz": "Boku (Ozarbayjon)",
+        "ru": "Баку (Азербайджан)",
+        "en": "Baku (Azerbaijan)"
+      },
+      {
+        "gmt": "GMT+04:30",
+        "uz": "Kobul (Afg'oniston)",
+        "ru": "Кабул (Афганистан)",
+        "en": "Kabul (Afghanistan)"
+      },
+      {
+        "gmt": "GMT+05:00",
+        "uz": "Toshkent (O'zbekiston)",
+        "ru": "Ташкент (Узбекистан)",
+        "en": "Tashkent (Uzbekistan)"
+      },
+      {
+        "gmt": "GMT+05:00",
+        "uz": "Islomobod (Pokiston)",
+        "ru": "Исламабад (Пакистан)",
+        "en": "Islamabad (Pakistan)"
+      },
+      {
+        "gmt": "GMT+05:30",
+        "uz": "Nyu-Dehli (Hindiston)",
+        "ru": "Нью-Дели (Индия)",
+        "en": "New Delhi (India)"
+      },
+      {
+        "gmt": "GMT+06:00",
+        "uz": "Almati (Qozog'iston)",
+        "ru": "Алматы (Казахстан)",
+        "en": "Almaty (Kazakhstan)"
+      },
+      {
+        "gmt": "GMT+06:00",
+        "uz": "Dakka (Bangladesh)",
+        "ru": "Дакка (Бангладеш)",
+        "en": "Dhaka (Bangladesh)"
+      },
+      {
+        "gmt": "GMT+07:00",
+        "uz": "Bangkok (Tailand)",
+        "ru": "Бангкок (Таиланд)",
+        "en": "Bangkok (Thailand)"
+      },
+      {
+        "gmt": "GMT+07:00",
+        "uz": "Jakarta (Indoneziya)",
+        "ru": "Джакарта (Индонезия)",
+        "en": "Jakarta (Indonesia)"
+      },
+      {
+        "gmt": "GMT+08:00",
+        "uz": "Pekin (Xitoy)",
+        "ru": "Пекин (Китай)",
+        "en": "Beijing (China)"
+      },
+      {
+        "gmt": "GMT+08:00",
+        "uz": "Singapur",
+        "ru": "Сингапур",
+        "en": "Singapore"
+      },
+      {
+        "gmt": "GMT+09:00",
+        "uz": "Tokio (Yaponiya)",
+        "ru": "Токио (Япония)",
+        "en": "Tokyo (Japan)"
+      },
+      {
+        "gmt": "GMT+09:00",
+        "uz": "Seul (Janubiy Koreya)",
+        "ru": "Сеул (Южная Корея)",
+        "en": "Seoul (South Korea)"
+      },
+      {
+        "gmt": "GMT+09:30",
+        "uz": "Adelaida (Avstraliya)",
+        "ru": "Аделаида (Австралия)",
+        "en": "Adelaide (Australia)"
+      },
+      {
+        "gmt": "GMT+10:00",
+        "uz": "Sidney (Avstraliya)",
+        "ru": "Сидней (Австралия)",
+        "en": "Sydney (Australia)"
+      },
+      {
+        "gmt": "GMT+11:00",
+        "uz": "Solomon orollari",
+        "ru": "Соломоновы острова",
+        "en": "Solomon Islands"
+      },
+      {
+        "gmt": "GMT+12:00",
+        "uz": "Oklend (Yangi Zelandiya)",
+        "ru": "Окленд (Новая Зеландия)",
+        "en": "Auckland (New Zealand)"
+      },
+      {
+        "gmt": "GMT+13:00",
+        "uz": "Nukualofa (Tonga)",
+        "ru": "Нукуалофа (Тонга)",
+        "en": "Nuku'alofa (Tonga)"
+      },
+      {
+        "gmt": "GMT+14:00",
+        "uz": "Kiritimati (Kiribati)",
+        "ru": "Киритимати (Кирибати)",
+        "en": "Kiritimati (Kiribati)"
+      }
+    ]
+  },
+  "calculator": {
+    "instrument": "XAUUSD",
+    "direction": "buy",
+    "deposit": "100",
+    "lots": "0.01",
+    "openPrice": "",
+    "closePrice": ""
+  },
+  "instruments": [
+    {
+      "group": "forex",
+      "items": [
+        {
+          "code": "EURUSD",
+          "name": "EUR/USD",
+          "contract": 100000,
+          "pip": 0.0001,
+          "quoteIsUSD": true,
+          "decimals": 5,
+          "unit": "units"
+        },
+        {
+          "code": "GBPUSD",
+          "name": "GBP/USD",
+          "contract": 100000,
+          "pip": 0.0001,
+          "quoteIsUSD": true,
+          "decimals": 5,
+          "unit": "units"
+        },
+        {
+          "code": "AUDUSD",
+          "name": "AUD/USD",
+          "contract": 100000,
+          "pip": 0.0001,
+          "quoteIsUSD": true,
+          "decimals": 5,
+          "unit": "units"
+        },
+        {
+          "code": "NZDUSD",
+          "name": "NZD/USD",
+          "contract": 100000,
+          "pip": 0.0001,
+          "quoteIsUSD": true,
+          "decimals": 5,
+          "unit": "units"
+        },
+        {
+          "code": "USDJPY",
+          "name": "USD/JPY",
+          "contract": 100000,
+          "pip": 0.01,
+          "quoteIsUSD": false,
+          "decimals": 3,
+          "unit": "units"
+        },
+        {
+          "code": "USDCHF",
+          "name": "USD/CHF",
+          "contract": 100000,
+          "pip": 0.0001,
+          "quoteIsUSD": false,
+          "decimals": 5,
+          "unit": "units"
+        },
+        {
+          "code": "USDCAD",
+          "name": "USD/CAD",
+          "contract": 100000,
+          "pip": 0.0001,
+          "quoteIsUSD": false,
+          "decimals": 5,
+          "unit": "units"
+        }
+      ]
+    },
+    {
+      "group": "metal",
+      "items": [
+        {
+          "code": "XAUUSD",
+          "name": "XAU/USD",
+          "contract": 100,
+          "pip": 0.01,
+          "quoteIsUSD": true,
+          "decimals": 2,
+          "unit": "oz"
+        },
+        {
+          "code": "XAGUSD",
+          "name": "XAG/USD",
+          "contract": 5000,
+          "pip": 0.01,
+          "quoteIsUSD": true,
+          "decimals": 3,
+          "unit": "oz"
+        }
+      ]
+    }
+  ],
+  "forexTimes": {
+    "maxClockTracks": 3,
+    "vibrationMs": 60,
+    "hiddenMarkets": [],
+    "markets": [
+      {
+        "id": "sydney",
+        "uz": "Sidney (Avstraliya)",
+        "ru": "Сидней (Австралия)",
+        "en": "Sydney (Australia)",
+        "openUTC": 22,
+        "closeUTC": 7,
+        "color": "#c9a24b"
+      },
+      {
+        "id": "tokyo",
+        "uz": "Tokio (Yaponiya)",
+        "ru": "Токио (Япония)",
+        "en": "Tokyo (Japan)",
+        "openUTC": 0,
+        "closeUTC": 9,
+        "color": "#3fa66f"
+      },
+      {
+        "id": "london",
+        "uz": "London (Buyuk Britaniya)",
+        "ru": "Лондон (Великобритания)",
+        "en": "London (UK)",
+        "openUTC": 8,
+        "closeUTC": 17,
+        "color": "#c1553f"
+      },
+      {
+        "id": "newyork",
+        "uz": "Nyu-York (AQSH)",
+        "ru": "Нью-Йорк (США)",
+        "en": "New York (USA)",
+        "openUTC": 13,
+        "closeUTC": 22,
+        "color": "#4a90c9"
+      },
+      {
+        "id": "frankfurt",
+        "uz": "Frankfurt (Germaniya)",
+        "ru": "Франкфурт (Германия)",
+        "en": "Frankfurt (Germany)",
+        "openUTC": 7,
+        "closeUTC": 16,
+        "color": "#9d6fd1"
+      },
+      {
+        "id": "hongkong",
+        "uz": "Gonkong",
+        "ru": "Гонконг",
+        "en": "Hong Kong",
+        "openUTC": 1,
+        "closeUTC": 9,
+        "color": "#4bb3a2"
+      },
+      {
+        "id": "singapore",
+        "uz": "Singapur",
+        "ru": "Сингапур",
+        "en": "Singapore",
+        "openUTC": 1,
+        "closeUTC": 9,
+        "color": "#d18a3f"
+      },
+      {
+        "id": "shanghai",
+        "uz": "Shanxay (Xitoy)",
+        "ru": "Шанхай (Китай)",
+        "en": "Shanghai (China)",
+        "openUTC": 1,
+        "closeUTC": 7,
+        "color": "#6fa8dc"
+      },
+      {
+        "id": "mumbai",
+        "uz": "Mumbay (Hindiston)",
+        "ru": "Мумбаи (Индия)",
+        "en": "Mumbai (India)",
+        "openUTC": 3.75,
+        "closeUTC": 10,
+        "color": "#b05fa0"
+      },
+      {
+        "id": "dubai",
+        "uz": "Dubay (BAA)",
+        "ru": "Дубай (ОАЭ)",
+        "en": "Dubai (UAE)",
+        "openUTC": 5,
+        "closeUTC": 13.5,
+        "color": "#7fae4b"
+      },
+      {
+        "id": "moscow",
+        "uz": "Moskva (Rossiya)",
+        "ru": "Москва (Россия)",
+        "en": "Moscow (Russia)",
+        "openUTC": 6,
+        "closeUTC": 15,
+        "color": "#5f87d1"
+      },
+      {
+        "id": "wellington",
+        "uz": "Velington (Yangi Zelandiya)",
+        "ru": "Веллингтон (Новая Зеландия)",
+        "en": "Wellington (New Zealand)",
+        "openUTC": 21,
+        "closeUTC": 6,
+        "color": "#c97f9e"
+      }
+    ]
+  }
+}
