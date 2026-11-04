@@ -1,5 +1,5 @@
 {
-  "id": "/tradinging-instruments/",
+  "id": "/trading-instruments/",
   "name": "Trading Instruments",
   "short_name": "Trading Instruments",
   "start_url": "./",
@@ -11,7 +11,7 @@
     "finance"
   ],
   "lang": "uz",
-  "dir": "ltr"
+  "dir": "ltr",
   "icons": [
     {
       "src": "./icon-192.png",
@@ -24,4 +24,4 @@
       "type": "image/png"
     }
   ]
-  }
+}
