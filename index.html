@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Trading Instruments</title>
+
 <link rel="manifest" href="./manifest.json">
 
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -13,7 +14,6 @@
 <meta name="apple-mobile-web-app-title" content="Trading Instruments">
 
 <meta name="theme-color" content="#000000">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -147,6 +147,19 @@
   }
 
   .row2{ display:flex; gap: 8px; }
+  .row-dls .field.dep, .row-dls .field.lot{ flex:1; min-width:0; }
+  .row-dls .field.tpsl{ flex:0 0 auto; display:flex; flex-direction:column; align-items:center; }
+  .tpsl-btn{
+    flex:none; align-self:center; width:38px; height:38px; padding:0; border-radius:10px; cursor:pointer;
+    background:#1a1b1e; border:1px solid var(--border); color:var(--gold);
+    display:grid; place-items:center;
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .tpsl-btn svg{ width:62%; height:62%; opacity:0; transition: opacity .15s ease; }
+  @media (pointer: coarse){ .tpsl-btn{ width:41px; height:41px; } }
+  .tpsl-btn.active{ background:rgba(201,162,75,.16); border-color:var(--gold-dim); }
+  .tpsl-btn.active svg{ opacity:1; }
+  input:disabled{ opacity:.4; cursor:not-allowed; }
   .row2 .field{ flex:1; }
 
   .divider{
@@ -314,7 +327,6 @@
 
 
   [hidden]{ display:none !important; }
-  .app-version{ text-align:center; color:var(--text-faint); font-family:'JetBrains Mono',monospace; font-size:11.5px; margin-top:22px; }
   /* ---- Sozlamalar: Instrumentlar (iOS Settings style) ---- */
   .set-row{
     width:100%; display:flex; align-items:center; justify-content:space-between; margin-top:16px;
@@ -399,7 +411,12 @@
   .fx-ticker-item b{ color:var(--text); font-weight:600; }
   .fx-ticker-sep{ color:var(--text-faint); padding:0 3px; }
 
-  .fx-clock-wrap{ display:flex; justify-content:center; margin-bottom:14px; }
+  .fx-clock-wrap{ display:flex; justify-content:center; margin-bottom:10px; }
+  .fx-gmt-row{
+    text-align:right; background:transparent; border:0;
+    padding:9px 13px; margin-bottom:12px; font-family:'JetBrains Mono',monospace; font-size:14px;
+    font-weight:600; color:var(--text);
+  }
   .fx-clock-wrap svg{ width:324px; max-width:100%; height:auto; aspect-ratio:1/1; }
 
   .fx-markets-toggle{
@@ -450,15 +467,9 @@
   @media (pointer: coarse){
     input, select, textarea{ font-size:16px !important; }
   }
-  body.loading .wrap, body.loading .tabbar{ visibility:hidden; }
-  #defaults-missing{ position:fixed; inset:0; z-index:100; background:var(--bg); display:flex; align-items:center; justify-content:center; padding:24px; }
-  .dm-card{ max-width:380px; text-align:center; font-family:'Manrope',sans-serif; line-height:1.55; font-size:13px; color:var(--text-muted); }
-  .dm-title{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:var(--text); margin-bottom:12px; }
-  .dm-btn{ display:inline-block; margin-top:14px; padding:11px 18px; border-radius:13px; border:1px solid var(--gold-dim); background:rgba(201,162,75,0.12); color:var(--gold); font-weight:700; cursor:pointer; }
-  .dm-error{ color:#e8806c; margin-top:10px; min-height:16px; }
 </style>
 </head>
-<body class="loading">
+<body>
 <div class="wrap">
 
   <div class="ticket screen active" id="screen-calculator">
@@ -476,25 +487,42 @@
       </div>
     </div>
 
-    <div class="row2">
-      <div class="field">
+    <div class="row2 row-dls">
+      <div class="field dep">
         <span class="label" id="lbl-deposit">Depozit ($)</span>
-        <input type="number" id="deposit" min="0" step="10">
+        <input type="text" id="deposit" value="40" inputmode="decimal" autocomplete="off">
       </div>
-      <div class="field">
+      <div class="field lot">
         <span class="label" id="lbl-lots">Lot hajmi</span>
-        <input type="number" id="lots" min="0" step="0.01">
+        <input type="text" id="lots" value="0,01" inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="field tpsl">
+        <span class="label">TP/SL</span>
+        <button type="button" class="tpsl-btn" id="tpsl-btn" aria-pressed="false" aria-label="TP/SL">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 10.5l4 4 7-9"/></svg>
+        </button>
       </div>
     </div>
 
     <div class="row2">
       <div class="field">
         <span class="label" id="lbl-openPrice">Ochilish narxi</span>
-        <input type="number" id="openPrice" step="0.00001" placeholder="0.00000">
+        <input type="text" id="openPrice" inputmode="decimal" autocomplete="off" placeholder="0000,000">
       </div>
       <div class="field">
         <span class="label" id="lbl-closePrice">Yopilish narxi</span>
-        <input type="number" id="closePrice" step="0.00001" placeholder="0.00000">
+        <input type="text" id="closePrice" inputmode="decimal" autocomplete="off" placeholder="0000,000">
+      </div>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <span class="label">Take Profit</span>
+        <input type="text" id="tpPrice" inputmode="decimal" autocomplete="off" placeholder="0000,000" disabled>
+      </div>
+      <div class="field">
+        <span class="label">Stop Loss</span>
+        <input type="text" id="slPrice" inputmode="decimal" autocomplete="off" placeholder="0000,000" disabled>
       </div>
     </div>
 
@@ -504,18 +532,18 @@
       <div class="result-main">
         <div>
           <div class="result-label" id="lbl-pnl">Foyda / Zarar</div>
-          <div class="result-value zero" id="pnl">$0.00</div>
+          <div class="result-value zero" id="pnl">$0,00</div>
         </div>
-        <div class="badge zero" id="pnl-pct">0.00%</div>
+        <div class="badge zero" id="pnl-pct">0,00%</div>
       </div>
       <div class="stat-grid">
         <div class="stat">
           <div class="stat-k" id="lbl-movement">Harakat</div>
-          <div class="stat-v" id="movement">0.0 pips</div>
+          <div class="stat-v" id="movement">0 punkt</div>
         </div>
         <div class="stat">
           <div class="stat-k" id="lbl-contract">Kontrakt hajmi</div>
-          <div class="stat-v" id="contract">100,000</div>
+          <div class="stat-v" id="contract">100 000</div>
         </div>
       </div>
     </div>
@@ -547,7 +575,6 @@
       <span id="lbl-set-news">Yangiliklar</span>
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 5l5 5-5 5"/></svg>
     </button>
-    <div class="app-version" id="app-version"></div>
     </div>
 
     <div id="settings-instruments" hidden>
@@ -644,6 +671,7 @@
     <div class="fx-clock-wrap">
       <svg id="fx-analog-clock" viewBox="0 0 200 200"></svg>
     </div>
+    <div class="fx-gmt-row" id="fx-gmt-row">--:--:-- GMT +0</div>
     <button class="fx-markets-toggle" id="fx-markets-toggle">
       <span id="lbl-markets-select">Bozorlarni tanlash</span>
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7.5l5 5 5-5"/></svg>
@@ -655,17 +683,6 @@
     </div>
   </div>
 
-</div>
-
-<div id="defaults-missing" hidden>
-  <div class="dm-card">
-    <div class="dm-title">default-settings.json</div>
-    <p>Fayl topilmadi. U HTML bilan bir papkada bo'lishi kerak yoki uni shu yerdan tanlang (bir marta, keyin eslab qolinadi).<br>
-       Файл не найден. Он должен лежать рядом с HTML — или выберите его здесь (один раз, дальше запомнится).<br>
-       File not found. It must sit next to the HTML — or choose it here (once, it is remembered afterwards).</p>
-    <label class="dm-btn">Tanlash · Выбрать · Choose<input type="file" id="dm-file" accept=".json,application/json" hidden></label>
-    <div class="dm-error" id="dm-error"></div>
-  </div>
 </div>
 
 <nav class="tabbar">
@@ -708,84 +725,124 @@
 </nav>
 
 <script>
-  // ---- Storage: all saved settings live in IndexedDB ----
-  const idb = (() => {
-    const DB = 'trading-instruments', STORE = 'kv';
-    let dbp = null;
-    function open(){
-      if(dbp) return dbp;
-      dbp = new Promise((res, rej) => {
-        try{
-          const r = indexedDB.open(DB, 1);
-          r.onupgradeneeded = () => { r.result.createObjectStore(STORE, { keyPath: 'key' }); };
-          r.onsuccess = () => res(r.result);
-          r.onerror = () => rej(r.error);
-          r.onblocked = () => rej(new Error('blocked'));
-        }catch(err){ rej(err); }
-      });
-      return dbp;
-    }
-    function tx(mode, fn){
-      return open().then(db => new Promise((res, rej) => {
-        const t = db.transaction(STORE, mode);
-        const q = fn(t.objectStore(STORE));
-        t.oncomplete = () => res(q && q.result);
-        t.onerror = () => rej(t.error);
-        t.onabort = () => rej(t.error);
-      }));
-    }
-    return {
-      get: k => tx('readonly', s => s.get(k)),
-      set: (k, v) => tx('readwrite', s => s.put({ key: k, value: v })),
-      del: k => tx('readwrite', s => s.delete(k)),
-    };
-  })();
+  const INSTRUMENTS = [
+    { group:"forex", items:[
+      { code:'EURUSD', name:'EUR/USD', contract:100000, pip:0.0001, quoteIsUSD:true, decimals:5, unit:'units' },
+      { code:'GBPUSD', name:'GBP/USD', contract:100000, pip:0.0001, quoteIsUSD:true, decimals:5, unit:'units' },
+      { code:'AUDUSD', name:'AUD/USD', contract:100000, pip:0.0001, quoteIsUSD:true, decimals:5, unit:'units' },
+      { code:'NZDUSD', name:'NZD/USD', contract:100000, pip:0.0001, quoteIsUSD:true, decimals:5, unit:'units' },
+      { code:'USDJPY', name:'USD/JPY', contract:100000, pip:0.01,   quoteIsUSD:false, decimals:3, unit:'units' },
+      { code:'USDCHF', name:'USD/CHF', contract:100000, pip:0.0001, quoteIsUSD:false, decimals:5, unit:'units' },
+      { code:'USDCAD', name:'USD/CAD', contract:100000, pip:0.0001, quoteIsUSD:false, decimals:5, unit:'units' },
+    ]},
+    { group:"metal", items:[
+      { code:'XAUUSD', name:'XAU/USD', contract:100,  pip:0.01, quoteIsUSD:true, decimals:3, unit:'oz' },
+      { code:'XAGUSD', name:'XAG/USD', contract:5000, pip:0.01, quoteIsUSD:true, decimals:3, unit:'oz' },
+    ]},
+  ];
 
-  let idbFailed = false;
-  const storeReady = idb.get('meta').then(() => {}, () => { idbFailed = true; }); // IndexedDB unusable -> localStorage fallback
+  const TIMEZONES = [
+    "GMT-12:00 — Beyker oroli (AQSH)", "GMT-11:00 — Amerika Samoasi", "GMT-10:00 — Gonolulu (AQSH)",
+    "GMT-09:00 — Ankoridj (AQSH)", "GMT-08:00 — Los-Anjeles (AQSH)", "GMT-07:00 — Denver (AQSH)",
+    "GMT-06:00 — Mexiko (Meksika)", "GMT-05:00 — Nyu-York (AQSH)", "GMT-04:00 — Santyago (Chili)",
+    "GMT-03:00 — San-Paulu (Braziliya)", "GMT-02:00 — Janubiy Georgiya", "GMT-01:00 — Azor orollari (Portugaliya)",
+    "GMT+00:00 — London (Buyuk Britaniya)", "GMT+01:00 — Berlin (Germaniya)", "GMT+01:00 — Parij (Fransiya)",
+    "GMT+02:00 — Qohira (Misr)", "GMT+02:00 — Iyerusalim (Isroil)", "GMT+03:00 — Moskva (Rossiya)",
+    "GMT+03:00 — Istanbul (Turkiya)", "GMT+03:00 — Nayrobi (Keniya)", "GMT+03:30 — Tehron (Eron)",
+    "GMT+04:00 — Dubay (BAA)", "GMT+04:00 — Boku (Ozarbayjon)", "GMT+04:30 — Kobul (Afg'oniston)",
+    "GMT+05:00 — Toshkent (O'zbekiston)", "GMT+05:00 — Islomobod (Pokiston)", "GMT+05:30 — Nyu-Dehli (Hindiston)",
+    "GMT+06:00 — Almati (Qozog'iston)", "GMT+06:00 — Dakka (Bangladesh)", "GMT+07:00 — Bangkok (Tailand)",
+    "GMT+07:00 — Jakarta (Indoneziya)", "GMT+08:00 — Pekin (Xitoy)", "GMT+08:00 — Singapur",
+    "GMT+09:00 — Tokio (Yaponiya)", "GMT+09:00 — Seul (Janubiy Koreya)", "GMT+09:30 — Adelaida (Avstraliya)",
+    "GMT+10:00 — Sidney (Avstraliya)", "GMT+11:00 — Solomon orollari", "GMT+12:00 — Oklend (Yangi Zelandiya)",
+    "GMT+13:00 — Nukualofa (Tonga)", "GMT+14:00 — Kiritimati (Kiribati)",
+  ];
 
-  window.storage = {
-    async get(k){
-      await storeReady;
-      if(!idbFailed){
-        const rec = await idb.get(k);
-        if(!rec) throw new Error('not found');
-        return { key: k, value: rec.value, shared: false };
-      }
-      const v = localStorage.getItem('pc:' + k);
-      if(v === null) throw new Error('not found');
-      return { key: k, value: v, shared: false };
-    },
-    async set(k, v){
-      await storeReady;
-      if(!idbFailed){
-        try{ await idb.set(k, v); return { key: k, value: v, shared: false }; }catch(err){}
-      }
-      try{ localStorage.setItem('pc:' + k, v); return { key: k, value: v, shared: false }; }catch(err){ return null; }
-    },
-    async delete(k){
-      await storeReady;
-      try{ if(!idbFailed) await idb.del(k); else localStorage.removeItem('pc:' + k); return { key: k, deleted: true, shared: false }; }catch(err){ return null; }
-    },
+  const TZ_NAMES = {
+    ru: ["Остров Бейкер (США)", "Американское Самоа", "Гонолулу (США)", "Анкоридж (США)", "Лос-Анджелес (США)", "Денвер (США)", "Мехико (Мексика)", "Нью-Йорк (США)", "Сантьяго (Чили)", "Сан-Паулу (Бразилия)", "Южная Георгия", "Азорские острова (Португалия)", "Лондон (Великобритания)", "Берлин (Германия)", "Париж (Франция)", "Каир (Египет)", "Иерусалим (Израиль)", "Москва (Россия)", "Стамбул (Турция)", "Найроби (Кения)", "Тегеран (Иран)", "Дубай (ОАЭ)", "Баку (Азербайджан)", "Кабул (Афганистан)", "Ташкент (Узбекистан)", "Исламабад (Пакистан)", "Нью-Дели (Индия)", "Алматы (Казахстан)", "Дакка (Бангладеш)", "Бангкок (Таиланд)", "Джакарта (Индонезия)", "Пекин (Китай)", "Сингапур", "Токио (Япония)", "Сеул (Южная Корея)", "Аделаида (Австралия)", "Сидней (Австралия)", "Соломоновы острова", "Окленд (Новая Зеландия)", "Нукуалофа (Тонга)", "Киритимати (Кирибати)"],
+    en: ["Baker Island (USA)", "American Samoa", "Honolulu (USA)", "Anchorage (USA)", "Los Angeles (USA)", "Denver (USA)", "Mexico City (Mexico)", "New York (USA)", "Santiago (Chile)", "São Paulo (Brazil)", "South Georgia", "Azores (Portugal)", "London (United Kingdom)", "Berlin (Germany)", "Paris (France)", "Cairo (Egypt)", "Jerusalem (Israel)", "Moscow (Russia)", "Istanbul (Turkey)", "Nairobi (Kenya)", "Tehran (Iran)", "Dubai (UAE)", "Baku (Azerbaijan)", "Kabul (Afghanistan)", "Tashkent (Uzbekistan)", "Islamabad (Pakistan)", "New Delhi (India)", "Almaty (Kazakhstan)", "Dhaka (Bangladesh)", "Bangkok (Thailand)", "Jakarta (Indonesia)", "Beijing (China)", "Singapore", "Tokyo (Japan)", "Seoul (South Korea)", "Adelaide (Australia)", "Sydney (Australia)", "Solomon Islands", "Auckland (New Zealand)", "Nuku'alofa (Tonga)", "Kiritimati (Kiribati)"],
   };
-
-
-  function startApp(DEFAULTS){
-  document.body.classList.remove('loading');
-
-  const INSTRUMENTS = DEFAULTS.instruments.map(g => ({ group: g.group, items: g.items.map(i => Object.assign({}, i)) }));
-
-  const TIMEZONES = DEFAULTS.timezone.list.map(t => t.gmt + ' — ' + t.uz);
-
-  const TZ_NAMES = { ru: DEFAULTS.timezone.list.map(t => t.ru), en: DEFAULTS.timezone.list.map(t => t.en) };
   function tzLabel(i){
     const parts = TIMEZONES[i].split(' — ');
     const name = state.lang === 'uz' ? parts[1] : (TZ_NAMES[state.lang] || [])[i] || parts[1];
     return parts[0] + ' — ' + name;
   }
 
+  const WEEKDAYS = {
+    uz: ["Yakshanba","Dushanba","Seshanba","Chorshanba","Payshanba","Juma","Shanba"],
+    ru: ["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"],
+    en: ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+  };
 
-  const MARKETS = DEFAULTS.forexTimes.markets.map(m => Object.assign({}, m));
+  const MARKETS = [
+    { id:'sydney',     uz:"Sidney (Avstraliya)",        ru:"Сидней (Австралия)",        en:"Sydney (Australia)",      tz:'Australia/Sydney', lo:9, lc:18, openUTC:0, closeUTC:0,    color:'#c9a24b' },
+    { id:'tokyo',      uz:"Tokio (Yaponiya)",           ru:"Токио (Япония)",            en:"Tokyo (Japan)",           tz:'Asia/Tokyo', lo:9, lc:18, openUTC:0, closeUTC:0,    color:'#3fa66f' },
+    { id:'london',     uz:"London (Buyuk Britaniya)",   ru:"Лондон (Великобритания)",   en:"London (UK)",             tz:'Europe/London', lo:8, lc:17, openUTC:0, closeUTC:0,   color:'#c1553f' },
+    { id:'newyork',    uz:"Nyu-York (AQSH)",            ru:"Нью-Йорк (США)",            en:"New York (USA)",          tz:'America/New_York', lo:8, lc:17, openUTC:0, closeUTC:0,   color:'#4a90c9' },
+    { id:'frankfurt',  uz:"Frankfurt (Germaniya)",      ru:"Франкфурт (Германия)",      en:"Frankfurt (Germany)",     tz:'Europe/Berlin', lo:9, lc:17.5, openUTC:0, closeUTC:0,   color:'#9d6fd1' },
+    { id:'hongkong',   uz:"Gonkong",                    ru:"Гонконг",                   en:"Hong Kong",               tz:'Asia/Hong_Kong', lo:9.5, lc:16, openUTC:0, closeUTC:0,    color:'#4bb3a2' },
+    { id:'singapore',  uz:"Singapur",                   ru:"Сингапур",                  en:"Singapore",               tz:'Asia/Singapore', lo:9, lc:17, openUTC:0, closeUTC:0,    color:'#d18a3f' },
+    { id:'shanghai',   uz:"Shanxay (Xitoy)",            ru:"Шанхай (Китай)",            en:"Shanghai (China)",        tz:'Asia/Shanghai', lo:9.5, lc:15, openUTC:0, closeUTC:0,    color:'#6fa8dc' },
+    { id:'mumbai',     uz:"Mumbay (Hindiston)",         ru:"Мумбаи (Индия)",            en:"Mumbai (India)",          tz:'Asia/Kolkata', lo:9.25, lc:15.5, openUTC:0, closeUTC:0,   color:'#b05fa0' },
+    { id:'dubai',      uz:"Dubay (BAA)",                ru:"Дубай (ОАЭ)",               en:"Dubai (UAE)",             tz:'Asia/Dubai', lo:10, lc:14.75, openUTC:0, closeUTC:0, color:'#7fae4b' },
+    { id:'moscow',     uz:"Moskva (Rossiya)",           ru:"Москва (Россия)",           en:"Moscow (Russia)",         tz:'Europe/Moscow', lo:9.833333, lc:18.833333, openUTC:0, closeUTC:0,   color:'#5f87d1' },
+    { id:'wellington', uz:"Velington (Yangi Zelandiya)",ru:"Веллингтон (Новая Зеландия)",en:"Wellington (New Zealand)",tz:'Pacific/Auckland', lo:10, lc:16.75, openUTC:0, closeUTC:0,    color:'#c97f9e' },
+  ];
+
+  // ---- Market hours are kept in each market's own local time, so daylight saving and weekends are handled ----
+  const _tzFmt = {};
+  function tzParts(tz, ms){
+    let f = _tzFmt[tz];
+    if(!f){
+      f = _tzFmt[tz] = new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' });
+    }
+    const o = {};
+    f.formatToParts(new Date(ms)).forEach(p => { o[p.type] = p.value; });
+    return { y: +o.year, mo: +o.month, d: +o.day, h: (+o.hour) % 24, mi: +o.minute, s: +o.second };
+  }
+  function tzOffsetMs(tz, ms){
+    const p = tzParts(tz, ms);
+    return Date.UTC(p.y, p.mo - 1, p.d, p.h, p.mi, p.s) - Math.floor(ms / 1000) * 1000;
+  }
+  function localToUtcMs(tz, y, mo, d, hours){
+    const h = Math.floor(hours), mi = Math.round((hours - h) * 60);
+    const guess = Date.UTC(y, mo - 1, d, h, mi, 0);
+    let ms = guess - tzOffsetMs(tz, guess);
+    ms = guess - tzOffsetMs(tz, ms);
+    return ms;
+  }
+  // open now? and when is the next open/close (Saturday and Sunday are skipped in the market's own time zone)
+  const _msCache = {};
+  function marketState(m){
+    const nowMs = Date.now();
+    const sec = Math.floor(nowMs / 1000);
+    const cached = _msCache[m.id];
+    if(cached && cached.sec === sec) return cached.v;
+    const base = tzParts(m.tz, nowMs);
+    let v = { open: false, nextMs: nowMs + 86400000, opening: true };
+    for(let add = 0; add <= 9; add++){
+      const dt = new Date(Date.UTC(base.y, base.mo - 1, base.d + add));
+      const wd = dt.getUTCDay();
+      if(wd === 0 || wd === 6) continue;
+      const y = dt.getUTCFullYear(), mo = dt.getUTCMonth() + 1, d = dt.getUTCDate();
+      const openMs = localToUtcMs(m.tz, y, mo, d, m.lo);
+      const closeMs = localToUtcMs(m.tz, y, mo, d, m.lc);
+      if(nowMs < openMs){ v = { open: false, nextMs: openMs, opening: true }; break; }
+      if(nowMs < closeMs){ v = { open: true, nextMs: closeMs, opening: false }; break; }
+    }
+    _msCache[m.id] = { sec, v };
+    return v;
+  }
+  // today's daily window expressed in UTC hours (follows daylight saving)
+  function updateMarketHours(){
+    const now = Date.now();
+    MARKETS.forEach(m => {
+      const off = tzOffsetMs(m.tz, now) / 3600000;
+      m.openUTC = ((m.lo - off) % 24 + 24) % 24;
+      m.closeUTC = ((m.lc - off) % 24 + 24) % 24;
+    });
+  }
+  updateMarketHours();
 
   const I18N = {
     uz: {
@@ -795,12 +852,14 @@
       pnl:"Foyda / Zarar", movement:"Harakat", contract:"Kontrakt hajmi", unitUnits:"birlik",
       tabCalculator:"Kalkulyator", tabSettings:"Sozlamalar",
       tabForexTimes:"Savdo vaqtlari",
+      comingSoon:" bo'limi tez orada qo'shiladi",
       timezoneLabel:"Vaqt mintaqasi", languageLabel:"Til",
-      sessionOpen:"OCHIQ", sessionClosed:"YOPIQ",
+      marketsBtn:"Bozorlar", sessionOpen:"OCHIQ", sessionClosed:"YOPIQ",
       fxWorkHours:"Ish vaqti",
       tickerOpensIn:"ochilguncha", tickerClosesIn:"yopilguncha",
-      overlapBadge:"kesishadi",
-      hourAbbr:"s", minuteAbbr:"d", marketsSelectLabel:"Bozorlarni tanlash",
+      centerOpens:"ochiladi", centerCloses:"yopiladi",
+      statusOpen:"Hozir ochiq", statusClosed:"Hozir yopiq", overlapBadge:"kesishadi",
+      hourAbbr:"s", minuteAbbr:"d", dayAbbr:"k", pointsUnit:"punkt", marketsSelectLabel:"Bozorlarni tanlash",
       tabNews:"Yangilik ko'rsatmasi", newsTitle:"Yangilik ko'rsatmasi", newsHead:"Yangilik",
       newsSort:"Tartiblash", newsSelect:"Belgilash", newsConfig:"Sozlash", setInstruments:"Instrumentlar", instAdd:"Yangi qo'shish", instName:"Instrument nomi", instCategory:"Kategoriya", instSave:"Saqlash", instCancel:"Bekor qilish", instErrName:"Nom 3–12 ta harf yoki raqamdan iborat bo'lsin", instErrDup:"Bu instrument allaqachon mavjud", setNews:"Yangiliklar", newsFormAdd:"Yangi yangilik", newsFormEdit:"Nomlarni tahrirlash", newsNameErr:"Kamida bitta nom kiriting", instDelete:"O'chirish", newsEmpty:"Yangiliklar qo'shilmagan. Uch nuqta → Sozlash orqali tanlang.", newsSelectAll:"Hammasini belgilash", newsClear:"Tozalash",
       newsNote:"Bu bog'lanishlar umumiy qoida: real bozorda har doim ishlamaydi. Moliyaviy maslahat emas.",
@@ -812,12 +871,14 @@
       pnl:"Прибыль / Убыток", movement:"Движение", contract:"Размер контракта", unitUnits:"ед.",
       tabCalculator:"Калькулятор", tabSettings:"Настройки",
       tabForexTimes:"Время торгов",
+      comingSoon:" раздел скоро будет добавлен",
       timezoneLabel:"Часовой пояс", languageLabel:"Язык",
-      sessionOpen:"ОТКРЫТО", sessionClosed:"ЗАКРЫТО",
+      marketsBtn:"Рынки", sessionOpen:"ОТКРЫТО", sessionClosed:"ЗАКРЫТО",
       fxWorkHours:"Часы работы",
       tickerOpensIn:"до открытия", tickerClosesIn:"до закрытия",
-      overlapBadge:"пересекается",
-      hourAbbr:"ч", minuteAbbr:"м", marketsSelectLabel:"Выбор рынков",
+      centerOpens:"открывается", centerCloses:"закрывается",
+      statusOpen:"Сейчас открыто", statusClosed:"Сейчас закрыто", overlapBadge:"пересекается",
+      hourAbbr:"ч", minuteAbbr:"м", dayAbbr:"д", pointsUnit:"пунктов", marketsSelectLabel:"Выбор рынков",
       tabNews:"Новостная инструкция", newsTitle:"Новостная инструкция", newsHead:"Новость",
       newsSort:"Сортировка", newsSelect:"Выбор", newsConfig:"Настройка", setInstruments:"Инструменты", instAdd:"Добавить новый", instName:"Название инструмента", instCategory:"Категория", instSave:"Сохранить", instCancel:"Отмена", instErrName:"Название — от 3 до 12 букв или цифр", instErrDup:"Такой инструмент уже существует", setNews:"Новости", newsFormAdd:"Новая новость", newsFormEdit:"Редактирование названий", newsNameErr:"Введите хотя бы одно название", instDelete:"Удалить", newsEmpty:"Новости не добавлены. Выберите через три точки → Настройка.", newsSelectAll:"Выбрать все", newsClear:"Очистить",
       newsNote:"Эти связи — общее правило: на реальном рынке они работают не всегда. Не является финансовой рекомендацией.",
@@ -829,12 +890,14 @@
       pnl:"Profit / Loss", movement:"Movement", contract:"Contract size", unitUnits:"units",
       tabCalculator:"Calculator", tabSettings:"Settings",
       tabForexTimes:"Market hours",
+      comingSoon:" section is coming soon",
       timezoneLabel:"Time zone", languageLabel:"Language",
-      sessionOpen:"OPEN", sessionClosed:"CLOSED",
+      marketsBtn:"Markets", sessionOpen:"OPEN", sessionClosed:"CLOSED",
       fxWorkHours:"Trading hours",
       tickerOpensIn:"until open", tickerClosesIn:"until close",
-      overlapBadge:"overlaps",
-      hourAbbr:"h", minuteAbbr:"m", marketsSelectLabel:"Select markets",
+      centerOpens:"opens", centerCloses:"closes",
+      statusOpen:"Currently open", statusClosed:"Currently closed", overlapBadge:"overlaps",
+      hourAbbr:"h", minuteAbbr:"m", dayAbbr:"d", pointsUnit:"points", marketsSelectLabel:"Select markets",
       tabNews:"News instruction", newsTitle:"News instruction", newsHead:"News",
       newsSort:"Sort", newsSelect:"Select", newsConfig:"Configure", setInstruments:"Instruments", instAdd:"Add new", instName:"Instrument name", instCategory:"Category", instSave:"Save", instCancel:"Cancel", instErrName:"Name must be 3–12 letters or digits", instErrDup:"This instrument already exists", setNews:"News", newsFormAdd:"New news item", newsFormEdit:"Edit names", newsNameErr:"Enter at least one name", instDelete:"Delete", newsEmpty:"No news added yet. Choose them via the three dots → Configure.", newsSelectAll:"Select all", newsClear:"Clear",
       newsNote:"These relationships are a general rule: they don't always hold in the real market. Not financial advice.",
@@ -842,10 +905,9 @@
   };
 
   const state = {
-    instrument: DEFAULTS.calculator.instrument, direction: DEFAULTS.calculator.direction,
-    lang: DEFAULTS.language, timezone: DEFAULTS.timezone.defaultIndex,
+    instrument:'XAUUSD', direction:'buy', lang:'uz', timezone:24,
     marketOrder: MARKETS.map(m => m.id),
-    hiddenMarkets: DEFAULTS.forexTimes.hiddenMarkets.slice(),
+    hiddenMarkets: [],
     prevOpenMap: {},
     prevOverflow: [],
     vibrationsReady: false,
@@ -854,11 +916,6 @@
   const $ = id => document.getElementById(id);
   const instrumentSelect = $('instrument');
   const directionButtons = document.querySelectorAll('#direction button');
-
-  document.title = DEFAULTS.app.name;
-  $('app-version').textContent = DEFAULTS.app.name + ' · v' + DEFAULTS.app.version;
-  ['deposit', 'lots', 'openPrice', 'closePrice'].forEach(id => { $(id).value = DEFAULTS.calculator[id]; });
-  directionButtons.forEach(b => b.classList.toggle('active', b.dataset.val === DEFAULTS.calculator.direction));
 
   function currentSpec(){
     for(const cat of INSTRUMENTS){
@@ -885,36 +942,83 @@
     instrumentSelect.value = state.instrument;
   }
 
+  // thousands separated by a space, decimal comma: 15 225 / 4 082,120
+  function fmtGrouped(n, dec){
+    const s = Math.abs(n).toFixed(dec);
+    const parts = s.split('.');
+    const g = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
+    return parts[1] ? g + ',' + parts[1] : g;
+  }
   function fmtMoney(n){
     const sign = n > 0 ? '+' : n < 0 ? '−' : '';
-    return sign + '$' + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
+    return sign + '$' + fmtGrouped(n, 2);
   }
   function fmtPct(n){
     const sign = n > 0 ? '+' : n < 0 ? '−' : '';
-    return sign + Math.abs(n).toFixed(2) + '%';
+    return sign + fmtGrouped(n, 2) + '%';
+  }
+
+  // number fields are plain text; prices show as 4082,120 (no thousands separator), other fields group thousands
+  function formatNumInput(raw, maxDec, group){
+    const s = raw.replace(/[^\d.,]/g, '');
+    const sepIdx = s.search(/[.,]/);
+    let intPart = sepIdx === -1 ? s : s.slice(0, sepIdx);
+    let decPart = sepIdx === -1 ? null : s.slice(sepIdx + 1).replace(/[.,]/g, '');
+    if(maxDec === 0) decPart = null;
+    else if(decPart !== null) decPart = decPart.slice(0, maxDec);
+    intPart = intPart.replace(/^0+(?=\d)/, '');
+    if(intPart === '' && decPart !== null) intPart = '0';
+    return (group === false ? intPart : intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0')) + (decPart !== null ? ',' + decPart : '');
+  }
+  function padDecimals(str, dec){
+    if(!str) return str;
+    const parts = str.split(',');
+    if(dec === 0) return parts[0];
+    return parts[0] + ',' + (parts[1] || '').padEnd(dec, '0');
+  }
+  function parseNumInput(str){
+    if(!str) return NaN;
+    return parseFloat(str.replace(/[\s\u00A0]/g, '').replace(',', '.'));
+  }
+  function bindNumInput(el, getMaxDec, padOnBlur, group){
+    el.addEventListener('input', () => {
+      const caret = el.selectionStart;
+      const sigBefore = el.value.slice(0, caret).replace(/[^\d.,]/g, '').length;
+      el.value = formatNumInput(el.value, getMaxDec(), group);
+      let count = 0, pos = 0;
+      while(pos < el.value.length && count < sigBefore){ if(/[\d,]/.test(el.value[pos])) count++; pos++; }
+      try{ el.setSelectionRange(pos, pos); }catch(err){}
+      calculate();
+    });
+    el.addEventListener('blur', () => {
+      if(padOnBlur) el.value = padDecimals(el.value, getMaxDec());
+      calculate();
+    });
   }
 
   function calculate(){
     const spec = currentSpec();
     const t = I18N[state.lang];
     const unitText = spec.unit === 'oz' ? 'oz' : t.unitUnits;
-    $('contract').textContent = spec.contract.toLocaleString('en-US') + ' ' + unitText;
+    $('contract').textContent = fmtGrouped(spec.contract, 0) + ' ' + unitText;
+    const ph = '0000,' + '0'.repeat(spec.decimals);
+    ['openPrice', 'closePrice', 'tpPrice', 'slPrice'].forEach(id => { $(id).placeholder = ph; });
 
-    const deposit = parseFloat($('deposit').value) || 0;
-    const lots = parseFloat($('lots').value) || 0;
-    const open = parseFloat($('openPrice').value);
-    const close = parseFloat($('closePrice').value);
+    const deposit = parseNumInput($('deposit').value) || 0;
+    const lots = parseNumInput($('lots').value) || 0;
+    const open = parseNumInput($('openPrice').value);
+    const close = parseNumInput($('closePrice').value);
 
     const pnlEl = $('pnl');
     const pctEl = $('pnl-pct');
     const moveEl = $('movement');
 
     if(!open || !close || lots <= 0){
-      pnlEl.textContent = '$0.00';
+      pnlEl.textContent = '$0,00';
       pnlEl.className = 'result-value zero';
-      pctEl.textContent = '0.00%';
+      pctEl.textContent = '0,00%';
       pctEl.className = 'badge zero';
-      moveEl.textContent = '0.0 pips';
+      moveEl.textContent = '0 ' + t.pointsUnit;
       return;
     }
 
@@ -925,7 +1029,8 @@
     }
 
     const pct = deposit > 0 ? (pnl / deposit) * 100 : 0;
-    const pips = diff / spec.pip;
+    // 1 point = the smallest price step of the instrument (0.001 for gold quoted as 4 082,120)
+    const points = Math.round(diff / Math.pow(10, -spec.decimals));
 
     pnlEl.textContent = fmtMoney(pnl);
     pnlEl.className = 'result-value ' + (pnl > 0.004 ? 'pos' : pnl < -0.004 ? 'neg' : 'zero');
@@ -933,7 +1038,7 @@
     pctEl.textContent = fmtPct(pct);
     pctEl.className = 'badge ' + (pnl > 0.004 ? 'pos' : pnl < -0.004 ? 'neg' : 'zero');
 
-    moveEl.textContent = (pips >= 0 ? pips.toFixed(1) : '−' + Math.abs(pips).toFixed(1)) + ' pips';
+    moveEl.textContent = (points < 0 ? '−' : '') + fmtGrouped(points, 0) + ' ' + t.pointsUnit;
   }
 
   directionButtons.forEach(btn => {
@@ -947,12 +1052,34 @@
 
   instrumentSelect.addEventListener('change', () => {
     state.instrument = instrumentSelect.value;
+    reformatPriceValues();
     calculate();
     renderNews();
   });
 
-  ['deposit','lots','openPrice','closePrice'].forEach(id => {
-    $(id).addEventListener('input', calculate);
+  function priceDecimals(){ const s = currentSpec(); return s ? s.decimals : 3; }
+  function reformatPriceValues(){
+    const dec = priceDecimals();
+    ['openPrice', 'closePrice', 'tpPrice', 'slPrice'].forEach(id => {
+      const el = $(id);
+      if(el.value) el.value = padDecimals(formatNumInput(el.value, dec, false), dec);
+    });
+  }
+  bindNumInput($('deposit'), () => 2, false);
+  bindNumInput($('lots'), () => 2, false);
+  bindNumInput($('openPrice'), priceDecimals, true, false);
+  bindNumInput($('closePrice'), priceDecimals, true, false);
+  bindNumInput($('tpPrice'), priceDecimals, true, false);
+  bindNumInput($('slPrice'), priceDecimals, true, false);
+
+  // TP/SL button: the Take Profit / Stop Loss fields can only be edited while it is active (off by default)
+  const tpslBtn = $('tpsl-btn');
+  tpslBtn.addEventListener('click', () => {
+    const on = !tpslBtn.classList.contains('active');
+    tpslBtn.classList.toggle('active', on);
+    tpslBtn.setAttribute('aria-pressed', on);
+    $('tpPrice').disabled = !on;
+    $('slPrice').disabled = !on;
   });
 
   // ---- Sozlamalar: vaqt mintaqasi ----
@@ -969,7 +1096,6 @@
   }
   timezoneSelect.addEventListener('change', () => {
     state.timezone = parseInt(timezoneSelect.value, 10);
-    saveAppSettings();
     renderSessions();
     renderClock();
     renderTicker();
@@ -979,7 +1105,6 @@
   const languageButtons = document.querySelectorAll('#language-switch button');
   function applyLanguage(lang){
     state.lang = lang;
-    saveAppSettings();
     const t = I18N[lang];
     document.documentElement.lang = lang;
     $('lbl-instrument').textContent = t.instrument;
@@ -1055,10 +1180,6 @@
     return String(hh).padStart(2,'0') + ':' + String(mm === 60 ? 0 : mm).padStart(2,'0');
   }
 
-  function isMarketOpen(openUTC, closeUTC, nowUTC){
-    if(openUTC < closeUTC){ return nowUTC >= openUTC && nowUTC < closeUTC; }
-    return nowUTC >= openUTC || nowUTC < closeUTC;
-  }
 
   function polarToCartesian(cx, cy, r, angleDeg){
     const rad = angleDeg * Math.PI / 180;
@@ -1081,18 +1202,14 @@
     return [hh, mm, ss].map(v => String(v).padStart(2, '0')).join(':');
   }
 
-  function nextTransition(m, nowUTC){
-    const openNow = isMarketOpen(m.openUTC, m.closeUTC, nowUTC);
-    const targetUTC = openNow ? m.closeUTC : m.openUTC;
-    let diff = targetUTC - nowUTC;
-    diff = ((diff % 24) + 24) % 24;
-    if(diff === 0) diff = 24;
-    return { seconds: diff * 3600, isOpening: !openNow, open: openNow };
+  function nextTransition(m){
+    const st = marketState(m);
+    return { seconds: Math.max(0, (st.nextMs - Date.now()) / 1000), isOpening: !st.open, open: st.open };
   }
 
   function shortName(m){ return m[state.lang].split(' (')[0]; }
 
-  const MAX_CLOCK_TRACKS = DEFAULTS.forexTimes.maxClockTracks;
+  const MAX_CLOCK_TRACKS = 3;
 
   function toSegments(s, d){
     // s: local start hour [0,24), d: duration hours (0,24]
@@ -1161,17 +1278,17 @@
     const secondLocal = localSeconds%60;
 
     const cx = 100, cy = 100;
-    const maxR = 70, minR = 40;
+    const maxR = 65, minR = 35;
     const gap = (maxR - minR) / (MAX_CLOCK_TRACKS - 1);
 
     let parts = [];
     parts.push('<circle cx="100" cy="100" r="98" fill="#121317" stroke="#2a3038" stroke-width="1"/>');
 
-    // radial spokes (center to rim) at every 15/30/45-minute mark of each hour
+    // radial spokes (center to rim) at the 0 and 30-minute mark of each hour
     for(let h = 0; h < 24; h++){
-      [15, 30, 45].forEach(mins => {
+      [0, 30].forEach(mins => {
         const ang = h * 15 + mins / 60 * 15;
-        const s1 = polarToCartesian(cx, cy, 32, ang);
+        const s1 = polarToCartesian(cx, cy, 22, ang);
         const s2 = polarToCartesian(cx, cy, 96, ang);
         parts.push('<line x1="'+s1.x.toFixed(1)+'" y1="'+s1.y.toFixed(1)+'" x2="'+s2.x.toFixed(1)+'" y2="'+s2.y.toFixed(1)+'" stroke="#262b32" stroke-width="0.5"/>');
       });
@@ -1195,6 +1312,12 @@
       parts.push('<text x="'+lp.x.toFixed(1)+'" y="'+(lp.y+2.8).toFixed(1)+'" text-anchor="middle" font-size="7" font-weight="700" fill="#e8e6e1" font-family="Manrope, sans-serif">'+label+'</text>');
     }
 
+    // minute numbers in 5-minute steps, just inside the hour numbers (60 at the top, 15 on the right, 30 at the bottom)
+    for(let n = 1; n <= 12; n++){
+      const mp = polarToCartesian(cx, cy, 76, n * 30);
+      parts.push('<text x="'+mp.x.toFixed(1)+'" y="'+(mp.y+1.8).toFixed(1)+'" text-anchor="middle" font-size="5" font-weight="600" fill="#6b7280" font-family="JetBrains Mono, monospace">'+(n*5)+'</text>');
+    }
+
     // session arcs with curved market labels — packed into at most 3 non-overlapping tracks
     const { placement } = computeTrackPlacement(offset);
     state.marketOrder.forEach(id => {
@@ -1208,12 +1331,13 @@
       const endAngle = startAngle + duration * 15;
       const pathId = 'fx-arc-' + id;
       const path = describeArc(cx, cy, r, startAngle, endAngle);
-      parts.push('<path id="'+pathId+'" d="'+path+'" fill="none" stroke="'+m.color+'" stroke-width="10.5" stroke-linecap="butt" opacity="0.9"/>');
+      const arcOpen = marketState(m).open;
+      parts.push('<path id="'+pathId+'" d="'+path+'" fill="none" stroke="'+(arcOpen ? m.color : '#5d6169')+'" stroke-width="10.5" stroke-linecap="butt" opacity="'+(arcOpen ? '0.9' : '0.75')+'"/>');
       parts.push('<text font-size="6" font-weight="700" letter-spacing="1" fill="#14151a" dominant-baseline="central"><textPath href="#'+pathId+'" startOffset="50%" text-anchor="middle" dominant-baseline="central">'+shortName(m).toUpperCase()+'</textPath></text>');
     });
 
     // analog hands (local wall time): hour + minute in white, second in red
-    const hourAngle = ((hourLocal % 12) + minuteLocal/60) * 30;
+    const hourAngle = (hourLocal + minuteLocal/60 + secondLocal/3600) * 15; // one turn per 24 h, like the dial
     const minuteAngle = (minuteLocal + secondLocal/60) * 6;
     const secondAngle = secondLocal * 6;
     const hourEnd = polarToCartesian(cx, cy, 50, hourAngle);
@@ -1223,21 +1347,20 @@
     parts.push('<line x1="100" y1="100" x2="'+minuteEnd.x.toFixed(1)+'" y2="'+minuteEnd.y.toFixed(1)+'" stroke="#f3f1ec" stroke-width="2.4" stroke-linecap="round"/>');
     parts.push('<line x1="100" y1="100" x2="'+secondEnd.x.toFixed(1)+'" y2="'+secondEnd.y.toFixed(1)+'" stroke="#d9473a" stroke-width="1.2" stroke-linecap="round"/>');
 
-    // center badge: current trading date (dd.mm.yyyy) + time at GMT+0 (on top, covers hand bases)
-    const utcDateStr = String(now.getUTCDate()).padStart(2,'0') + '.' + String(now.getUTCMonth()+1).padStart(2,'0') + '.' + now.getUTCFullYear();
-    const utcHH = String(now.getUTCHours()).padStart(2,'0');
-    const utcMM = String(now.getUTCMinutes()).padStart(2,'0');
-    const utcSS = String(now.getUTCSeconds()).padStart(2,'0');
-    parts.push('<circle cx="100" cy="100" r="29" fill="#15161a" stroke="var(--gold-dim)" stroke-width="1"/>');
-    parts.push('<text x="100" y="91" text-anchor="middle" font-size="4.8" fill="#8b93a1" font-family="JetBrains Mono, monospace">'+utcDateStr+'</text>');
-    parts.push('<text x="100" y="102.5" text-anchor="middle" font-size="9.5" font-weight="700" fill="#3fa66f" font-family="JetBrains Mono, monospace">'+utcHH+':'+utcMM+':'+utcSS+'</text>');
-    parts.push('<text x="100" y="112" text-anchor="middle" font-size="4.6" fill="#5c5e64" font-family="JetBrains Mono, monospace">GMT+0</text>');
+    // center badge: the same time the hands show (HH:MM:SS); on top, covers hand bases
+    const pad2 = v => String(v).padStart(2, '0');
+    parts.push('<circle cx="100" cy="100" r="19" fill="#15161a" stroke="var(--gold-dim)" stroke-width="1"/>');
+    parts.push('<text x="100" y="102.4" text-anchor="middle" font-size="6.2" font-weight="700" fill="#3fa66f" font-family="JetBrains Mono, monospace">'+pad2(hourLocal)+':'+pad2(minuteLocal)+':'+pad2(secondLocal)+'</text>');
+
+    // GMT+0 time row under the dial
+    const gmtRow = $('fx-gmt-row');
+    if(gmtRow) gmtRow.textContent = pad2(now.getUTCHours()) + ':' + pad2(now.getUTCMinutes()) + ':' + pad2(now.getUTCSeconds()) + ' GMT +0';
 
     svg.innerHTML = parts.join('');
   }
 
   function vibrateShort(){
-    if('vibrate' in navigator){ try{ navigator.vibrate(DEFAULTS.forexTimes.vibrationMs); }catch(err){} }
+    if('vibrate' in navigator){ try{ navigator.vibrate(60); }catch(err){} }
   }
 
   function checkVibrations(){
@@ -1251,7 +1374,7 @@
     visible.forEach(id => {
       const m = MARKETS.find(x => x.id === id);
       if(!m) return;
-      const open = isMarketOpen(m.openUTC, m.closeUTC, nowUTC);
+      const open = marketState(m).open;
       if(state.vibrationsReady && state.prevOpenMap[id] !== undefined && state.prevOpenMap[id] !== open){
         shouldVibrate = true;
       }
@@ -1279,7 +1402,7 @@
       if(!m) return '';
       const tr = nextTransition(m, nowUTC);
       const hh = Math.floor(tr.seconds/3600), mm = Math.floor((tr.seconds%3600)/60);
-      const dur = hh > 0 ? (hh+t.hourAbbr+' '+mm+t.minuteAbbr) : (mm+t.minuteAbbr);
+      const dur = hh >= 24 ? (Math.floor(hh/24)+t.dayAbbr+' '+(hh%24)+t.hourAbbr) : (hh > 0 ? (hh+t.hourAbbr+' '+mm+t.minuteAbbr) : (mm+t.minuteAbbr));
       // open now -> show time left until it closes, in red; closed now -> time left until it opens, in green
       const color = tr.open ? 'var(--sell)' : 'var(--buy)';
       const label = tr.open ? t.tickerClosesIn : t.tickerOpensIn;
@@ -1305,7 +1428,7 @@
       if(!m) return;
       const hidden = state.hiddenMarkets.includes(id);
       const overflowed = !hidden && overflow.includes(id);
-      const open = isMarketOpen(m.openUTC, m.closeUTC, nowUTC);
+      const open = marketState(m).open;
       const localOpen = fmtHM(m.openUTC + offset);
       const localClose = fmtHM(m.closeUTC + offset);
 
@@ -1664,7 +1787,7 @@
 
   function makeInstrumentSpec(code, name, group){
     if(group === 'metal'){
-      return { code, name, contract: code.startsWith('XAG') ? 5000 : 100, pip:0.01, quoteIsUSD:true, decimals:2, unit:'oz', custom:true };
+      return { code, name, contract: code.startsWith('XAG') ? 5000 : 100, pip:0.01, quoteIsUSD:true, decimals:3, unit:'oz', custom:true };
     }
     const jpy = code.endsWith('JPY');
     return { code, name, contract:100000, pip: jpy ? 0.01 : 0.0001, quoteIsUSD: code.endsWith('USD'), decimals: jpy ? 3 : 5, unit:'units', custom:true };
@@ -1803,6 +1926,7 @@
       if(g) state.instrument = g.items[0].code;
     }
     populateInstruments();
+    reformatPriceValues();
     calculate();
     renderNews();
     renderInstrumentList();
@@ -1866,7 +1990,7 @@
     showInstForm(false);
   });
 
-  loadCustomInstruments().then(loadCalcSettings).finally(refreshInstrumentUI);
+  loadCustomInstruments().finally(refreshInstrumentUI);
 
   // ---- Sozlamalar: Yangiliklar (add / rename, all three languages at once) ----
   const BASE_NEWS = NEWS_ITEMS.map(i => Object.assign({}, i));
@@ -1988,51 +2112,8 @@
   // custom/renamed news must be known before the saved news settings are filtered against it
   loadNewsContent().then(() => loadNewsSettings()).finally(() => { renderNews(); renderNewsAdminList(); });
 
-  // ---- Saved settings: calculator fields, language, time zone ----
-  const CALC_KEY = 'calculator-settings';
-  const APP_KEY = 'app-settings';
-  const CALC_FIELDS = ['deposit', 'lots']; // open/close prices are not stored: they must be entered every time
-  let calcSaveTimer = null;
-
-  function saveCalcSettings(){
-    const data = { instrument: state.instrument, direction: state.direction };
-    CALC_FIELDS.forEach(id => { data[id] = $(id).value; });
-    try{ window.storage.set(CALC_KEY, JSON.stringify(data), false); }catch(err){}
-  }
-  function scheduleCalcSave(){ clearTimeout(calcSaveTimer); calcSaveTimer = setTimeout(saveCalcSettings, 250); }
-  async function loadCalcSettings(){
-    try{
-      const r = await window.storage.get(CALC_KEY, false);
-      if(!r || !r.value) return;
-      const s = JSON.parse(r.value);
-      CALC_FIELDS.forEach(id => { if(typeof s[id] === 'string') $(id).value = s[id]; });
-      if(s.direction === 'buy' || s.direction === 'sell'){
-        state.direction = s.direction;
-        directionButtons.forEach(b => b.classList.toggle('active', b.dataset.val === s.direction));
-      }
-      if(typeof s.instrument === 'string') state.instrument = s.instrument; // validated in refreshInstrumentUI
-    }catch(err){ /* nothing saved yet */ }
-  }
-  CALC_FIELDS.forEach(id => $(id).addEventListener('input', scheduleCalcSave));
-  directionButtons.forEach(b => b.addEventListener('click', scheduleCalcSave));
-  instrumentSelect.addEventListener('change', scheduleCalcSave);
-
-  function saveAppSettings(){
-    try{ window.storage.set(APP_KEY, JSON.stringify({ lang: state.lang, timezone: state.timezone }), false); }catch(err){}
-  }
-  async function loadAppSettings(){
-    try{
-      const r = await window.storage.get(APP_KEY, false);
-      if(!r || !r.value) return;
-      const s = JSON.parse(r.value);
-      if(['uz', 'ru', 'en'].includes(s.lang)) state.lang = s.lang;
-      if(Number.isInteger(s.timezone) && s.timezone >= 0 && s.timezone < TIMEZONES.length) state.timezone = s.timezone;
-    }catch(err){ /* nothing saved yet */ }
-  }
-  loadAppSettings().then(() => applyLanguage(state.lang));
-
   setInterval(() => { renderClock(); checkVibrations(); }, 1000);
-  setInterval(() => { renderSessions(); renderTicker(); }, 30000);
+  setInterval(() => { updateMarketHours(); renderSessions(); renderTicker(); }, 30000);
 
   populateInstruments();
   populateTimezones();
@@ -2064,53 +2145,6 @@
     });
   });
 
-
-  } // end of startApp
-
-  // ---- Default settings live in default-settings.json (kept out of this file) ----
-  function validDefaults(cfg){
-    return !!(cfg && cfg.app && Array.isArray(cfg.instruments) && cfg.instruments.length &&
-      cfg.timezone && Array.isArray(cfg.timezone.list) && cfg.timezone.list.length &&
-      cfg.calculator && cfg.forexTimes && Array.isArray(cfg.forexTimes.markets) && cfg.forexTimes.markets.length);
-  }
-  async function loadDefaults(){
-    try{
-      const res = await fetch('default-settings.json', { cache: 'no-cache' });
-      if(res.ok){
-        const cfg = await res.json();
-        if(validDefaults(cfg)){
-          try{ await window.storage.set('default-settings', JSON.stringify(cfg), false); }catch(err){}
-          return cfg;
-        }
-      }
-    }catch(err){ /* not reachable, e.g. the page was opened straight from a file */ }
-    try{
-      const r = await window.storage.get('default-settings', false); // copy kept from an earlier run
-      if(r && r.value){ const cfg = JSON.parse(r.value); if(validDefaults(cfg)) return cfg; }
-    }catch(err){}
-    return null;
-  }
-  let appStarted = false;
-  function launch(cfg){ if(appStarted) return; appStarted = true; startApp(cfg); }
-
-  document.getElementById('dm-file').addEventListener('change', async (e) => {
-    const f = e.target.files && e.target.files[0];
-    if(!f) return;
-    try{
-      const cfg = JSON.parse(await f.text());
-      if(!validDefaults(cfg)) throw new Error('invalid');
-      try{ await window.storage.set('default-settings', JSON.stringify(cfg), false); }catch(err){}
-      document.getElementById('defaults-missing').hidden = true;
-      launch(cfg);
-    }catch(err){
-      document.getElementById('dm-error').textContent = '✗ default-settings.json';
-    }
-  });
-  loadDefaults().then(cfg => {
-    if(cfg){ launch(cfg); return; }
-    document.body.classList.remove('loading');
-    document.getElementById('defaults-missing').hidden = false;
-  });
 </script>
 </body>
 </html>
