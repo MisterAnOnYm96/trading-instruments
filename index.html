@@ -149,6 +149,10 @@
   .row2{ display:flex; gap: 8px; }
   .row-dls .field.dep, .row-dls .field.lot{ flex:1; min-width:0; }
   .row-dls .field.tpsl{ flex:0 0 auto; display:flex; flex-direction:column; align-items:center; }
+  .tpsl-row{ display:flex; justify-content:space-between; gap:8px; }
+  .tpsl-val{ text-align:right; }
+  .tpsl-val.pos{ color:var(--buy); }
+  .tpsl-val.neg{ color:var(--sell); }
   .tpsl-btn{
     flex:none; align-self:center; width:38px; height:38px; padding:0; border-radius:10px; cursor:pointer;
     background:#1a1b1e; border:1px solid var(--border); color:var(--gold);
@@ -181,7 +185,7 @@
   .result-label{ font-size:11px; color: var(--text-muted); font-weight:600; }
   .result-value{
     font-family:'JetBrains Mono', monospace;
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 700;
     line-height:1.1;
     margin-top: 2px;
@@ -204,7 +208,7 @@
   .badge.zero{ background: rgba(255,255,255,0.06); color: var(--text-muted); }
 
   .stat-grid{
-    display:flex; gap: 8px;
+    display:flex; gap: 5px;
   }
   .stat{
     flex:1;
@@ -394,6 +398,148 @@
   .inst-form .inst-error + .ios-group{ margin-top:10px; }
   .news-head .r{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
+
+
+  /* ---- Yangiliklar (economic calendar) ---- */
+  .eco-status{ background:#1a1b1e; border:1px solid var(--border-soft); border-radius:13px; padding:10px 12px; margin-bottom:10px; font-size:12px; color:var(--text-muted); display:flex; flex-direction:column; gap:5px; }
+  .eco-status-row{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .eco-status-row b{ font-weight:700; color:var(--gold); text-align:right; }
+  .eco-status-row[data-state="error"] b, .eco-status-row[data-state="offline"] b{ color:#e8806c; }
+  .eco-toolbar{ display:flex; align-items:center; justify-content:space-between; gap:6px; background:#1a1b1e; border:1px solid var(--border-soft); border-radius:13px; padding:5px; margin-bottom:12px; }
+  .eco-tabs{ display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; }
+  .eco-tabs::-webkit-scrollbar{ display:none; }
+  .eco-tabs button{ border:1px solid transparent; border-radius:9px; padding:8px 12px; background:transparent; color:var(--text-muted); cursor:pointer; font-family:'Manrope',sans-serif; font-size:13px; font-weight:700; white-space:nowrap; }
+  .eco-tabs button.active{ background:rgba(201,162,75,.16); border-color:var(--gold-dim); color:var(--gold); }
+  .eco-section{ display:flex; align-items:center; margin:8px 0 6px; }
+  .eco-badge{ display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:.5px; white-space:nowrap; flex:none; border:1px solid transparent; }
+  .eco-badge.date{ background:rgba(201,162,75,.14); color:var(--gold); border-color:var(--gold-dim); }
+  .eco-badge.now{ background:rgba(193,85,63,.15); color:#e8806c; border-color:var(--sell-dim); }
+  .eco-line{ flex:1; height:1px; margin-left:10px; background:var(--border); }
+  .eco-row{ display:flex; align-items:flex-start; gap:8px; margin-bottom:12px; }
+  .eco-row.past{ opacity:.45; filter:grayscale(30%); }
+  .eco-time{ width:20%; flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:3px; padding-top:10px; }
+  .eco-time-val{ font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:var(--text-muted); }
+  .eco-count{ font-size:9px; font-weight:700; color:var(--gold); background:rgba(201,162,75,.12); padding:2px 5px; border-radius:4px; white-space:nowrap; }
+  .eco-card{ flex:1; min-width:0; background:#1a1b1e; border:1px solid var(--border-soft); border-left:3px solid var(--border); border-radius:12px; padding:10px 12px; display:flex; flex-direction:column; gap:6px; }
+  .eco-card.high{ border-left-color:var(--sell); } .eco-card.medium{ border-left-color:var(--gold); } .eco-card.low{ border-left-color:var(--buy); }
+  .eco-head{ display:flex; align-items:center; gap:6px; }
+  .eco-flag{ font-size:15px; line-height:1; }
+  .eco-cur{ color:var(--gold); font-weight:700; font-size:13px; }
+  .eco-title2{ font-size:14px; font-weight:600; line-height:1.3; word-break:break-word; }
+  .eco-country{ color:var(--text-muted); font-size:10px; margin-top:2px; }
+  .eco-values{ display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--border-soft); padding-top:6px; }
+  .eco-vbox{ display:flex; flex-direction:column; align-items:center; gap:2px; padding:0 2px; min-width:0; }
+  .eco-vbox + .eco-vbox{ border-left:1px solid var(--border-soft); }
+  .eco-vlabel{ color:var(--text-muted); font-size:8px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; line-height:1; }
+  .eco-vbox strong{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px; line-height:1.2; text-align:center; }
+  .eco-footer{ color:var(--text-faint); font-size:10.5px; text-align:center; padding:12px 2px 2px; line-height:1.5; }
+  .eco-sheet-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .eco-close{ background:transparent; border:0; color:var(--text-muted); font-size:26px; line-height:1; cursor:pointer; padding:0 4px; }
+  .eco-imps{ display:flex; gap:6px; margin-bottom:14px; }
+  .eco-imp{ flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 4px; border-radius:10px; border:1px solid var(--border); background:var(--panel-2); color:var(--text-muted); font-family:'Manrope',sans-serif; font-weight:700; font-size:12px; cursor:pointer; }
+  .eco-imp i{ width:7px; height:7px; border-radius:50%; background:currentColor; opacity:.6; }
+  .eco-imp.high.on{ background:rgba(193,85,63,.16); border-color:var(--sell-dim); color:#e8806c; }
+  .eco-imp.medium.on{ background:rgba(201,162,75,.16); border-color:var(--gold-dim); color:var(--gold); }
+  .eco-imp.low.on{ background:rgba(63,166,111,.16); border-color:var(--buy-dim); color:var(--buy); }
+  .eco-imp.on i{ opacity:1; }
+  .eco-curs{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding-bottom:6px; }
+  .eco-curitem{ display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 6px; border-radius:10px; border:1px solid var(--border); background:var(--panel-2); color:var(--text); font-family:'Manrope',sans-serif; font-weight:700; font-size:12.5px; cursor:pointer; }
+  .eco-curitem.on{ background:rgba(201,162,75,.16); border-color:var(--gold-dim); color:var(--gold); }
+  .eco-empty{ text-align:center; color:var(--text-muted); font-size:12.5px; padding:30px 12px; line-height:1.6; background:#1a1b1e; border:1px solid var(--border-soft); border-radius:14px; }
+  .eco-empty strong{ display:block; color:var(--text); font-size:13px; }
+  .tt-iconbtn.spin svg{ animation: eco-spin 1s linear infinite; }
+  @keyframes eco-spin{ to{ transform:rotate(360deg); } }
+  .tab-item{ font-size:10px; }
+
+  /* ---- Savdo vaqti (best trading times) ---- */
+  .tt-top{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px; }
+  .tt-title{ font-weight:800; font-size:14px; border-left:3px solid var(--gold); padding-left:10px; line-height:1.25; }
+  .tt-actions{ display:flex; gap:4px; flex:none; }
+  .tt-iconbtn{
+    width:34px; height:34px; border-radius:11px; border:1px solid var(--border); background:#1a1b1e;
+    color:var(--text-muted); display:grid; place-items:center; cursor:pointer; padding:0;
+  }
+  .tt-iconbtn svg{ width:17px; height:17px; }
+  .tt-iconbtn.active{ color:var(--buy); border-color:var(--buy-dim); background:rgba(63,166,111,.16); }
+  .tt-card{ background:#1a1b1e; border:1px solid var(--border-soft); border-radius:16px; padding:12px 12px 10px; margin-bottom:12px; }
+  .tt-card-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
+  .tt-card-title{ font-weight:700; font-size:13px; }
+  .tt-badge{
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; padding:5px 10px; border-radius:9px;
+    border:1px solid var(--border); background:var(--panel-2); color:var(--text-muted); cursor:default;
+  }
+  .tt-badge.sel{ background:rgba(201,162,75,.16); border-color:var(--gold-dim); color:var(--gold); cursor:pointer; }
+  .tt-ruler{
+    display:flex; align-items:flex-end; gap:2px; height:58px; padding-top:4px; margin-bottom:6px;
+    touch-action:none; user-select:none; -webkit-user-select:none;
+  }
+  .tt-seg{
+    flex:1 1 0; min-width:0; border-radius:3px 3px 0 0; cursor:pointer;
+    transition: flex .35s cubic-bezier(.4,0,.2,1), opacity .35s, filter .2s;
+  }
+  .tt-seg.liq-low{ height:15px; background:#3a3d44; }
+  .tt-seg.liq-medium{ height:25px; background:#c9a24b; }
+  .tt-seg.liq-high{ height:35px; background:#3fa66f; }
+  .tt-seg.liq-overlap{ height:45px; background:linear-gradient(180deg,#4fc487,#2c7550); }
+  .tt-seg.active{ flex:3 1 0; position:relative; z-index:2; box-shadow:0 2px 8px rgba(0,0,0,.4); }
+  .tt-ruler.has-active .tt-seg:not(.active){ flex:.6 1 0; opacity:.4; }
+  .tt-now-wrap{ position:relative; height:6px; }
+  .tt-now{
+    position:absolute; top:0; height:4px; background:var(--gold); border-radius:4px; box-shadow:0 0 6px rgba(201,162,75,.6);
+    transition: left .35s cubic-bezier(.4,0,.2,1), width .35s cubic-bezier(.4,0,.2,1);
+  }
+  .tt-item{
+    display:flex; align-items:center; justify-content:space-between; gap:8px; background:#1a1b1e;
+    border:1px solid var(--border-soft); border-radius:14px; padding:10px 12px; margin-bottom:6px;
+  }
+  .tt-item.drag{ border-color:#8b8d93; box-shadow:0 10px 24px -8px rgba(0,0,0,.55); position:relative; z-index:5; }
+  .tt-left{ display:flex; align-items:center; min-width:0; flex:1; }
+  .tt-handle{ display:none; width:24px; height:30px; margin-left:-4px; color:var(--text-faint); cursor:grab; touch-action:none; align-items:center; justify-content:center; flex:none; }
+  .tt-handle svg{ width:12px; height:18px; }
+  #tt-list.sorting .tt-handle{ display:flex; }
+  .tt-dot{ width:10px; height:10px; border-radius:50%; background:#6b7280; margin-right:9px; flex:none; }
+  .tt-dot.on{ background:var(--buy); animation: tt-pulse 2s infinite; }
+  @keyframes tt-pulse{
+    0%{ box-shadow:0 0 0 0 rgba(63,166,111,.7); } 70%{ box-shadow:0 0 0 6px rgba(63,166,111,0); } 100%{ box-shadow:0 0 0 0 rgba(63,166,111,0); }
+  }
+  .tt-pair{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; }
+  .tt-times{
+    font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; background:#141518; border:1px solid var(--border);
+    border-radius:10px; padding:5px 9px; display:flex; flex-direction:column; gap:2px; text-align:right; flex:none;
+  }
+  .tt-empty{ text-align:center; color:var(--text-muted); font-size:13px; padding:26px 8px; line-height:1.5; }
+  .sheet.tall{ max-height:88vh; display:flex; flex-direction:column; }
+  .tt-chips{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px; }
+  .tt-chip{
+    flex:1; padding:11px 8px; border-radius:12px; border:1px solid var(--border); background:var(--panel-2); color:var(--text-muted);
+    font-family:'Manrope',sans-serif; font-weight:700; font-size:13px; cursor:pointer;
+  }
+  .tt-chip.on{ background:rgba(201,162,75,.16); border-color:var(--gold-dim); color:var(--gold); }
+  .tt-rows{ min-height:0; display:flex; flex-direction:column; gap:8px; margin-bottom:12px; overflow-y:auto; flex:1; padding-top:2px; }
+  .tt-row{ display:flex; align-items:center; gap:6px; }
+  .tt-check{
+    width:22px; height:22px; flex:none; padding:0; border-radius:6px; border:1.5px solid #5a5d64; background:transparent;
+    display:grid; place-items:center; color:transparent; cursor:pointer;
+  }
+  .tt-check svg{ width:12px; height:12px; }
+  .tt-check.on{ background:rgba(201,162,75,.2); border-color:var(--gold); color:var(--gold); }
+  .tt-sel{ width:96px; flex:none; padding:7px 22px 7px 9px; font-size:13px; border-radius:12px; background-position:right 8px center; }
+  .tt-timebox{
+    flex:1; min-width:0; display:flex; align-items:center; justify-content:center; background:#1a1b1e; border:1px solid var(--border);
+    border-radius:12px; padding:3px 4px; font-family:'JetBrains Mono',monospace; color:var(--text-muted);
+  }
+  .tt-tin{ width:26px; padding:0; border:0; border-radius:0; background:transparent; text-align:center; font-size:14px; color:var(--text); }
+  .tt-del{
+    flex:none; width:28px; height:28px; padding:0; border:0; border-radius:8px; background:transparent; color:var(--sell);
+    display:grid; place-items:center; cursor:pointer;
+  }
+  .tt-del svg{ width:16px; height:16px; }
+  .tt-del.confirm{ width:auto; padding:0 7px; background:rgba(193,85,63,.2); font-family:'Manrope',sans-serif; font-weight:700; font-size:11px; }
+  .tt-addbtn{
+    width:100%; padding:11px; border-radius:13px; border:1px solid var(--border); background:var(--panel-2); color:var(--text);
+    font-family:'Manrope',sans-serif; font-weight:700; font-size:13px; cursor:pointer; margin-bottom:10px;
+  }
+
   /* ---- Savdo vaqtlari ---- */
   .fx-ticker-row{ margin-bottom:14px; }
   .fx-ticker-wrap{
@@ -419,8 +565,16 @@
   }
   .fx-clock-wrap svg{ width:324px; max-width:100%; height:auto; aspect-ratio:1/1; }
 
+  .fx-markets-head{ display:flex; gap:8px; }
+  .fx-sort-btn{
+    flex:none; width:46px; padding:0; border-radius:13px; cursor:pointer; display:grid; place-items:center;
+    background:#1a1b1e; border:1px solid var(--border); color:var(--text-muted);
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .fx-sort-btn svg{ width:18px; height:18px; }
+  .fx-sort-btn.active{ background:rgba(63,166,111,.16); border-color:var(--buy-dim); color:var(--buy); }
   .fx-markets-toggle{
-    width:100%; display:flex; align-items:center; justify-content:space-between;
+    flex:1; min-width:0; display:flex; align-items:center; justify-content:space-between;
     background:#1a1b1e; border:1px solid var(--border); border-radius:13px;
     padding:11px 14px; cursor:pointer; color:var(--text);
     font-family:'Manrope',sans-serif; font-weight:700; font-size:13px;
@@ -434,7 +588,7 @@
   .session-card{
     display:flex; align-items:center; gap:10px;
     background:#1a1b1e; border:1px solid var(--border-soft); border-radius:15px;
-    padding:10px 12px; margin-bottom:8px;
+    padding:16px 12px; margin-bottom:8px;
     transition: opacity .15s ease;
     cursor:pointer;
   }
@@ -445,12 +599,15 @@
   }
   .drag-handle{
     width:20px; height:20px; flex:none; color:var(--text-faint);
-    touch-action:none; cursor:grab; display:flex; align-items:center; justify-content:center;
+    touch-action:none; cursor:grab; display:none; align-items:center; justify-content:center;
   }
+  #sessions-list.sorting .drag-handle{ display:flex; }
   .drag-handle svg{ width:16px; height:16px; }
-  .session-dot{ width:8px; height:8px; border-radius:50%; flex:none; }
+  .session-dot{ display:inline-block; width:8px; height:8px; border-radius:50%; flex:none; }
+  .time-left{ display:inline-flex; align-items:center; gap:7px; }
+  .flag{ margin-right:6px; font-size:15px; line-height:1; }
   .session-body{ flex:1; min-width:0; }
-  .session-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; gap:6px; }
+  .session-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:6px; }
   .session-name{ font-family:'Manrope',sans-serif; font-weight:700; font-size:13px; }
   .overlap-badge{
     font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700;
@@ -463,7 +620,51 @@
   }
   .session-status.open{ color:var(--buy); background:rgba(63,166,111,0.14); }
   .session-status.closed{ color:var(--text-faint); background:rgba(255,255,255,0.05); }
-  .session-time{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-muted); }
+  .session-time{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-muted); }
+  .alarm-btn{
+    flex:none; width:30px; height:30px; padding:0; border-radius:9px; cursor:pointer;
+    background:#202127; border:1px solid var(--border); color:var(--text-muted);
+    display:grid; place-items:center; transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .alarm-btn svg{ width:16px; height:16px; }
+  .alarm-btn.active{ color:var(--gold); border-color:var(--gold-dim); background:rgba(201,162,75,.14); }
+
+  /* bottom sheet for the market alarm (opens up to half of the screen) */
+  .sheet-backdrop{
+    position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:60;
+    opacity:0; visibility:hidden; transition: opacity .22s ease, visibility .22s;
+  }
+  .sheet-backdrop.open{ opacity:1; visibility:visible; }
+  .sheet{
+    position:fixed; left:0; right:0; bottom:0; margin:0 auto; max-width:420px; max-height:50vh; overflow-y:auto;
+    background:#1c1d21; border:1px solid var(--border); border-bottom:0; border-radius:22px 22px 0 0;
+    padding:10px 16px calc(18px + env(safe-area-inset-bottom, 0px)); z-index:61;
+    transform:translateY(100%); visibility:hidden; transition: transform .25s ease, visibility .25s;
+  }
+  .sheet.open{ transform:none; visibility:visible; }
+  .sheet-grip{ width:38px; height:4px; border-radius:2px; background:#3a3c42; margin:0 auto 12px; }
+  .sheet-title{ font-family:'Manrope',sans-serif; font-weight:800; font-size:16px; margin:0 2px 20px; }
+  .sheet .ios-row{ min-height:62px; font-size:15px; }
+  .sheet-save{
+    width:100%; margin-top:24px; padding:14px; border-radius:14px; cursor:pointer;
+    background:rgba(63,166,111,.16); border:1px solid var(--buy-dim); color:var(--buy);
+    font-family:'Manrope',sans-serif; font-weight:700; font-size:14px;
+  }
+  .ios-switch{
+    position:relative; flex:none; width:51px; height:31px; padding:0; border:0; border-radius:16px;
+    background:#3a3b40; cursor:pointer; transition: background .2s ease;
+  }
+  .ios-switch::after{
+    content:''; position:absolute; top:2px; left:2px; width:27px; height:27px; border-radius:50%;
+    background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.35); transition: transform .2s ease;
+  }
+  .ios-switch[aria-checked="true"]{ background:var(--buy); }
+  .ios-switch[aria-checked="true"]::after{ transform:translateX(20px); }
+  .fx-toast{
+    position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:80; max-width:90%;
+    background:#26272b; border:1px solid var(--border); color:var(--text); padding:10px 16px; border-radius:14px;
+    font-family:'Manrope',sans-serif; font-weight:600; font-size:13px; box-shadow:0 10px 28px -10px rgba(0,0,0,.6);
+  }
   @media (pointer: coarse){
     input, select, textarea{ font-size:16px !important; }
   }
@@ -517,12 +718,12 @@
 
     <div class="row2">
       <div class="field">
-        <span class="label">Take Profit</span>
-        <input type="text" id="tpPrice" inputmode="decimal" autocomplete="off" placeholder="0000,000" disabled>
-      </div>
-      <div class="field">
         <span class="label">Stop Loss</span>
         <input type="text" id="slPrice" inputmode="decimal" autocomplete="off" placeholder="0000,000" disabled>
+      </div>
+      <div class="field">
+        <span class="label">Take Profit</span>
+        <input type="text" id="tpPrice" inputmode="decimal" autocomplete="off" placeholder="0000,000" disabled>
       </div>
     </div>
 
@@ -538,12 +739,12 @@
       </div>
       <div class="stat-grid">
         <div class="stat">
-          <div class="stat-k" id="lbl-movement">Harakat</div>
-          <div class="stat-v" id="movement">0 punkt</div>
+          <div class="stat-v tpsl-row"><span>TP:</span><span class="tpsl-val" id="tp-val">-</span></div>
+          <div class="stat-v tpsl-row"><span>SL:</span><span class="tpsl-val" id="sl-val">-</span></div>
         </div>
         <div class="stat">
-          <div class="stat-k" id="lbl-contract">Kontrakt hajmi</div>
-          <div class="stat-v" id="contract">100 000</div>
+          <div class="stat-k" id="lbl-movement">Harakat</div>
+          <div class="stat-v" id="movement">0 punkt</div>
         </div>
       </div>
     </div>
@@ -641,6 +842,47 @@
 
   </div>
 
+  <div class="ticket screen" id="screen-tradetimes">
+    <div class="tt-top">
+      <div class="tt-title" id="lbl-tt-title">Eng yaxshi savdo vaqtlari</div>
+      <div class="tt-actions">
+        <button class="tt-iconbtn" id="tt-sort-btn" type="button" aria-label="Sort"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20V4M4 8l4-4 4 4M16 4v16M12 16l4 4 4-4"/></svg></button>
+        <button class="tt-iconbtn" id="tt-filter-btn" type="button" aria-label="Filter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 7.5V19l-4 2v-8.5L4 5Z"/></svg></button>
+        <button class="tt-iconbtn" id="tt-menu-btn" type="button" aria-label="Menu"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
+      </div>
+    </div>
+    <div class="tt-card">
+      <div class="tt-card-head">
+        <div class="tt-card-title" id="lbl-tt-liq">Likvidlik shkalasi</div>
+        <button class="tt-badge" id="tt-badge" type="button">--:-- - --:--</button>
+      </div>
+      <div class="tt-ruler" id="tt-ruler"></div>
+      <div class="tt-now-wrap" id="tt-now-wrap"><div class="tt-now" id="tt-now"></div></div>
+    </div>
+    <div id="tt-list"></div>
+  </div>
+
+  <div class="ticket screen" id="screen-econews">
+    <div class="tt-top">
+      <div class="tt-title" id="eco-title">Iqtisodiy kalendar</div>
+      <button class="tt-iconbtn" id="eco-refresh" type="button" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5"/></svg></button>
+    </div>
+    <div class="eco-status">
+      <div class="eco-status-row"><span id="eco-lbl-last">Oxirgi yangilangan vaqt</span><b id="eco-last-val">—</b></div>
+      <div class="eco-status-row" id="eco-status-row"><span id="eco-status-text">Kalendar tayyorlanmoqda…</span><b id="eco-status-time"></b></div>
+    </div>
+    <div class="eco-toolbar">
+      <div class="eco-tabs" id="eco-tabs">
+        <button type="button" data-range="today" class="active" id="eco-tab-today">Bugun</button>
+        <button type="button" data-range="tomorrow" id="eco-tab-tomorrow">Ertaga</button>
+        <button type="button" data-range="7days" id="eco-tab-week">Haftalik</button>
+      </div>
+      <button class="tt-iconbtn" id="eco-filter-btn" type="button" aria-label="Filter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 7.5V19l-4 2v-8.5L4 5Z"/></svg></button>
+    </div>
+    <div id="eco-events"></div>
+    <div class="eco-footer" id="eco-footer">Manba: ShowMyTrades · Avtomatik yangilanish: 6 soatda bir marta.</div>
+  </div>
+
   <div class="ticket screen" id="screen-news">
     <div class="news-top">
       <div class="news-title" id="lbl-news-title">Yangilik ko'rsatmasi</div>
@@ -672,10 +914,13 @@
       <svg id="fx-analog-clock" viewBox="0 0 200 200"></svg>
     </div>
     <div class="fx-gmt-row" id="fx-gmt-row">--:--:-- GMT +0</div>
-    <button class="fx-markets-toggle" id="fx-markets-toggle">
-      <span id="lbl-markets-select">Bozorlarni tanlash</span>
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7.5l5 5 5-5"/></svg>
-    </button>
+    <div class="fx-markets-head">
+      <button class="fx-markets-toggle" id="fx-markets-toggle">
+        <span id="lbl-markets-select">Bozorlarni tanlash</span>
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7.5l5 5 5-5"/></svg>
+      </button>
+      <button class="fx-sort-btn" id="fx-sort-btn" type="button" aria-label="Sort"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20V4M4 8l4-4 4 4M16 4v16M12 16l4 4 4-4"/></svg></button>
+    </div>
     <div class="fx-markets-panel" id="fx-markets-panel">
       <div class="fx-markets-panel-inner">
         <div id="sessions-list"></div>
@@ -685,13 +930,55 @@
 
 </div>
 
+<div class="sheet-backdrop" id="tt-filter-backdrop"></div>
+<div class="sheet" id="tt-filter-sheet" role="dialog" aria-modal="true">
+  <div class="sheet-grip"></div>
+  <div class="tt-chips" id="tt-chips"></div>
+  <button class="sheet-save" id="tt-filter-save" type="button" style="margin-top:0">Saqlash</button>
+</div>
+
+<div class="sheet-backdrop" id="tt-menu-backdrop"></div>
+<div class="sheet tall" id="tt-menu-sheet" role="dialog" aria-modal="true">
+  <div class="sheet-grip"></div>
+  <div class="tt-rows" id="tt-rows"></div>
+  <button class="tt-addbtn" id="tt-add-btn" type="button">+ Qo'shish</button>
+  <button class="sheet-save" id="tt-menu-save" type="button" style="margin-top:0">Saqlash</button>
+</div>
+
+<div class="sheet-backdrop" id="eco-filter-backdrop"></div>
+<div class="sheet" id="eco-filter-sheet" role="dialog" aria-modal="true">
+  <div class="sheet-grip"></div>
+  <div class="eco-sheet-head"><div class="sheet-title" id="eco-filter-title" style="margin:0">Filtrlash</div><button class="eco-close" id="eco-filter-close" type="button" aria-label="Close">&times;</button></div>
+  <div class="eco-imps" id="eco-imps"></div>
+  <div class="eco-curs" id="eco-curs"></div>
+</div>
+
+<div class="sheet-backdrop" id="alarm-backdrop"></div>
+<div class="sheet" id="alarm-sheet" role="dialog" aria-modal="true">
+  <div class="sheet-grip"></div>
+  <div class="sheet-title" id="alarm-title">—</div>
+  <div class="ios-group">
+    <div class="ios-row"><span id="alarm-lbl-open">Bozor ochilishi</span><button class="ios-switch" id="alarm-sw-open" type="button" role="switch" aria-checked="false"></button></div>
+    <div class="ios-row"><span id="alarm-lbl-close">Bozor yopilishi</span><button class="ios-switch" id="alarm-sw-close" type="button" role="switch" aria-checked="false"></button></div>
+  </div>
+  <button class="sheet-save" id="alarm-save" type="button">Saqlash</button>
+</div>
+
 <nav class="tabbar">
   <button class="tab-item" id="tab-forextimes" data-tab="forextimes">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="12" r="9"/>
       <path d="M12 7v5l3.5 2"/>
     </svg>
-    <span id="lbl-tab-forextimes">Savdo vaqtlari</span>
+    <span id="lbl-tab-forextimes">Bozorlar vaqti</span>
+  </button>
+  <button class="tab-item" id="tab-tradetimes" data-tab="tradetimes">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-3"/></svg>
+    <span id="lbl-tab-tradetimes">Savdo vaqti</span>
+  </button>
+  <button class="tab-item" id="tab-econews" data-tab="econews">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12a2 2 0 0 1 2 2v12a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2V4Z"/><path d="M18 4h2a2 2 0 0 1 2 2v3"/><line x1="8" y1="8" x2="13" y2="8"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+    <span id="lbl-tab-econews">Yangiliklar</span>
   </button>
   <button class="tab-item" id="tab-news" data-tab="news">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -851,7 +1138,7 @@
       openPrice:"Ochilish narxi", closePrice:"Yopilish narxi",
       pnl:"Foyda / Zarar", movement:"Harakat", contract:"Kontrakt hajmi", unitUnits:"birlik",
       tabCalculator:"Kalkulyator", tabSettings:"Sozlamalar",
-      tabForexTimes:"Savdo vaqtlari",
+      tabForexTimes:"Bozorlar vaqti",
       comingSoon:" bo'limi tez orada qo'shiladi",
       timezoneLabel:"Vaqt mintaqasi", languageLabel:"Til",
       marketsBtn:"Bozorlar", sessionOpen:"OCHIQ", sessionClosed:"YOPIQ",
@@ -859,9 +1146,9 @@
       tickerOpensIn:"ochilguncha", tickerClosesIn:"yopilguncha",
       centerOpens:"ochiladi", centerCloses:"yopiladi",
       statusOpen:"Hozir ochiq", statusClosed:"Hozir yopiq", overlapBadge:"kesishadi",
-      hourAbbr:"s", minuteAbbr:"d", dayAbbr:"k", pointsUnit:"punkt", marketsSelectLabel:"Bozorlarni tanlash",
+      hourAbbr:"s", minuteAbbr:"d", dayAbbr:"k", tabTradeTimes:"Savdo vaqti", ttTitle:"Eng yaxshi savdo vaqtlari", ttLiquidity:"Likvidlik shkalasi", ttEmptyFilter:"Filtrda hech narsa tanlanmagan", ttEmptyGroup:"Tanlangan guruhda instrumentlar yo'q", ttAdd:"+ Qo'shish", ttConfirm:"O'chirish?", ttTypeForex:"Forex", ttTypeMetal:"Metall", ttTypeIndex:"Indeks", pointsUnit:"punkt", marketsSelectLabel:"Bozorlarni tanlash",
       tabNews:"Yangilik ko'rsatmasi", newsTitle:"Yangilik ko'rsatmasi", newsHead:"Yangilik",
-      newsSort:"Tartiblash", newsSelect:"Belgilash", newsConfig:"Sozlash", setInstruments:"Instrumentlar", instAdd:"Yangi qo'shish", instName:"Instrument nomi", instCategory:"Kategoriya", instSave:"Saqlash", instCancel:"Bekor qilish", instErrName:"Nom 3–12 ta harf yoki raqamdan iborat bo'lsin", instErrDup:"Bu instrument allaqachon mavjud", setNews:"Yangiliklar", newsFormAdd:"Yangi yangilik", newsFormEdit:"Nomlarni tahrirlash", newsNameErr:"Kamida bitta nom kiriting", instDelete:"O'chirish", newsEmpty:"Yangiliklar qo'shilmagan. Uch nuqta → Sozlash orqali tanlang.", newsSelectAll:"Hammasini belgilash", newsClear:"Tozalash",
+      newsSort:"Tartiblash", newsSelect:"Belgilash", newsConfig:"Sozlash", setInstruments:"Instrumentlar", instAdd:"Yangi qo'shish", instName:"Instrument nomi", instCategory:"Kategoriya", instSave:"Saqlash", instCancel:"Bekor qilish", instErrName:"Nom 3–12 ta harf yoki raqamdan iborat bo'lsin", instErrDup:"Bu instrument allaqachon mavjud", setNews:"Yangiliklar", newsFormAdd:"Yangi yangilik", newsFormEdit:"Nomlarni tahrirlash", newsNameErr:"Kamida bitta nom kiriting", instDelete:"O'chirish", alarmOpen:"Bozor ochilishi", alarmClose:"Bozor yopilishi", alarmOpened:"bozor ochildi", alarmClosed:"bozor yopildi", newsEmpty:"Yangiliklar qo'shilmagan. Uch nuqta → Sozlash orqali tanlang.", newsSelectAll:"Hammasini belgilash", newsClear:"Tozalash",
       newsNote:"Bu bog'lanishlar umumiy qoida: real bozorda har doim ishlamaydi. Moliyaviy maslahat emas.",
     },
     ru: {
@@ -870,7 +1157,7 @@
       openPrice:"Цена открытия", closePrice:"Цена закрытия",
       pnl:"Прибыль / Убыток", movement:"Движение", contract:"Размер контракта", unitUnits:"ед.",
       tabCalculator:"Калькулятор", tabSettings:"Настройки",
-      tabForexTimes:"Время торгов",
+      tabForexTimes:"Время рынков",
       comingSoon:" раздел скоро будет добавлен",
       timezoneLabel:"Часовой пояс", languageLabel:"Язык",
       marketsBtn:"Рынки", sessionOpen:"ОТКРЫТО", sessionClosed:"ЗАКРЫТО",
@@ -878,9 +1165,9 @@
       tickerOpensIn:"до открытия", tickerClosesIn:"до закрытия",
       centerOpens:"открывается", centerCloses:"закрывается",
       statusOpen:"Сейчас открыто", statusClosed:"Сейчас закрыто", overlapBadge:"пересекается",
-      hourAbbr:"ч", minuteAbbr:"м", dayAbbr:"д", pointsUnit:"пунктов", marketsSelectLabel:"Выбор рынков",
+      hourAbbr:"ч", minuteAbbr:"м", dayAbbr:"д", tabTradeTimes:"Время торговли", ttTitle:"Лучшее время для торговли", ttLiquidity:"Шкала ликвидности", ttEmptyFilter:"В фильтре ничего не выбрано", ttEmptyGroup:"В выбранной группе нет инструментов", ttAdd:"+ Добавить", ttConfirm:"Удалить?", ttTypeForex:"Forex", ttTypeMetal:"Металлы", ttTypeIndex:"Индексы", pointsUnit:"пункт", marketsSelectLabel:"Выбор рынков",
       tabNews:"Новостная инструкция", newsTitle:"Новостная инструкция", newsHead:"Новость",
-      newsSort:"Сортировка", newsSelect:"Выбор", newsConfig:"Настройка", setInstruments:"Инструменты", instAdd:"Добавить новый", instName:"Название инструмента", instCategory:"Категория", instSave:"Сохранить", instCancel:"Отмена", instErrName:"Название — от 3 до 12 букв или цифр", instErrDup:"Такой инструмент уже существует", setNews:"Новости", newsFormAdd:"Новая новость", newsFormEdit:"Редактирование названий", newsNameErr:"Введите хотя бы одно название", instDelete:"Удалить", newsEmpty:"Новости не добавлены. Выберите через три точки → Настройка.", newsSelectAll:"Выбрать все", newsClear:"Очистить",
+      newsSort:"Сортировка", newsSelect:"Выбор", newsConfig:"Настройка", setInstruments:"Инструменты", instAdd:"Добавить новый", instName:"Название инструмента", instCategory:"Категория", instSave:"Сохранить", instCancel:"Отмена", instErrName:"Название — от 3 до 12 букв или цифр", instErrDup:"Такой инструмент уже существует", setNews:"Новости", newsFormAdd:"Новая новость", newsFormEdit:"Редактирование названий", newsNameErr:"Введите хотя бы одно название", instDelete:"Удалить", alarmOpen:"Открытие рынка", alarmClose:"Закрытие рынка", alarmOpened:"рынок открылся", alarmClosed:"рынок закрылся", newsEmpty:"Новости не добавлены. Выберите через три точки → Настройка.", newsSelectAll:"Выбрать все", newsClear:"Очистить",
       newsNote:"Эти связи — общее правило: на реальном рынке они работают не всегда. Не является финансовой рекомендацией.",
     },
     en: {
@@ -889,7 +1176,7 @@
       openPrice:"Open price", closePrice:"Close price",
       pnl:"Profit / Loss", movement:"Movement", contract:"Contract size", unitUnits:"units",
       tabCalculator:"Calculator", tabSettings:"Settings",
-      tabForexTimes:"Market hours",
+      tabForexTimes:"Market times",
       comingSoon:" section is coming soon",
       timezoneLabel:"Time zone", languageLabel:"Language",
       marketsBtn:"Markets", sessionOpen:"OPEN", sessionClosed:"CLOSED",
@@ -897,9 +1184,9 @@
       tickerOpensIn:"until open", tickerClosesIn:"until close",
       centerOpens:"opens", centerCloses:"closes",
       statusOpen:"Currently open", statusClosed:"Currently closed", overlapBadge:"overlaps",
-      hourAbbr:"h", minuteAbbr:"m", dayAbbr:"d", pointsUnit:"points", marketsSelectLabel:"Select markets",
+      hourAbbr:"h", minuteAbbr:"m", dayAbbr:"d", tabTradeTimes:"Trading time", ttTitle:"Best trading times", ttLiquidity:"Liquidity scale", ttEmptyFilter:"Nothing selected in the filter", ttEmptyGroup:"No instruments in the selected group", ttAdd:"+ Add", ttConfirm:"Delete?", ttTypeForex:"Forex", ttTypeMetal:"Metals", ttTypeIndex:"Indices", pointsUnit:"point", marketsSelectLabel:"Select markets",
       tabNews:"News instruction", newsTitle:"News instruction", newsHead:"News",
-      newsSort:"Sort", newsSelect:"Select", newsConfig:"Configure", setInstruments:"Instruments", instAdd:"Add new", instName:"Instrument name", instCategory:"Category", instSave:"Save", instCancel:"Cancel", instErrName:"Name must be 3–12 letters or digits", instErrDup:"This instrument already exists", setNews:"News", newsFormAdd:"New news item", newsFormEdit:"Edit names", newsNameErr:"Enter at least one name", instDelete:"Delete", newsEmpty:"No news added yet. Choose them via the three dots → Configure.", newsSelectAll:"Select all", newsClear:"Clear",
+      newsSort:"Sort", newsSelect:"Select", newsConfig:"Configure", setInstruments:"Instruments", instAdd:"Add new", instName:"Instrument name", instCategory:"Category", instSave:"Save", instCancel:"Cancel", instErrName:"Name must be 3–12 letters or digits", instErrDup:"This instrument already exists", setNews:"News", newsFormAdd:"New news item", newsFormEdit:"Edit names", newsNameErr:"Enter at least one name", instDelete:"Delete", alarmOpen:"Market opens", alarmClose:"Market closes", alarmOpened:"market opened", alarmClosed:"market closed", newsEmpty:"No news added yet. Choose them via the three dots → Configure.", newsSelectAll:"Select all", newsClear:"Clear",
       newsNote:"These relationships are a general rule: they don't always hold in the real market. Not financial advice.",
     },
   };
@@ -908,6 +1195,9 @@
     instrument:'XAUUSD', direction:'buy', lang:'uz', timezone:24,
     marketOrder: MARKETS.map(m => m.id),
     hiddenMarkets: [],
+    fxSortMode: false,   // true while the markets list can be reordered
+    alarms: {},          // { marketId: { open: bool, close: bool } }
+    prevAlarmOpen: {},
     prevOpenMap: {},
     prevOverflow: [],
     vibrationsReady: false,
@@ -999,8 +1289,6 @@
   function calculate(){
     const spec = currentSpec();
     const t = I18N[state.lang];
-    const unitText = spec.unit === 'oz' ? 'oz' : t.unitUnits;
-    $('contract').textContent = fmtGrouped(spec.contract, 0) + ' ' + unitText;
     const ph = '0000,' + '0'.repeat(spec.decimals);
     ['openPrice', 'closePrice', 'tpPrice', 'slPrice'].forEach(id => { $(id).placeholder = ph; });
 
@@ -1012,6 +1300,18 @@
     const pnlEl = $('pnl');
     const pctEl = $('pnl-pct');
     const moveEl = $('movement');
+
+    // dollar result if the price reaches the Take Profit / Stop Loss level
+    ['tp', 'sl'].forEach(k => {
+      const price = parseNumInput($(k + 'Price').value);
+      const out = $(k + '-val');
+      if(!price || !open || lots <= 0){ out.textContent = '-'; out.className = 'tpsl-val'; return; }
+      const d = state.direction === 'buy' ? (price - open) : (open - price);
+      let v = d * spec.contract * lots;
+      if(!spec.quoteIsUSD) v = v / price;
+      out.textContent = fmtMoney(v);
+      out.className = 'tpsl-val ' + (v > 0.004 ? 'pos' : v < -0.004 ? 'neg' : '');
+    });
 
     if(!open || !close || lots <= 0){
       pnlEl.textContent = '$0,00';
@@ -1096,6 +1396,9 @@
   }
   timezoneSelect.addEventListener('change', () => {
     state.timezone = parseInt(timezoneSelect.value, 10);
+    ttRenderAll();
+    ecoUpdateStatus();
+    ecoRenderEvents();
     renderSessions();
     renderClock();
     renderTicker();
@@ -1115,12 +1418,16 @@
     $('lbl-closePrice').textContent = t.closePrice;
     $('lbl-pnl').textContent = t.pnl;
     $('lbl-movement').textContent = t.movement;
-    $('lbl-contract').textContent = t.contract;
     $('lbl-timezone').textContent = t.timezoneLabel;
     $('lbl-language').textContent = t.languageLabel;
     $('lbl-tab-calculator').textContent = t.tabCalculator;
     $('lbl-tab-settings').textContent = t.tabSettings;
     $('lbl-tab-forextimes').textContent = t.tabForexTimes;
+    $('lbl-tab-tradetimes').textContent = t.tabTradeTimes;
+    ecoApplyLang();
+    $('lbl-tt-title').textContent = t.ttTitle;
+    $('lbl-tt-liq').textContent = t.ttLiquidity;
+    ttRenderAll();
     $('lbl-markets-select').textContent = t.marketsSelectLabel;
     $('lbl-tab-news').textContent = t.tabNews;
     $('lbl-news-title').textContent = t.newsTitle;
@@ -1245,6 +1552,7 @@
     const data = {
       marketOrder: state.marketOrder,
       hiddenMarkets: state.hiddenMarkets,
+      alarms: state.alarms,
     };
     try{ window.storage.set(FX_SETTINGS_KEY, JSON.stringify(data), false); }catch(err){}
   }
@@ -1262,6 +1570,12 @@
       }
       if(Array.isArray(saved.hiddenMarkets)){
         state.hiddenMarkets = saved.hiddenMarkets.filter(id => validIds.includes(id));
+      }
+      if(saved.alarms && typeof saved.alarms === 'object'){
+        Object.keys(saved.alarms).forEach(id => {
+          const a = saved.alarms[id];
+          if(validIds.includes(id) && a && typeof a === 'object') state.alarms[id] = { open: !!a.open, close: !!a.close };
+        });
       }
     }catch(err){ /* no saved settings yet */ }
   }
@@ -1386,6 +1700,15 @@
         if(!state.prevOverflow.includes(id)) shouldVibrate = true;
       });
     }
+    MARKETS.forEach(m => {
+      const isOpen = marketState(m).open;
+      const prev = state.prevAlarmOpen[m.id];
+      if(state.vibrationsReady && prev !== undefined && prev !== isOpen){
+        const a = state.alarms[m.id];
+        if(a && (isOpen ? a.open : a.close)) fireAlarm(m, isOpen);
+      }
+      state.prevAlarmOpen[m.id] = isOpen;
+    });
     state.prevOverflow = overflow;
     state.vibrationsReady = true;
 
@@ -1440,17 +1763,18 @@
           '<circle cx="7" cy="5" r="1.4"/><circle cx="13" cy="5" r="1.4"/>' +
           '<circle cx="7" cy="10" r="1.4"/><circle cx="13" cy="10" r="1.4"/>' +
           '<circle cx="7" cy="15" r="1.4"/><circle cx="13" cy="15" r="1.4"/></svg></div>' +
-        '<div class="session-dot" style="background:'+m.color+'"></div>' +
         '<div class="session-body">' +
           '<div class="session-top">' +
-            '<div class="session-name">' + m[state.lang] + (overflowed ? ' <span class="overlap-badge">' + t.overlapBadge + '</span>' : '') + '</div>' +
+            '<div class="session-name"><span class="flag">' + flagEmoji(MARKET_CC[id]) + '</span>' + m[state.lang] + (overflowed ? ' <span class="overlap-badge">' + t.overlapBadge + '</span>' : '') + '</div>' +
             '<div class="session-status ' + (open ? 'open' : 'closed') + '">' + (open ? t.sessionOpen : t.sessionClosed) + '</div>' +
           '</div>' +
-          '<div class="session-time">' + t.fxWorkHours + ': ' + localOpen + '–' + localClose + '</div>' +
+          '<div class="session-time"><span class="time-left"><i class="session-dot" style="background:'+m.color+'"></i>' + t.fxWorkHours + ': ' + localOpen + '–' + localClose + '</span>' +
+            '<button type="button" class="alarm-btn' + (alarmActive(id) ? ' active' : '') + '" aria-label="alarm">' + ALARM_ICON + '</button></div>' +
         '</div>';
 
+      card.querySelector('.alarm-btn').addEventListener('click', (e) => { e.stopPropagation(); openAlarmSheet(id); });
       card.addEventListener('click', (e) => {
-        if(e.target.closest('.drag-handle')) return;
+        if(e.target.closest('.drag-handle') || e.target.closest('.alarm-btn')) return;
         const idx = state.hiddenMarkets.indexOf(id);
         if(idx === -1){ state.hiddenMarkets.push(id); } else { state.hiddenMarkets.splice(idx, 1); }
         renderSessions();
@@ -1509,11 +1833,11 @@
       dragEl = null;
       renderClock();
       renderTicker();
-      saveFxSettings();
     }
 
     listEl.querySelectorAll('.drag-handle').forEach(handle => {
       handle.addEventListener('pointerdown', (e) => {
+        if(!state.fxSortMode) return;
         e.preventDefault();
         dragEl = handle.closest('.session-card');
         pointerId = e.pointerId;
@@ -2112,6 +2436,779 @@
   // custom/renamed news must be known before the saved news settings are filtered against it
   loadNewsContent().then(() => loadNewsSettings()).finally(() => { renderNews(); renderNewsAdminList(); });
 
+  // ---- Markets list: reordering only while the sort button is on (it turns into a check; the check saves) ----
+  const SORT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20V4M4 8l4-4 4 4M16 4v16M12 16l4 4 4-4"/></svg>';
+  const CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
+  function setSortMode(on){
+    state.fxSortMode = on;
+    $('sessions-list').classList.toggle('sorting', on);
+    const b = $('fx-sort-btn');
+    b.classList.toggle('active', on);
+    b.innerHTML = on ? CHECK_ICON : SORT_ICON;
+    if(on){ // the list has to be visible to reorder it
+      $('fx-markets-panel').classList.add('open');
+      $('fx-markets-toggle').classList.add('open');
+    }
+  }
+  $('fx-sort-btn').addEventListener('click', () => {
+    if(state.fxSortMode){ saveFxSettings(); setSortMode(false); }
+    else setSortMode(true);
+  });
+
+  // country flag (emoji) shown in front of each market name
+  const MARKET_CC = { sydney:'AU', tokyo:'JP', london:'GB', newyork:'US', frankfurt:'DE', hongkong:'HK', singapore:'SG', shanghai:'CN', mumbai:'IN', dubai:'AE', moscow:'RU', wellington:'NZ' };
+  function flagEmoji(cc){
+    return cc ? String.fromCodePoint(...cc.toUpperCase().split('').map(ch => 0x1F1E6 + ch.charCodeAt(0) - 65)) : '';
+  }
+
+  // ---- Market alarms (bottom sheet opens up to half of the screen) ----
+  const ALARM_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.5 1.5M4.5 5.2L7.3 3M19.5 5.2L16.7 3"/></svg>';
+  let alarmDraft = null, alarmMarketId = null, toastTimer = null;
+  function alarmActive(id){ const a = state.alarms[id]; return !!(a && (a.open || a.close)); }
+  function setSwitch(el, on){ el.setAttribute('aria-checked', on ? 'true' : 'false'); }
+  function openAlarmSheet(id){
+    const m = MARKETS.find(x => x.id === id);
+    if(!m) return;
+    const t = I18N[state.lang];
+    const a = state.alarms[id] || {};
+    alarmMarketId = id;
+    alarmDraft = { open: !!a.open, close: !!a.close };
+    $('alarm-title').textContent = m[state.lang];
+    $('alarm-lbl-open').textContent = t.alarmOpen;
+    $('alarm-lbl-close').textContent = t.alarmClose;
+    $('alarm-save').textContent = t.instSave;
+    setSwitch($('alarm-sw-open'), alarmDraft.open);
+    setSwitch($('alarm-sw-close'), alarmDraft.close);
+    $('alarm-backdrop').classList.add('open');
+    $('alarm-sheet').classList.add('open');
+  }
+  function closeAlarmSheet(){
+    $('alarm-backdrop').classList.remove('open');
+    $('alarm-sheet').classList.remove('open');
+    alarmMarketId = null;
+    alarmDraft = null;
+  }
+  $('alarm-sw-open').addEventListener('click', () => {
+    if(!alarmDraft) return;
+    alarmDraft.open = !alarmDraft.open;
+    setSwitch($('alarm-sw-open'), alarmDraft.open);
+  });
+  $('alarm-sw-close').addEventListener('click', () => {
+    if(!alarmDraft) return;
+    alarmDraft.close = !alarmDraft.close;
+    setSwitch($('alarm-sw-close'), alarmDraft.close);
+  });
+  $('alarm-backdrop').addEventListener('click', closeAlarmSheet);
+  $('alarm-save').addEventListener('click', () => {
+    if(alarmMarketId && alarmDraft){
+      state.alarms[alarmMarketId] = { open: alarmDraft.open, close: alarmDraft.close };
+      saveFxSettings();
+      renderSessions();
+    }
+    closeAlarmSheet();
+  });
+  function showToast(msg){
+    let el = $('fx-toast');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'fx-toast';
+      el.className = 'fx-toast';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.hidden = true; }, 4500);
+  }
+  function fireAlarm(m, opened){
+    const t = I18N[state.lang];
+    showToast('⏰ ' + shortName(m) + ' — ' + (opened ? t.alarmOpened : t.alarmClosed));
+    if('vibrate' in navigator){ try{ navigator.vibrate([200, 100, 200]); }catch(err){} }
+  }
+
+  // ---- Savdo vaqti (best trading times): liquidity scale + instrument time windows ----
+  const TT_DEFAULTS = [
+    { type:'Metall', pair:'XAUUSD', times:['12:30 - 17:30'], isVisible:true },
+    { type:'Forex',  pair:'EURUSD', times:['06:30 - 10:30'], isVisible:true },
+    { type:'Forex',  pair:'USDCAD', times:['17:30 - 22:30'], isVisible:true },
+    { type:'Forex',  pair:'USDJPY', times:['17:30 - 22:30'], isVisible:true },
+    { type:'Forex',  pair:'GBPJPY', times:['09:30 - 13:30'], isVisible:true },
+    { type:'Indeks', pair:'US30',   times:['06:30 - 11:30', '17:00 - 22:30'], isVisible:true },
+    { type:'Forex',  pair:'AUDUSD', times:['04:30 - 08:30', '17:30 - 21:30'], isVisible:true },
+  ];
+  const TT = {
+    instruments: TT_DEFAULTS.map(i => ({ type: i.type, pair: i.pair, times: i.times.slice(), isVisible: i.isVisible })),
+    filters: ['Forex', 'Metall', 'Indeks'],
+    hour: null, sorting: false, tempFilters: [], tempRows: [], confirmIdx: -1,
+  };
+  const TT_KEY_INSTR = 'tt-instruments', TT_KEY_FILTERS = 'tt-filters';
+  const TT_SORT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20V4M4 8l4-4 4 4M16 4v16M12 16l4 4 4-4"/></svg>';
+  const TT_TICK = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg>';
+  const TT_TRASH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>';
+  const TT_TIME_RE = /^(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})$/;
+
+  function ttSave(){
+    try{
+      window.storage.set(TT_KEY_INSTR, JSON.stringify(TT.instruments), false);
+      window.storage.set(TT_KEY_FILTERS, JSON.stringify(TT.filters), false);
+    }catch(err){}
+  }
+  async function ttLoad(){
+    try{
+      const a = await window.storage.get(TT_KEY_INSTR, false);
+      if(a && a.value){
+        const arr = JSON.parse(a.value);
+        if(Array.isArray(arr)){
+          const ok = arr.filter(x => x && typeof x.pair === 'string' && /^[A-Za-z0-9._-]{1,20}$/.test(x.pair) && ['Forex', 'Metall', 'Indeks'].includes(x.type) && Array.isArray(x.times))
+            .map(x => ({ type: x.type, pair: x.pair, times: x.times.filter(s => typeof s === 'string' && TT_TIME_RE.test(s)), isVisible: x.isVisible !== false }));
+          if(ok.length) TT.instruments = ok;
+        }
+      }
+      const b = await window.storage.get(TT_KEY_FILTERS, false);
+      if(b && b.value){
+        const f = JSON.parse(b.value);
+        if(Array.isArray(f)) TT.filters = f.filter(x => ['Forex', 'Metall', 'Indeks'].includes(x));
+      }
+    }catch(err){ /* nothing saved yet */ }
+  }
+
+  function ttPad(n){ return String(Math.floor(n)).padStart(2, '0'); }
+  function ttNowMinutes(){
+    return (((Math.floor(Date.now() / 60000) + Math.round(parseTzOffset() * 60)) % 1440) + 1440) % 1440;
+  }
+  function ttInterval(h){ return ttPad(h) + ':00 - ' + ttPad(h) + ':59'; }
+  function ttTypeLabel(type){
+    const t = I18N[state.lang];
+    return ({ Forex: t.ttTypeForex, Metall: t.ttTypeMetal, Indeks: t.ttTypeIndex })[type] || type;
+  }
+  function ttInRange(str, cur){
+    const m = TT_TIME_RE.exec(str);
+    if(!m) return false;
+    const s = (+m[1]) * 60 + (+m[2]), e = (+m[3]) * 60 + (+m[4]);
+    return e < s ? (cur >= s || cur <= e) : (cur >= s && cur <= e);
+  }
+
+  // liquidity of a local (selected time zone) hour: London / New York / Tokyo sessions, converted from UTC
+  function ttInWindow(m, u){ return m.openUTC < m.closeUTC ? (u >= m.openUTC && u < m.closeUTC) : (u >= m.openUTC || u < m.closeUTC); }
+  function ttLiquidity(h){
+    const u = (((h + 0.5 - parseTzOffset()) % 24) + 24) % 24;
+    const g = id => MARKETS.find(m => m.id === id);
+    const ld = ttInWindow(g('london'), u), ny = ttInWindow(g('newyork'), u), tk = ttInWindow(g('tokyo'), u);
+    if(ld && ny) return 'overlap';
+    if(ld || ny) return 'high';
+    return tk ? 'medium' : 'low';
+  }
+
+  function ttRenderRuler(){
+    const wrap = $('tt-ruler');
+    wrap.innerHTML = '';
+    for(let h = 0; h < 24; h++){
+      const seg = document.createElement('div');
+      seg.className = 'tt-seg liq-' + ttLiquidity(h) + (TT.hour === h ? ' active' : '');
+      seg.id = 'tt-seg-' + h;
+      seg.dataset.hour = h;
+      seg.title = ttInterval(h);
+      wrap.appendChild(seg);
+    }
+    wrap.classList.toggle('has-active', TT.hour !== null);
+  }
+  function ttUpdateBadge(){
+    const b = $('tt-badge');
+    if(TT.hour === null){ b.textContent = ttInterval(Math.floor(ttNowMinutes() / 60)); b.classList.remove('sel'); }
+    else { b.textContent = ttInterval(TT.hour); b.classList.add('sel'); }
+  }
+  function ttUpdateNow(){
+    const cur = $('tt-seg-' + Math.floor(ttNowMinutes() / 60));
+    if(!cur) return;
+    const a = cur.getBoundingClientRect(), base = $('tt-now-wrap').getBoundingClientRect();
+    $('tt-now').style.left = (a.left - base.left) + 'px';
+    $('tt-now').style.width = a.width + 'px';
+  }
+  function ttRefreshRuler(){
+    ttRenderRuler();
+    ttUpdateBadge();
+    requestAnimationFrame(() => setTimeout(ttUpdateNow, 10));
+  }
+
+  // pick an hour on the scale: tap, or drag across it
+  const ttRuler = $('tt-ruler');
+  let ttDragging = false, ttLastHour = null;
+  function ttHourFromX(x){
+    const segs = ttRuler.querySelectorAll('.tt-seg');
+    if(!segs.length) return null;
+    for(let i = 0; i < segs.length; i++){
+      const r = segs[i].getBoundingClientRect();
+      if(x >= r.left && x <= r.right) return parseInt(segs[i].dataset.hour, 10);
+    }
+    if(x < segs[0].getBoundingClientRect().left) return 0;
+    if(x > segs[segs.length - 1].getBoundingClientRect().right) return 23;
+    return null;
+  }
+  ttRuler.addEventListener('pointerdown', (e) => {
+    ttDragging = true;
+    try{ ttRuler.setPointerCapture(e.pointerId); }catch(err){}
+    const h = ttHourFromX(e.clientX);
+    if(h !== null){ TT.hour = (TT.hour === h) ? null : h; ttLastHour = h; ttRefreshRuler(); }
+  });
+  ttRuler.addEventListener('pointermove', (e) => {
+    if(!ttDragging) return;
+    const h = ttHourFromX(e.clientX);
+    if(h !== null && h !== ttLastHour){ TT.hour = h; ttLastHour = h; ttRefreshRuler(); }
+  });
+  ['pointerup', 'pointercancel'].forEach(ev => ttRuler.addEventListener(ev, () => { ttDragging = false; }));
+  $('tt-badge').addEventListener('click', () => {
+    if(TT.hour !== null){ TT.hour = null; ttRefreshRuler(); }
+  });
+
+  function ttRenderList(){
+    const list = $('tt-list');
+    const t = I18N[state.lang];
+    if(!TT.filters.length){ list.innerHTML = '<div class="tt-empty">' + t.ttEmptyFilter + '</div>'; return; }
+    const items = TT.instruments.filter(i => TT.filters.includes(i.type) && i.isVisible !== false);
+    if(!items.length){ list.innerHTML = '<div class="tt-empty">' + t.ttEmptyGroup + '</div>'; return; }
+    const now = ttNowMinutes();
+    list.innerHTML = items.map(i => {
+      const active = i.times.some(tm => ttInRange(tm, now));
+      return '<div class="tt-item" data-pair="' + i.pair + '">' +
+        '<div class="tt-left"><div class="tt-handle" aria-hidden="true">' + NEWS_GRIP + '</div>' +
+        '<span class="tt-dot' + (active ? ' on' : '') + '"></span><span class="tt-pair">' + i.pair + '</span></div>' +
+        '<div class="tt-times">' + i.times.map(x => '<div>' + x + '</div>').join('') + '</div></div>';
+    }).join('');
+    ttAttachSortable();
+  }
+  function ttRenderAll(){
+    ttRenderRuler();
+    ttUpdateBadge();
+    ttRenderList();
+    requestAnimationFrame(() => setTimeout(ttUpdateNow, 10));
+  }
+
+  // reorder: only while the sort button is on; the check saves
+  function ttSetSorting(on){
+    TT.sorting = on;
+    $('tt-list').classList.toggle('sorting', on);
+    const b = $('tt-sort-btn');
+    b.classList.toggle('active', on);
+    b.innerHTML = on ? CHECK_ICON : TT_SORT_ICON;
+  }
+  $('tt-sort-btn').addEventListener('click', () => {
+    if(!TT.filters.length) return;
+    if(TT.sorting){ ttSave(); ttSetSorting(false); } else ttSetSorting(true);
+  });
+  function ttSyncOrder(){
+    const dom = [...$('tt-list').querySelectorAll('.tt-item')].map(el => el.dataset.pair);
+    const shown = new Set(dom);
+    const byPair = {};
+    TT.instruments.forEach(x => { byPair[x.pair] = x; });
+    let i = 0;
+    TT.instruments = TT.instruments.map(x => shown.has(x.pair) ? byPair[dom[i++]] : x);
+  }
+  function ttAttachSortable(){
+    const listEl = $('tt-list');
+    let dragEl = null, startY = 0, pid = null;
+    function onMove(e){
+      if(!dragEl) return;
+      dragEl.style.transform = 'translateY(' + (e.clientY - startY) + 'px)';
+      let sib = dragEl.nextElementSibling;
+      if(sib){
+        const r = sib.getBoundingClientRect(), d = dragEl.getBoundingClientRect();
+        if(d.top + d.height / 2 > r.top + r.height / 2){
+          listEl.insertBefore(sib, dragEl);
+          startY += r.height;
+          dragEl.style.transform = 'translateY(' + (e.clientY - startY) + 'px)';
+        }
+      }
+      sib = dragEl.previousElementSibling;
+      if(sib){
+        const r = sib.getBoundingClientRect(), d = dragEl.getBoundingClientRect();
+        if(d.top + d.height / 2 < r.top + r.height / 2){
+          listEl.insertBefore(dragEl, sib);
+          startY -= r.height;
+          dragEl.style.transform = 'translateY(' + (e.clientY - startY) + 'px)';
+        }
+      }
+    }
+    function onUp(){
+      if(!dragEl) return;
+      dragEl.classList.remove('drag');
+      dragEl.style.transform = '';
+      try{ dragEl.releasePointerCapture(pid); }catch(err){}
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      dragEl = null;
+      ttSyncOrder();
+      ttSave();
+    }
+    listEl.querySelectorAll('.tt-handle').forEach(h => {
+      h.addEventListener('pointerdown', (e) => {
+        if(!TT.sorting) return;
+        e.preventDefault();
+        dragEl = h.closest('.tt-item');
+        pid = e.pointerId;
+        startY = e.clientY;
+        dragEl.classList.add('drag');
+        try{ dragEl.setPointerCapture(pid); }catch(err){}
+        document.addEventListener('pointermove', onMove);
+        document.addEventListener('pointerup', onUp);
+      });
+    });
+  }
+
+  // filter sheet (instrument groups)
+  function ttOpenSheet(id){ $(id + '-backdrop').classList.add('open'); $(id + '-sheet').classList.add('open'); }
+  function ttCloseSheet(id){ $(id + '-backdrop').classList.remove('open'); $(id + '-sheet').classList.remove('open'); }
+  function ttRenderChips(){
+    const types = [...new Set(TT.instruments.map(i => i.type))];
+    $('tt-chips').innerHTML = types.map(tp =>
+      '<button type="button" class="tt-chip' + (TT.tempFilters.includes(tp) ? ' on' : '') + '" data-type="' + tp + '">' + ttTypeLabel(tp) + '</button>').join('');
+  }
+  $('tt-chips').addEventListener('click', (e) => {
+    const b = e.target.closest('.tt-chip');
+    if(!b) return;
+    const tp = b.dataset.type, i = TT.tempFilters.indexOf(tp);
+    if(i === -1) TT.tempFilters.push(tp); else TT.tempFilters.splice(i, 1);
+    b.classList.toggle('on', i === -1);
+  });
+  $('tt-filter-btn').addEventListener('click', () => {
+    TT.tempFilters = TT.filters.slice();
+    ttRenderChips();
+    $('tt-filter-save').textContent = I18N[state.lang].instSave;
+    ttOpenSheet('tt-filter');
+  });
+  $('tt-filter-backdrop').addEventListener('click', () => ttCloseSheet('tt-filter'));
+  $('tt-filter-save').addEventListener('click', () => {
+    TT.filters = TT.tempFilters.slice();
+    if(!TT.filters.length && TT.sorting) ttSetSorting(false);
+    ttSave();
+    ttRenderList();
+    ttCloseSheet('tt-filter');
+  });
+
+  // time-window editor (three dots)
+  function ttRenderRows(){
+    const t = I18N[state.lang];
+    const pairs = [...new Set(TT.instruments.map(i => i.pair))];
+    $('tt-rows').innerHTML = TT.tempRows.map((r, idx) =>
+      '<div class="tt-row" data-i="' + idx + '">' +
+        '<button type="button" class="tt-check' + (r.checked ? ' on' : '') + '" data-act="check">' + TT_TICK + '</button>' +
+        '<select class="tt-sel" data-act="pair">' + pairs.map(p => '<option value="' + p + '"' + (p === r.pair ? ' selected' : '') + '>' + p + '</option>').join('') + '</select>' +
+        '<div class="tt-timebox">' +
+          '<input class="tt-tin" inputmode="numeric" maxlength="2" data-f="sh" value="' + r.sh + '">:' +
+          '<input class="tt-tin" inputmode="numeric" maxlength="2" data-f="sm" value="' + r.sm + '">–' +
+          '<input class="tt-tin" inputmode="numeric" maxlength="2" data-f="eh" value="' + r.eh + '">:' +
+          '<input class="tt-tin" inputmode="numeric" maxlength="2" data-f="em" value="' + r.em + '">' +
+        '</div>' +
+        '<button type="button" class="tt-del' + (TT.confirmIdx === idx ? ' confirm' : '') + '" data-act="del">' + (TT.confirmIdx === idx ? t.ttConfirm : TT_TRASH) + '</button>' +
+      '</div>').join('');
+  }
+  $('tt-menu-btn').addEventListener('click', () => {
+    const t = I18N[state.lang];
+    TT.tempRows = [];
+    TT.confirmIdx = -1;
+    TT.instruments.forEach(inst => {
+      if(!inst.times.length){
+        TT.tempRows.push({ pair: inst.pair, type: inst.type, sh: '00', sm: '00', eh: '00', em: '00', checked: inst.isVisible });
+        return;
+      }
+      inst.times.forEach(tm => {
+        const m = TT_TIME_RE.exec(tm);
+        TT.tempRows.push({ pair: inst.pair, type: inst.type, sh: m[1], sm: m[2], eh: m[3], em: m[4], checked: inst.isVisible });
+      });
+    });
+    ttRenderRows();
+    $('tt-add-btn').textContent = t.ttAdd;
+    $('tt-menu-save').textContent = t.instSave;
+    ttOpenSheet('tt-menu');
+  });
+  $('tt-menu-backdrop').addEventListener('click', () => ttCloseSheet('tt-menu'));
+  $('tt-rows').addEventListener('click', (e) => {
+    const row = e.target.closest('.tt-row');
+    if(!row) return;
+    const i = +row.dataset.i;
+    const act = e.target.closest('[data-act]');
+    const kind = act ? act.dataset.act : null;
+    if(kind === 'check'){
+      TT.tempRows[i].checked = !TT.tempRows[i].checked;
+      act.classList.toggle('on', TT.tempRows[i].checked);
+    } else if(kind === 'del'){
+      if(TT.confirmIdx === i){ TT.tempRows.splice(i, 1); TT.confirmIdx = -1; }
+      else TT.confirmIdx = i;
+      ttRenderRows();
+    } else if(TT.confirmIdx !== -1 && e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT'){
+      TT.confirmIdx = -1;
+      ttRenderRows();
+    }
+  });
+  const TT_FIELD_ORDER = ['sh', 'sm', 'eh', 'em'];
+  $('tt-rows').addEventListener('input', (e) => {
+    const el = e.target;
+    if(!el.classList.contains('tt-tin')) return;
+    const f = el.dataset.f, isHour = (f === 'sh' || f === 'eh');
+    let v = el.value.replace(/\D/g, '').slice(0, 2);
+    if(v.length && parseInt(v, 10) > (isHour ? 23 : 59)) v = isHour ? '23' : '59';
+    el.value = v;
+    const i = +el.closest('.tt-row').dataset.i;
+    TT.tempRows[i][f] = v.padStart(2, '0');
+    if(v.length === 2){
+      const next = el.closest('.tt-row').querySelector('[data-f="' + TT_FIELD_ORDER[TT_FIELD_ORDER.indexOf(f) + 1] + '"]');
+      if(next){ next.focus(); next.select(); }
+    }
+  });
+  $('tt-rows').addEventListener('focusin', (e) => { if(e.target.classList.contains('tt-tin')) e.target.select(); });
+  $('tt-rows').addEventListener('focusout', (e) => {
+    if(e.target.classList.contains('tt-tin')) e.target.value = e.target.value.padStart(2, '0');
+  });
+  $('tt-rows').addEventListener('change', (e) => {
+    if(!e.target.classList.contains('tt-sel')) return;
+    const i = +e.target.closest('.tt-row').dataset.i;
+    const inst = TT.instruments.find(x => x.pair === e.target.value);
+    TT.tempRows[i].pair = e.target.value;
+    if(inst) TT.tempRows[i].type = inst.type;
+  });
+  $('tt-add-btn').addEventListener('click', () => {
+    if(TT.tempRows.length >= 20) return;
+    const pair = TT.instruments.length ? TT.instruments[0].pair : 'XAUUSD';
+    const inst = TT.instruments.find(x => x.pair === pair);
+    TT.tempRows.push({ pair, type: inst ? inst.type : 'Forex', sh: '00', sm: '00', eh: '00', em: '00', checked: false });
+    TT.confirmIdx = -1;
+    ttRenderRows();
+    const box = $('tt-rows');
+    box.scrollTop = box.scrollHeight;
+  });
+  $('tt-menu-save').addEventListener('click', () => {
+    const grouped = {}, order = [];
+    TT.tempRows.forEach(r => {
+      if(r.sh === '00' && r.sm === '00' && r.eh === '00' && r.em === '00') return;
+      if(!grouped[r.pair]){ grouped[r.pair] = { type: r.type, pair: r.pair, times: [], isVisible: r.checked }; order.push(r.pair); }
+      else if(r.checked) grouped[r.pair].isVisible = true;
+      grouped[r.pair].times.push(r.sh + ':' + r.sm + ' - ' + r.eh + ':' + r.em);
+    });
+    const next = [];
+    TT.instruments.forEach(i => { if(grouped[i.pair]) next.push(grouped[i.pair]); });
+    order.forEach(p => { if(!next.some(i => i.pair === p)) next.push(grouped[p]); });
+    next.forEach(g => { g.times = g.times.slice(0, 3); });
+    TT.instruments = next;
+    const types = [...new Set(TT.instruments.map(i => i.type))];
+    TT.filters = TT.filters.filter(tp => types.includes(tp));
+    ttSave();
+    ttRenderList();
+    ttCloseSheet('tt-menu');
+  });
+
+  window.addEventListener('resize', ttUpdateNow);
+  setInterval(ttUpdateNow, 1000);
+  setInterval(() => {
+    if(TT.hour === null) ttUpdateBadge();
+    ttRenderRuler();
+    if(!TT.sorting) ttRenderList();
+  }, 30000);
+  ttLoad().finally(ttRenderAll);
+
+  // ---- Yangiliklar: economic calendar (ShowMyTrades public API) ----
+  Object.assign(I18N.uz, {
+    tabEco:"Yangiliklar", ecoTitle:"Iqtisodiy kalendar", ecoLast:"Oxirgi yangilangan vaqt", ecoPrep:"Kalendar tayyorlanmoqda…",
+    ecoDue:"Yangilanish vaqti keldi", ecoNext:"Keyingi yangilanishgacha taxminiy vaqt:", ecoOffline:"Internet aloqa yo'q",
+    ecoLoading:"Yuklanmoqda…", ecoError:"Xatolik yuz berdi", ecoToday:"Bugun", ecoTomorrow:"Ertaga", ecoWeek:"Haftalik",
+    ecoNone:"Yangilik topilmadi", ecoNoneHint:"Tanlangan filtrlarga mos ma'lumot yo'q.", ecoWait:"Ma'lumot yuklanmoqda…",
+    ecoNow:"Hozir", ecoActual:"Haqiqiy", ecoForecast:"Prognoz", ecoPrevious:"Oldingi", ecoFilter:"Filtrlash",
+    ecoHigh:"Yuqori", ecoMedium:"O'rta", ecoLow:"Past", ecoFooter:"Manba: ShowMyTrades · Avtomatik yangilanish: 6 soatda bir marta."
+  });
+  Object.assign(I18N.ru, {
+    tabEco:"Новости", ecoTitle:"Экономический календарь", ecoLast:"Последнее обновление", ecoPrep:"Календарь готовится…",
+    ecoDue:"Пора обновить", ecoNext:"До следующего обновления примерно:", ecoOffline:"Нет подключения к интернету",
+    ecoLoading:"Загрузка…", ecoError:"Произошла ошибка", ecoToday:"Сегодня", ecoTomorrow:"Завтра", ecoWeek:"Неделя",
+    ecoNone:"Новостей не найдено", ecoNoneHint:"Нет данных по выбранным фильтрам.", ecoWait:"Загрузка данных…",
+    ecoNow:"Сейчас", ecoActual:"Факт", ecoForecast:"Прогноз", ecoPrevious:"Пред.", ecoFilter:"Фильтр",
+    ecoHigh:"Высокая", ecoMedium:"Средняя", ecoLow:"Низкая", ecoFooter:"Источник: ShowMyTrades · Автообновление: раз в 6 часов."
+  });
+  Object.assign(I18N.en, {
+    tabEco:"News", ecoTitle:"Economic Calendar", ecoLast:"Last updated", ecoPrep:"Preparing the calendar…",
+    ecoDue:"Time to refresh", ecoNext:"Approximate time until the next update:", ecoOffline:"No internet connection",
+    ecoLoading:"Loading…", ecoError:"Something went wrong", ecoToday:"Today", ecoTomorrow:"Tomorrow", ecoWeek:"Weekly",
+    ecoNone:"No events found", ecoNoneHint:"No data matches the selected filters.", ecoWait:"Loading data…",
+    ecoNow:"Now", ecoActual:"Actual", ecoForecast:"Forecast", ecoPrevious:"Previous", ecoFilter:"Filter",
+    ecoHigh:"High", ecoMedium:"Medium", ecoLow:"Low", ecoFooter:"Source: ShowMyTrades · Auto refresh: once every 6 hours."
+  });
+
+  const ECO_API = 'https://showmytrades.com/api/public/calendar/v1';
+  const ECO_INTERVAL = 6 * 60 * 60 * 1000;
+  const ECO_CURRENCIES = [
+    { code:'USD', cc:'US' }, { code:'EUR', cc:'EU' }, { code:'GBP', cc:'GB' }, { code:'JPY', cc:'JP' }, { code:'AUD', cc:'AU' },
+    { code:'NZD', cc:'NZ' }, { code:'CAD', cc:'CA' }, { code:'CHF', cc:'CH' }, { code:'CNY', cc:'CN' },
+  ];
+  const ECO = { events: [], last: 0, loading: false, range: 'today', impacts: new Set(['high']), currencies: new Set(['USD']), refreshTimer: null, statusTimer: null, state: 'loading' };
+  const ECO_KEYS = { last: 'eco-last', events: 'eco-events', filters: 'eco-filters' };
+
+  // dates are read in the time zone chosen in Settings (default GMT+5)
+  function ecoShiftDate(ms){ return new Date(ms + Math.round(parseTzOffset() * 3600000)); }
+  function ecoDateKey(ms){
+    const d = ecoShiftDate(ms);
+    return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0') + '-' + String(d.getUTCDate()).padStart(2, '0');
+  }
+  function ecoShiftKey(key, days){
+    const p = key.split('-').map(Number);
+    const d = new Date(Date.UTC(p[0], p[1] - 1, p[2] + days));
+    return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0') + '-' + String(d.getUTCDate()).padStart(2, '0');
+  }
+  function ecoClock(ms){
+    const d = ecoShiftDate(ms);
+    return String(d.getUTCHours()).padStart(2, '0') + ':' + String(d.getUTCMinutes()).padStart(2, '0');
+  }
+  function ecoEsc(v){
+    return String(v).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[ch]);
+  }
+  function ecoImpact(v){
+    const s = String(v == null ? '' : v).toLowerCase();
+    if(['high', '3', 'red'].includes(s)) return 'high';
+    if(['medium', 'med', '2', 'orange', 'yellow'].includes(s)) return 'medium';
+    if(['low', '1', 'green'].includes(s)) return 'low';
+    return 'unknown';
+  }
+  function ecoNormalize(ev, idx){
+    const ts = Number(ev.ts != null ? ev.ts : ev.timestamp);
+    const rawTime = ev.time != null ? ev.time : (ev.date != null ? ev.date : '');
+    const d = (Number.isFinite(ts) && ts > 0) ? new Date(String(ts).length === 10 ? ts * 1000 : ts) : new Date(rawTime);
+    const cur = String(ev.currency != null ? ev.currency : (ev.country_currency != null ? ev.country_currency : '')).toUpperCase();
+    const title = String(ev.title != null ? ev.title : (ev.event != null ? ev.event : (ev.name != null ? ev.name : 'Untitled event')));
+    return {
+      id: String(ev.id != null ? ev.id : (ev.event_id != null ? ev.event_id : cur + '_' + title + '_' + (ev.ts != null ? ev.ts : idx))),
+      currency: cur,
+      country: String(ev.country != null ? ev.country : (ev.country_code != null ? ev.country_code : '')),
+      title, time: d.getTime(),
+      impact: ecoImpact(ev.impact != null ? ev.impact : ev.impact_level),
+      actual: ev.actual != null ? ev.actual : null,
+      forecast: ev.forecast != null ? ev.forecast : (ev.consensus != null ? ev.consensus : null),
+      previous: ev.previous != null ? ev.previous : null,
+    };
+  }
+  function ecoRemaining(ms){
+    const t = I18N[state.lang];
+    const diff = ms - Date.now();
+    if(diff <= 0) return null;
+    const total = Math.floor(diff / 60000), h = Math.floor(total / 60), m = total % 60;
+    return h > 0 ? (h + t.hourAbbr + ' ' + m + t.minuteAbbr) : (m + t.minuteAbbr);
+  }
+  function ecoRangeBounds(){
+    const today = ecoDateKey(Date.now());
+    if(ECO.range === 'today') return [today, today];
+    if(ECO.range === 'tomorrow') return [ecoShiftKey(today, 1), ecoShiftKey(today, 1)];
+    return [today, ecoShiftKey(today, 7)];
+  }
+  function ecoFiltered(){
+    const b = ecoRangeBounds();
+    return ECO.events
+      .map(e => ({ e, key: Number.isFinite(e.time) ? ecoDateKey(e.time) : null }))
+      .filter(x => x.key && x.key >= b[0] && x.key <= b[1])
+      .filter(x => ECO.impacts.has(x.e.impact))
+      .filter(x => ECO.currencies.size === 0 || ECO.currencies.has(x.e.currency))
+      .sort((a, b2) => a.e.time - b2.e.time);
+  }
+
+  function ecoSaveFilters(){
+    try{ window.storage.set(ECO_KEYS.filters, JSON.stringify({ impacts: [...ECO.impacts], currencies: [...ECO.currencies] }), false); }catch(err){}
+  }
+  function ecoSaveEvents(){
+    try{
+      window.storage.set(ECO_KEYS.events, JSON.stringify(ECO.events), false);
+      window.storage.set(ECO_KEYS.last, String(ECO.last), false);
+    }catch(err){}
+  }
+  async function ecoLoadStored(){
+    let hasCache = false;
+    try{
+      const f = await window.storage.get(ECO_KEYS.filters, false);
+      if(f && f.value){
+        const p = JSON.parse(f.value);
+        if(Array.isArray(p.impacts)) ECO.impacts = new Set(p.impacts.filter(x => ['high', 'medium', 'low'].includes(x)));
+        if(Array.isArray(p.currencies)) ECO.currencies = new Set(p.currencies.filter(x => ECO_CURRENCIES.some(c2 => c2.code === x)));
+      }
+      const l = await window.storage.get(ECO_KEYS.last, false);
+      if(l && l.value && Number.isFinite(Number(l.value))) ECO.last = Number(l.value);
+      const ev = await window.storage.get(ECO_KEYS.events, false);
+      if(ev && ev.value){
+        const arr = JSON.parse(ev.value);
+        if(Array.isArray(arr)){ ECO.events = arr.filter(x => x && typeof x.title === 'string' && Number.isFinite(x.time)); hasCache = ECO.events.length > 0; }
+      }
+    }catch(err){ /* nothing stored yet */ }
+    return hasCache;
+  }
+
+  function ecoRenderFilterSheet(){
+    const t = I18N[state.lang];
+    const names = { high: t.ecoHigh, medium: t.ecoMedium, low: t.ecoLow };
+    $('eco-imps').innerHTML = ['high', 'medium', 'low'].map(k =>
+      '<button type="button" class="eco-imp ' + k + (ECO.impacts.has(k) ? ' on' : '') + '" data-imp="' + k + '"><i></i>' + names[k] + '</button>').join('');
+    $('eco-curs').innerHTML = ECO_CURRENCIES.map(c2 =>
+      '<button type="button" class="eco-curitem' + (ECO.currencies.has(c2.code) ? ' on' : '') + '" data-cur="' + c2.code + '"><span>' + flagEmoji(c2.cc) + '</span><span>' + c2.code + '</span></button>').join('');
+  }
+
+  function ecoRenderEvents(){
+    const list = $('eco-events');
+    const t = I18N[state.lang];
+    const items = ecoFiltered();
+    if(!items.length){
+      list.innerHTML = '<div class="eco-empty"><strong>' + (ECO.loading ? t.ecoWait : t.ecoNone) + '</strong>' + (!ECO.loading && ECO.last ? t.ecoNoneHint : '') + '</div>';
+      return;
+    }
+    const now = Date.now();
+    const today = ecoDateKey(now), tomorrow = ecoShiftKey(today, 1);
+    let html = '', lastKey = null, nowDone = false;
+    items.forEach(x => {
+      const e = x.e;
+      const isPast = x.key === today && e.time < now - 60000;
+      if(x.key !== lastKey){
+        lastKey = x.key;
+        const label = x.key === today ? t.ecoToday : (x.key === tomorrow ? t.ecoTomorrow : (x.key.split('-')[2] + '/' + x.key.split('-')[1]));
+        html += '<div class="eco-section"><div class="eco-badge date">' + ecoEsc(label) + '</div><div class="eco-line"></div></div>';
+      }
+      if(ECO.range === 'today' && !isPast && !nowDone){
+        html += '<div class="eco-section" style="margin-top:12px"><div class="eco-badge now">⬤ ' + t.ecoNow + '</div><div class="eco-line"></div></div>';
+        nowDone = true;
+      }
+      const cur = ECO_CURRENCIES.find(c2 => c2.code === e.currency);
+      const flag = cur ? '<span class="eco-flag">' + flagEmoji(cur.cc) + '</span>' : '';
+      const v = val => (val === null || val === undefined || val === '') ? '—' : val;
+      let count = '';
+      if(ECO.range === 'today' && !isPast && e.time > now){
+        const left = ecoRemaining(e.time);
+        if(left) count = '<div class="eco-count">' + left + '</div>';
+      }
+      html += '<div class="eco-row' + (isPast ? ' past' : '') + '">' +
+        '<div class="eco-time"><div class="eco-time-val">' + ecoClock(e.time) + '</div>' + count + '</div>' +
+        '<div class="eco-card ' + e.impact + '">' +
+          '<div><div class="eco-head">' + flag + '<span class="eco-cur">' + ecoEsc(e.currency || '—') + '</span></div>' +
+          '<div class="eco-title2">' + ecoEsc(e.title) + '</div>' +
+          '<div class="eco-country">' + ecoEsc(e.country) + '</div></div>' +
+          '<div class="eco-values">' +
+            '<div class="eco-vbox"><span class="eco-vlabel">' + t.ecoActual + '</span><strong>' + ecoEsc(v(e.actual)) + '</strong></div>' +
+            '<div class="eco-vbox"><span class="eco-vlabel">' + t.ecoForecast + '</span><strong>' + ecoEsc(v(e.forecast)) + '</strong></div>' +
+            '<div class="eco-vbox"><span class="eco-vlabel">' + t.ecoPrevious + '</span><strong>' + ecoEsc(v(e.previous)) + '</strong></div>' +
+          '</div></div></div>';
+    });
+    list.innerHTML = html;
+  }
+
+  function ecoUpdateStatus(){
+    const t = I18N[state.lang];
+    const row = $('eco-status-row'), txt = $('eco-status-text'), tm = $('eco-status-time');
+    if(ECO.last){
+      const d = ecoShiftDate(ECO.last), p2 = n => String(n).padStart(2, '0');
+      $('eco-last-val').textContent = p2(d.getUTCHours()) + ':' + p2(d.getUTCMinutes()) + ' ' + p2(d.getUTCDate()) + '.' + p2(d.getUTCMonth() + 1) + '.' + String(d.getUTCFullYear()).slice(-2);
+    } else $('eco-last-val').textContent = '—';
+    const set = (state2, text, time) => { ECO.state = state2; row.dataset.state = state2; txt.textContent = text; tm.textContent = time || ''; };
+    if(ECO.loading){ set('loading', t.ecoLoading); return; }
+    if(ECO.state === 'offline'){ set('offline', t.ecoOffline); return; }
+    if(ECO.state === 'error'){ set('error', t.ecoError); return; }
+    if(!ECO.last){ set('loading', t.ecoPrep); return; }
+    const remaining = ECO.last + ECO_INTERVAL - Date.now();
+    if(remaining <= 0){ set('error', t.ecoDue); return; }
+    const total = Math.ceil(remaining / 60000), h = Math.floor(total / 60), m = total % 60;
+    set('ok', t.ecoNext, h > 0 ? (h + t.hourAbbr + ' ' + m + t.minuteAbbr) : (m + t.minuteAbbr));
+  }
+
+  function ecoDue(force){ return force || !ECO.last || Date.now() - ECO.last >= ECO_INTERVAL; }
+  async function ecoFetch(){
+    const url = new URL(ECO_API);
+    url.searchParams.set('impact', 'all');
+    url.searchParams.set('days', '7');
+    const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' }, cache: 'no-store' });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const payload = await res.json();
+    const raw = Array.isArray(payload) ? payload : payload.events;
+    if(!Array.isArray(raw)) throw new Error('bad format');
+    ECO.events = raw.map(ecoNormalize);
+    ECO.last = Date.now();
+    ecoSaveEvents();
+  }
+  function ecoSchedule(){
+    clearTimeout(ECO.refreshTimer);
+    const remaining = ECO.last + ECO_INTERVAL - Date.now();
+    if(remaining > 0) ECO.refreshTimer = setTimeout(() => ecoUpdate(false), remaining);
+    if(!ECO.statusTimer){
+      ECO.statusTimer = setInterval(() => { ecoUpdateStatus(); ecoRenderEvents(); }, 60000);
+    }
+  }
+  async function ecoUpdate(force){
+    if(ECO.loading) return;
+    if(!navigator.onLine){ ECO.state = 'offline'; ecoUpdateStatus(); return; }
+    if(!ecoDue(force)){ ECO.state = 'ok'; ecoUpdateStatus(); ecoRenderEvents(); ecoSchedule(); return; }
+    ECO.loading = true;
+    $('eco-refresh').disabled = true;
+    $('eco-refresh').classList.add('spin');
+    ecoUpdateStatus();
+    ecoRenderEvents();
+    try{
+      await ecoFetch();
+      ECO.state = 'ok';
+    }catch(err){
+      ECO.state = 'error';
+    }finally{
+      ECO.loading = false;
+      $('eco-refresh').disabled = false;
+      $('eco-refresh').classList.remove('spin');
+      ecoUpdateStatus();
+      ecoRenderEvents();
+      ecoSchedule();
+    }
+  }
+
+  function ecoApplyLang(){
+    const t = I18N[state.lang];
+    $('lbl-tab-econews').textContent = t.tabEco;
+    $('eco-title').textContent = t.ecoTitle;
+    $('eco-lbl-last').textContent = t.ecoLast;
+    $('eco-tab-today').textContent = t.ecoToday;
+    $('eco-tab-tomorrow').textContent = t.ecoTomorrow;
+    $('eco-tab-week').textContent = t.ecoWeek;
+    $('eco-filter-title').textContent = t.ecoFilter;
+    $('eco-footer').textContent = t.ecoFooter;
+    ecoRenderFilterSheet();
+    ecoUpdateStatus();
+    ecoRenderEvents();
+  }
+
+  $('eco-tabs').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-range]');
+    if(!b) return;
+    ECO.range = b.dataset.range;
+    $('eco-tabs').querySelectorAll('[data-range]').forEach(x => x.classList.toggle('active', x === b));
+    ecoRenderEvents();
+  });
+  $('eco-refresh').addEventListener('click', () => ecoUpdate(true));
+  $('eco-filter-btn').addEventListener('click', () => {
+    ecoRenderFilterSheet();
+    $('eco-filter-backdrop').classList.add('open');
+    $('eco-filter-sheet').classList.add('open');
+  });
+  const ecoCloseSheet = () => { $('eco-filter-backdrop').classList.remove('open'); $('eco-filter-sheet').classList.remove('open'); };
+  $('eco-filter-backdrop').addEventListener('click', ecoCloseSheet);
+  $('eco-filter-close').addEventListener('click', ecoCloseSheet);
+  $('eco-imps').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-imp]');
+    if(!b) return;
+    if(ECO.impacts.has(b.dataset.imp)) ECO.impacts.delete(b.dataset.imp); else ECO.impacts.add(b.dataset.imp);
+    b.classList.toggle('on', ECO.impacts.has(b.dataset.imp));
+    ecoRenderEvents();
+    ecoSaveFilters();
+  });
+  $('eco-curs').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-cur]');
+    if(!b) return;
+    if(ECO.currencies.has(b.dataset.cur)) ECO.currencies.delete(b.dataset.cur); else ECO.currencies.add(b.dataset.cur);
+    b.classList.toggle('on', ECO.currencies.has(b.dataset.cur));
+    ecoRenderEvents();
+    ecoSaveFilters();
+  });
+  window.addEventListener('online', () => { if(ECO.state === 'offline') ECO.state = 'ok'; ecoUpdate(false); });
+  document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && ecoDue(false)) ecoUpdate(false); });
+
+  (async function ecoInit(){
+    const hasCache = await ecoLoadStored();
+    ecoApplyLang();
+    if(!hasCache || ecoDue(false)) ecoUpdate(false);
+    else { ECO.state = 'ok'; ecoUpdateStatus(); ecoSchedule(); }
+  })();
+
   setInterval(() => { renderClock(); checkVibrations(); }, 1000);
   setInterval(() => { updateMarketHours(); renderSessions(); renderTicker(); }, 30000);
 
@@ -2131,6 +3228,8 @@
     calculator: $('screen-calculator'),
     settings: $('screen-settings'),
     forextimes: $('screen-forextimes'),
+    tradetimes: $('screen-tradetimes'),
+    econews: $('screen-econews'),
     news: $('screen-news'),
   };
   const tabButtons = document.querySelectorAll('.tab-item');
@@ -2141,6 +3240,8 @@
       btn.classList.add('active');
       Object.keys(screens).forEach(k => screens[k].classList.toggle('active', k === tab));
       if(tab === 'news') fitNews();
+      if(tab === 'tradetimes') ttRenderAll();
+      if(tab === 'econews') ecoRenderEvents();
       if(tab === 'settings') showSettingsMain();
     });
   });
